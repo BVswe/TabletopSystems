@@ -5,9 +5,9 @@ namespace TabletopSystems;
 
 public interface IDBAccess
 {
-    void add(string objectName,object objectToAdd);
-    void remove(string objectName, object objectToRemove);
-    void edit(string objectName, object objectToRemove);
-    object GetByPrimaryKey(string objectName,object objectToGet);
+    void add(object objectToAdd);
+    void remove(object objectToRemove);
+    void edit(object objectToRemove);
+    object GetByPrimaryKey(object objectToGet);
 
 }
