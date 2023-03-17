@@ -12,7 +12,7 @@ namespace TabletopSystems
         public MainWindow()
         {
             InitializeComponent();
-            sqlTest = new SqlConnectionTest();
+            
         }
     }
 }

@@ -7,18 +7,13 @@ namespace TabletopSystems;
 
 public class TableCreation
 {
-    private UserConnection _userConnection;
-    public TableCreation(UserConnection u)
-    {
-        _userConnection = u;
-    }
 
     #region Table Creation Methods
     /// <summary>
     /// Processes SqlCommand to create an Attributes table
     /// </summary>
     /// <param name="cmd">Command to be altered</param>
-    /// <param name="systemID">ID of system associated with this table</param>
+    /// <param name="systemID">ID of system associated with this table. Retrieve this from the database</param>
     /// <returns></returns>
     public void ProcessCreateAttributesCommand(ref SqlCommand cmd, int systemID)
     {
@@ -35,7 +30,7 @@ public class TableCreation
     /// Processes SqlCommand to create an Actions table
     /// </summary>
     /// <param name="cmd">Command to be altered</param>
-    /// <param name="systemID">ID of system associated with this table</param>
+    /// <param name="systemID">ID of system associated with this table. Retrieve this from the database</param>
     public void CreateActionsCommand(ref SqlCommand cmd, int systemID)
     {
         cmd.CommandText =  "CREATE TABLE " + systemID + "_Actions" + " (" +
