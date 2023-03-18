@@ -8,13 +8,20 @@ namespace TabletopSystems;
 
 public class UserConnection
 {
+    private string _connectionString;
     private bool connectedToSqlServer;
-    private SqlConnection _userSqlConnection;
-    private SqliteConnection _userSqliteConnection;
+    public SqlConnection userSqlConnection { get; set; }
+    public SqliteConnection userSqliteConnection { get; set; }
+
+    public void setConnectionTarget(string s)
+    {
+        _connectionString = s;
+    }
 
     public UserConnection(string s)
     {
-        tryConnection(s);
+        _connectionString = "Data Source=" + s + "; Initial Catalog=TabletopSystems; Integrated Security=true; Encrypt=false";
+        tryConnection();
     }
 
     /// <summary>
@@ -25,31 +32,38 @@ public class UserConnection
     {
         if (connectedToSqlServer)
         {
-            return _userSqlConnection;
+            return userSqlConnection;
         }
         else
         {
-            return _userSqliteConnection;
+            return userSqliteConnection;
         }
     }
     /// <summary>
     /// Sets SqlConnection if a connection using string s is available, otherwise sets SqliteConnection to documents folder
     /// </summary>
     /// <param name="s">Give a database connection string</param>
-    public void tryConnection(String s)
+    public void tryConnection()
     {
-        using (SqlConnection connection = new SqlConnection(s + ";Connection Timeout = 3"))
+        using (SqlConnection connection = new SqlConnection(_connectionString + ";Connection Timeout = 3"))
         {
             try
             {
                 connection.Open();
                 connectedToSqlServer = true;
-                _userSqlConnection = new SqlConnection(connection.ConnectionString + ";Connection Timeout = 3");
+                if (userSqlConnection != null && userSqlConnection.ConnectionString != _connectionString) {
+                    return;
+                }
+                userSqlConnection = new SqlConnection(_connectionString + ";Connection Timeout = 3");
             }
             catch (SqlException)
             {
                 connectedToSqlServer = false;
-                _userSqliteConnection = new SqliteConnection("Data Source=" + Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "TabletopSystemsData.sqlite");
+                if (userSqliteConnection != null)
+                {
+                    return;
+                }
+                userSqliteConnection = new SqliteConnection("Data Source=" + Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "TabletopSystemsData.sqlite");
             }
         }
     }
