@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace TabletopSystems;
+namespace TabletopSystems.ViewModels;
 
 public class RelayCommand : ICommand
 {

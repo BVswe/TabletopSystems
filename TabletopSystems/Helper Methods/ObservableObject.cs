@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace TabletopSystems;
 
-public abstract class ViewModelBase : INotifyPropertyChanged
+public abstract class ObservableObject : INotifyPropertyChanged
 {
     //Notifies binding clients that a property has changed and they need to reevaluate
     public event PropertyChangedEventHandler? PropertyChanged;

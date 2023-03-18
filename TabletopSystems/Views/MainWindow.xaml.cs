@@ -8,11 +8,9 @@ namespace TabletopSystems
     /// </summary>
     public partial class MainWindow : Window
     {
-        public SqlConnectionTest sqlTest;
         public MainWindow()
         {
             InitializeComponent();
-            
         }
     }
 }
