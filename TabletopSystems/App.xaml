@@ -9,6 +9,8 @@
         <DataTemplate DataType="{x:Type TypeName=viewModels:SystemSelectionViewModel}">
             <views:SystemSelectionView/>
         </DataTemplate>
-        
+        <DataTemplate DataType="{x:Type TypeName=viewModels:TestViewModel}">
+            <views:TestView/>
+        </DataTemplate>
     </Application.Resources>
 </Application>

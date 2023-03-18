@@ -31,6 +31,7 @@ namespace TabletopSystems
                     DataContext = provider.GetRequiredService<MainWindowViewModel>()
                 });
                 services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<TestViewModel>();
                 services.AddSingleton<ITabletopSystemRepository, SqlTabletopSystemRepository>();
                 services.AddSingleton<UserConnection>(sp =>
                 {
