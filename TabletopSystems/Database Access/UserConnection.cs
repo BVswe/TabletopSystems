@@ -9,7 +9,7 @@ namespace TabletopSystems;
 public class UserConnection
 {
     private string _connectionString;
-    private bool connectedToSqlServer;
+    public bool connectedToSqlServer { get; set; }
     public SqlConnection userSqlConnection { get; set; }
     public SqliteConnection userSqliteConnection { get; set; }
 
