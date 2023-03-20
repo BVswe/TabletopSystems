@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,10 +11,6 @@ namespace TabletopSystems.Database_Access;
 public class SqlTabletopSystemRepository : ITabletopSystemRepository
 {
     private readonly UserConnection _userConnection;
-    public UserConnection userConnection
-    {
-        get { return _userConnection; }
-    }
     public SqlTabletopSystemRepository(UserConnection conn)
     {
         _userConnection = conn;
@@ -24,15 +21,30 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
     /// <param name="systemToAdd"></param>
     public void Add(TabletopSystem systemToAdd)
     {
+        string cmdString = "INSERT INTO Systems VALUES (@systemName)";
         try
         {
-            string cmdString = "INSERT INTO Systems VALUES (@systemName)";
-            using (SqlCommand cmd = new SqlCommand(cmdString, _userConnection.userSqlConnection))
+            if (_userConnection.connectedToSqlServer)
             {
-                _userConnection.userSqlConnection.Open();
-                cmd.Parameters.AddWithValue("@systemName", systemToAdd.SystemName);
-                cmd.ExecuteNonQuery();
-                _userConnection.userSqlConnection.Close();
+                using (SqlConnection conn = new SqlConnection(_userConnection.sqlString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(cmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@systemName", systemToAdd.SystemName);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
+                {
+                    using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@systemName", systemToAdd.SystemName);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -46,16 +58,30 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
     /// <param name="systemToAdd">System containing NEW SystemName and OLD SystemID</param>
     public void EditSystemName(TabletopSystem systemToEdit)
     {
+        string cmdString = "UPDATE Systems SET SystemName=@systemName WHERE SystemID=@systemID";
         try
         {
-            string cmdString = "UPDATE Systems SET SystemName=@systemName WHERE SystemID=@systemID";
-            using (SqlCommand cmd = new SqlCommand(cmdString, _userConnection.userSqlConnection))
+            if (_userConnection.connectedToSqlServer)
             {
-                _userConnection.userSqlConnection.Open();
-                cmd.Parameters.AddWithValue("@systemName", systemToEdit.SystemName);
-                cmd.Parameters.AddWithValue("@systemID", systemToEdit.SystemID);
-                cmd.ExecuteNonQuery();
-                _userConnection.userSqlConnection.Close();
+                using (SqlConnection conn = new SqlConnection(_userConnection.sqlString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(cmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@systemName", systemToEdit.SystemName);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
+                {
+                    using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@systemName", systemToEdit.SystemName);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -69,15 +95,30 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
     /// <param name="objectToRemove"></param>
     public void Delete(TabletopSystem systemToDelete)
     {
+        string cmdString = "DELETE FROM Systems WHERE SystemID=@systemID";
         try
         {
-            string cmdString = "DELETE FROM Systems WHERE SystemID=@systemID";
-            using (SqlCommand cmd = new SqlCommand(cmdString, _userConnection.userSqlConnection))
+            if (_userConnection.connectedToSqlServer)
             {
-                _userConnection.userSqlConnection.Open();
-                cmd.Parameters.AddWithValue("@systemID", systemToDelete.SystemID);
-                cmd.ExecuteNonQuery();
-                _userConnection.userSqlConnection.Close();
+                using (SqlConnection conn = new SqlConnection(_userConnection.sqlString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(cmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@systemName", systemToDelete.SystemName);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            else
+            {
+                using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
+                {
+                    using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@systemName", systemToDelete.SystemName);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -93,28 +134,61 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
     /// <returns></returns>
     public int GetIDBySystemName(string s)
     {
+        int i;
+        string cmdString = "SELECT SystemID FROM Systems WHERE SystemName=@systemName";
         try
         {
-            int i;
-            string cmdString = "SELECT SystemID FROM Systems WHERE SystemName=@systemName";
-            using (SqlCommand cmd = new SqlCommand(cmdString, _userConnection.userSqlConnection))
+            if (_userConnection.connectedToSqlServer)
             {
-                _userConnection.userSqlConnection.Open();
-                cmd.Parameters.AddWithValue("@systemName", s);
-                var firstColumn = cmd.ExecuteScalar();
-                if (firstColumn != null)
+                using (SqlConnection conn = new SqlConnection(_userConnection.sqlString))
                 {
-                    if (!Int32.TryParse(firstColumn.ToString(), out i))
+                    using (SqlCommand cmd = new SqlCommand(cmdString, conn))
                     {
-                        Trace.Write("Invalid Integer!");
+                        conn.Open();
+                        cmd.Parameters.AddWithValue("@systemName", s);
+                        var firstColumn = cmd.ExecuteScalar();
+                        if (firstColumn != null)
+                        {
+                            if (!Int32.TryParse(firstColumn.ToString(), out i))
+                            {
+                                Trace.WriteLine("Invalid Integer!");
+                            }
+                        }
+                        else
+                        {
+                            Trace.WriteLine("System not found!");
+                            conn.Close();
+                            return 0;
+                        }
+                        conn.Close();
                     }
                 }
-                else
+            }
+            else
+            {
+                using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
                 {
-                    Trace.Write("System not found!");
-                    return 0;
+                    using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
+                    {
+                        conn.Open();
+                        cmd.Parameters.AddWithValue("@systemName", s);
+                        var firstColumn = cmd.ExecuteScalar();
+                        if (firstColumn != null)
+                        {
+                            if (!Int32.TryParse(firstColumn.ToString(), out i))
+                            {
+                                Trace.WriteLine("Invalid Integer!");
+                            }
+                        }
+                        else
+                        {
+                            Trace.WriteLine("System not found!");
+                            conn.Close();
+                            return 0;
+                        }
+                        conn.Close();
+                    }
                 }
-                _userConnection.userSqlConnection.Close();
             }
             return i;
         }
@@ -130,19 +204,22 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
     /// <returns></returns>
     public Dictionary<string, int> GetSystems()
     {
+        string cmdString = "SELECT * FROM Systems";
+        Dictionary<string, int> systems = new Dictionary<string, int>();
         try
         {
-            string cmdString = "SELECT * FROM Systems";
-            Dictionary<string, int> systems = new Dictionary<string, int>();
-            using (SqlCommand cmd = new SqlCommand(cmdString, _userConnection.userSqlConnection))
+            using (SqlConnection conn = new SqlConnection(cmdString))
             {
-                _userConnection.userSqlConnection.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                using (SqlCommand cmd = new SqlCommand(cmdString, conn))
                 {
-                    systems.Add(reader["SystemName"].ToString(), Int32.Parse(reader["SystemID"].ToString()));
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        systems.Add(reader["SystemName"].ToString(), Int32.Parse(reader["SystemID"].ToString()));
+                    }
+                    conn.Close();
                 }
-                _userConnection.userSqlConnection.Close();
             }
             return systems;
         }
@@ -153,3 +230,4 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
         }
     }
 }
+    

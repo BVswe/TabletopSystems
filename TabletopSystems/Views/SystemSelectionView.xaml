@@ -12,7 +12,7 @@
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
         <StackPanel Margin="5">
-            <Button Height="20">Select</Button>
+            <Button Height="20" Command="{Binding SystemSelectedCommand}">Select</Button>
         </StackPanel>
 
     </Grid>

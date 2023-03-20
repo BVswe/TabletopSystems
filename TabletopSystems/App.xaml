@@ -9,8 +9,14 @@
         <DataTemplate DataType="{x:Type TypeName=viewModels:SystemSelectionViewModel}">
             <views:SystemSelectionView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type TypeName=viewModels:SystemMainPageViewModel}">
+            <views:SystemMainPage/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type TypeName=viewModels:TestViewModel}">
             <views:TestView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type TypeName=viewModels:ConnectToSqlViewModel}">
+            <views:ConnectToSqlView/>
         </DataTemplate>
     </Application.Resources>
 </Application>

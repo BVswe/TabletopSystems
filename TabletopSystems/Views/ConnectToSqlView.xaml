@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="TabletopSystems.Views.ConnectToSqlView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TabletopSystems.Views"
+             xmlns:helpers="clr-namespace:TabletopSystems.Helper_Methods"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="#252525">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <Viewbox Grid.Column="1" Grid.Row="1">
+            <StackPanel>
+                <TextBlock x:Name="ConnectionText" HorizontalAlignment="Center" Foreground="GhostWhite" Text="Host Connection"></TextBlock>
+                <TextBox MaxWidth="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type GridViewColumn}}, Path=ActualWidth}" Text="{Binding Path=connection,Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Margin="0 2 0 0 " Command="{Binding TryConnectionCommand}">Connect</Button>
+                <TextBlock HorizontalAlignment="Center" x:Name="StatusText" Foreground="GhostWhite" Text="{Binding Path=IsConnectedText, Mode=OneWay}"></TextBlock>
+            </StackPanel>
+        </Viewbox>
+            
+    </Grid>
+</UserControl>

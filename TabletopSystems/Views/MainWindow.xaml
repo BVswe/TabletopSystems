@@ -6,12 +6,20 @@
         xmlns:local="clr-namespace:TabletopSystems"
         xmlns:helpers="clr-namespace:TabletopSystems.Helper_Methods"
         mc:Ignorable="d"
-        Title="Tabletop Systems" Height="450" Width="800"
+        Title="Tabletop Systems" Height="800" Width="800" WindowState="Maximized"
         Background="#252525">
+    <Window.Resources>
+        <helpers:FontScaler x:Key="fontScaler"></helpers:FontScaler>
+        <Style TargetType="TextBlock" x:Key="ScalingButtonText">
+            <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="6.5*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Margin="5">
@@ -19,13 +27,30 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel>
-                <Button Height="20" Command="{Binding GoToSystemSelectionCommand}">Select System</Button>
-            </StackPanel>
-            <TextBox Grid.Row="1" Width="90" MaxLength="100" Text="{Binding Path=_connection,Mode=OneWayToSource}"/>
+            <Grid HorizontalAlignment="Stretch">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Button Margin="0 2" Grid.Row="0" Height="Auto" Command="{Binding GoToSystemSelectionCommand}">
+                    <TextBlock Style="{StaticResource ScalingButtonText}" Text="System Selection" TextAlignment="Center"/>
+                </Button>
+
+                <Button Margin="0 2" Grid.Row="1" Command="{Binding GoToSystemMainPageCommand}">
+                    <TextBlock Style="{StaticResource ScalingButtonText}" Text="System Main Page" TextAlignment="Center"/>
+                </Button>
+                <Button Margin="0 2" Grid.Row="2" Command="{Binding GoToConnectionPageCommand}">
+                    <TextBlock Style="{StaticResource ScalingButtonText}" Text="Connect to Server" TextAlignment="Center"/>
+                </Button>
+
+            </Grid>
         </Grid>
+        
 
         <ContentControl Grid.Column="1" Content="{Binding Navigation.CurrentView}"/>
     </Grid>
-    
+
 </Window>

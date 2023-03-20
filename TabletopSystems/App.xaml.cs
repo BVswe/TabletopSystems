@@ -31,19 +31,22 @@ namespace TabletopSystems
                     DataContext = provider.GetRequiredService<MainWindowViewModel>()
                 });
                 services.AddSingleton<MainWindowViewModel>();
-                services.AddSingleton<TestViewModel>();
-                services.AddSingleton<ITabletopSystemRepository, SqlTabletopSystemRepository>();
-                services.AddSingleton<UserConnection>(sp =>
-                {
-                    string connectionString = sp.GetService<MainWindowViewModel>().connection;
-                    return new UserConnection(connectionString);
-                });
-                services.AddSingleton<SystemSelectionViewModel>(sp =>
+                services.AddTransient<TestViewModel>();
+                services.AddTransient<ITabletopSystemRepository, SqlTabletopSystemRepository>();
+                services.AddSingleton<UserConnection>();
+                services.AddScoped<ConnectToSqlViewModel>();
+                services.AddScoped<SystemSelectionViewModel>(sp =>
                 {
                     TabletopSystem tabltp = new TabletopSystem { SystemID = 1, SystemName = "HI" };
                     return new SystemSelectionViewModel(sp.GetService<UserConnection>(), tabltp);
                 });
-                services.AddSingleton<INavigationService, NavigationService>();
+                services.AddScoped<SystemMainPageViewModel>(sp =>
+                {
+                    TabletopSystem tabltp = new TabletopSystem { SystemID = 1, SystemName = "HI" };
+                    return new SystemMainPageViewModel(sp.GetService<UserConnection>(), tabltp);
+
+                });
+                services.AddScoped<INavigationService, NavigationService>();
                 services.AddSingleton<Func<Type, UserConnection>>(  
                     serviceProvider => connectionToGet => (UserConnection)serviceProvider.GetRequiredService(connectionToGet));
                 services.AddSingleton<Func<Type, ObservableObject>>(

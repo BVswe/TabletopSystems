@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace TabletopSystems.Views
 {
     /// <summary>
-    /// Interaction logic for SystemMainPage.xaml
+    /// Interaction logic for ConnectToSqlView.xaml
     /// </summary>
-    public partial class SystemMainPage : UserControl
+    public partial class ConnectToSqlView : UserControl
     {
-        public SystemMainPage()
+        public ConnectToSqlView()
         {
             InitializeComponent();
         }

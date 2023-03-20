@@ -37,14 +37,13 @@ public class SystemSelectionViewModel : ObservableObject
         _tabletopSystem = t;
         _userConnection = conn;
         _tabletopSystemRepository = new SqlTabletopSystemRepository(_userConnection);
+
         SystemSelectedCommand = new RelayCommand(p => ExecuteSystemSelectedCommand());
     }
 
     public void ExecuteSystemSelectedCommand()
     {
-        SqlTabletopSystemRepository db = new SqlTabletopSystemRepository(_userConnection);
-        _tabletopSystem.SystemID = db.GetIDBySystemName(_tabletopSystem.SystemName);
         Trace.WriteLine(_tabletopSystem.SystemID);
-
+        _tabletopSystem.SystemID = _tabletopSystemRepository.GetIDBySystemName(_tabletopSystem.SystemName);
     }
 }
