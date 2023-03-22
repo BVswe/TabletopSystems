@@ -18,9 +18,9 @@ namespace TabletopSystems.Views
     /// <summary>
     /// Interaction logic for SystemMainPage.xaml
     /// </summary>
-    public partial class SystemMainPage : UserControl
+    public partial class SystemMainPageView : UserControl
     {
-        public SystemMainPage()
+        public SystemMainPageView()
         {
             InitializeComponent();
         }

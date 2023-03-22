@@ -1,26 +1,52 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using TabletopSystems.Database_Access;
+using TabletopSystems.Helper_Methods;
 
 namespace TabletopSystems.ViewModels;
 
 public class SystemSelectionViewModel : ObservableObject
 {
-    #region Properties/Fields
-
     private readonly UserConnection _userConnection;
-    private readonly TabletopSystem _tabletopSystem;
+    private INavigationService _navi;
+    private TabletopSystem _selectedSystem;
+    private ObservableCollection<TabletopSystem> _systems;
     private SqlTabletopSystemRepository _tabletopSystemRepository;
-    public string systemName {
-
-        get { return _tabletopSystem.SystemName; }
-
-        set {
-            _tabletopSystem.SystemName = value;
+    private IServiceScopeFactory _serviceScope;
+    public INavigationService Navi
+    {
+        get { return _navi; }
+        set
+        {
+            _navi = value;
             OnPropertyChanged();
-        } 
+        }
+    }
+    public TabletopSystem SelectedSystem
+    {
+        get { return _selectedSystem; }
+        set
+        {
+            _selectedSystem = value;
+            OnPropertyChanged();
+        }
+    }
+    public ObservableCollection<TabletopSystem> Systems
+    {
+        get { return _systems; }
+        set
+        {
+            _systems = value;
+            OnPropertyChanged();
+        }
     }
     public UserConnection userConnection
     {
@@ -31,19 +57,47 @@ public class SystemSelectionViewModel : ObservableObject
     public ICommand AddSystemCommand { get; }
     public ICommand DeleteSystemCommand { get; }
 
-    #endregion
-    public SystemSelectionViewModel(UserConnection conn, TabletopSystem t)
+    public SystemSelectionViewModel(UserConnection conn, INavigationService navi, IServiceScopeFactory serviceScope)
     {
-        _tabletopSystem = t;
+        _navi = navi;
+        _selectedSystem = new TabletopSystem();
         _userConnection = conn;
+        _serviceScope = serviceScope;
         _tabletopSystemRepository = new SqlTabletopSystemRepository(_userConnection);
-
-        SystemSelectedCommand = new RelayCommand(p => ExecuteSystemSelectedCommand());
+        _systems = _tabletopSystemRepository.GetSystems();
+        SystemSelectedCommand = new RelayCommand(o => { ExecuteSystemSelectedCommand(); }, o => true);
+        DeleteSystemCommand = new RelayCommand(p => ExecuteDeleteSystemCommand());
+        AddSystemCommand = new RelayCommand(p => ExecuteAddSystemCommand());
     }
 
+    public void ExecuteAddSystemCommand()
+    {
+        //Switch pages here later
+    }
+
+    /// <summary>
+    /// I honestly don't know why this works but it creates a scoped SystemMainPageViewModel
+    /// </summary>
     public void ExecuteSystemSelectedCommand()
     {
-        Trace.WriteLine(_tabletopSystem.SystemID);
-        _tabletopSystem.SystemID = _tabletopSystemRepository.GetIDBySystemName(_tabletopSystem.SystemName);
+        using (var scope = _serviceScope.CreateScope())
+        {
+            var model = scope.ServiceProvider.GetService<SystemMainPageViewModel>();
+            Navi.CurrentView = model;
+        }
+    }
+
+    public void ExecuteDeleteSystemCommand()
+    {
+        MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure you want to delete " + SelectedSystem.SystemName + "?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+        if (messageBoxResult == MessageBoxResult.Yes)
+        {
+            _tabletopSystemRepository.Delete(SelectedSystem);
+            _systems.Remove(SelectedSystem);
+        }
+        else
+        {
+            return;
+        }
     }
 }

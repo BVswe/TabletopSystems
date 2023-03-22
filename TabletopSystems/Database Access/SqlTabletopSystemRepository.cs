@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace TabletopSystems.Database_Access;
@@ -30,6 +31,7 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
                 {
                     using (SqlCommand cmd = new SqlCommand(cmdString, conn))
                     {
+                        conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToAdd.SystemName);
                         cmd.ExecuteNonQuery();
                     }
@@ -41,6 +43,7 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
                 {
                     using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
                     {
+                        conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToAdd.SystemName);
                         cmd.ExecuteNonQuery();
                     }
@@ -67,7 +70,9 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
                 {
                     using (SqlCommand cmd = new SqlCommand(cmdString, conn))
                     {
+                        conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToEdit.SystemName);
+                        cmd.Parameters.AddWithValue("@systemID", systemToEdit.SystemID);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -78,7 +83,9 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
                 {
                     using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
                     {
+                        conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToEdit.SystemName);
+                        cmd.Parameters.AddWithValue("@systemID", systemToEdit.SystemID);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -95,7 +102,7 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
     /// <param name="objectToRemove"></param>
     public void Delete(TabletopSystem systemToDelete)
     {
-        string cmdString = "DELETE FROM Systems WHERE SystemID=@systemID";
+        string cmdString = "DELETE FROM Systems WHERE SystemName=@systemName";
         try
         {
             if (_userConnection.connectedToSqlServer)
@@ -104,6 +111,7 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
                 {
                     using (SqlCommand cmd = new SqlCommand(cmdString, conn))
                     {
+                        conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToDelete.SystemName);
                         cmd.ExecuteNonQuery();
                     }
@@ -115,6 +123,7 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
                 {
                     using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
                     {
+                        conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToDelete.SystemName);
                         cmd.ExecuteNonQuery();
                     }
@@ -160,7 +169,6 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
                             conn.Close();
                             return 0;
                         }
-                        conn.Close();
                     }
                 }
             }
@@ -186,7 +194,6 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
                             conn.Close();
                             return 0;
                         }
-                        conn.Close();
                     }
                 }
             }
@@ -202,23 +209,46 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
     /// Gets all systems from the sql database
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, int> GetSystems()
+    public ObservableCollection<TabletopSystem> GetSystems()
     {
         string cmdString = "SELECT * FROM Systems";
-        Dictionary<string, int> systems = new Dictionary<string, int>();
+        ObservableCollection<TabletopSystem> systems = new ObservableCollection<TabletopSystem>();
         try
         {
-            using (SqlConnection conn = new SqlConnection(cmdString))
+            if (_userConnection.connectedToSqlServer)
             {
-                using (SqlCommand cmd = new SqlCommand(cmdString, conn))
+                using (SqlConnection conn = new SqlConnection(_userConnection.sqlString))
                 {
-                    conn.Open();
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
+                    using (SqlCommand cmd = new SqlCommand(cmdString, conn))
                     {
-                        systems.Add(reader["SystemName"].ToString(), Int32.Parse(reader["SystemID"].ToString()));
+                        conn.Open();
+                        SqlDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            TabletopSystem temp = new TabletopSystem();
+                            temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
+                            temp.SystemName = reader["SystemName"].ToString();
+                            systems.Add(temp);
+                        }
                     }
-                    conn.Close();
+                }
+            }
+            else
+            {
+                using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
+                {
+                    using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
+                    {
+                        conn.Open();
+                        SqliteDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            TabletopSystem temp = new TabletopSystem();
+                            temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
+                            temp.SystemName = reader["SystemName"].ToString();
+                            systems.Add(temp);
+                        }
+                    }
                 }
             }
             return systems;
@@ -226,8 +256,7 @@ public class SqlTabletopSystemRepository : ITabletopSystemRepository
         catch (Exception ex)
         {
             Trace.WriteLine("An exception occured: " + ex.ToString());
-            return new Dictionary<string, int>();
+            return new ObservableCollection<TabletopSystem>();
         }
     }
 }
-    

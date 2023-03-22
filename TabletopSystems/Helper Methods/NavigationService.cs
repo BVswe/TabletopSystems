@@ -12,7 +12,7 @@ public class NavigationService : ObservableObject, INavigationService
     public ObservableObject CurrentView
     {
         get => _currentView;
-        private set
+        set
         {
             _currentView = value;
             OnPropertyChanged();

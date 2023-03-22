@@ -1,23 +1,18 @@
-﻿
-
-using System;
-using System.Collections.ObjectModel;
+﻿using System.Diagnostics;
+using TabletopSystems.Helper_Methods;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
-using TabletopSystems.Helper_Methods;
 
 namespace TabletopSystems.ViewModels;
 
 public class MainWindowViewModel : ObservableObject
 {
     private UserConnection _connection;
-    private string _message;
-    private ObservableCollection<string> _messageLog;
+    
     private INavigationService _navi;
+    private IServiceScopeFactory _serviceScope;
+    //tie back button to a bool
     public INavigationService Navi
     {
         get { return _navi; }
@@ -27,21 +22,7 @@ public class MainWindowViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
-    public ObservableCollection<string> MessageLog
-    {
-        get { return _messageLog; }
-        set { _messageLog = value; }
-    }
-    public ObservableCollection<TabletopSystem> Systems { get; set; }
-    public string Message
-    {
-        get { return _message; }
-        set
-        {
-            _message = value;
-            OnPropertyChanged();
-        }
-    }
+    
     public string connection
     {
         get
@@ -51,7 +32,7 @@ public class MainWindowViewModel : ObservableObject
                 return _connection.sqlString;
             }
             else{
-                return _connection.sqlString;
+                return _connection.sqliteString;
             }
         }
         set
@@ -60,22 +41,20 @@ public class MainWindowViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
-    public RelayCommand SendCommand { get; set; }
+    public RelayCommand NavigateSystemMainPageCommand { get; set; }
     public RelayCommand BackCommand { get; set; }
-    public MainWindowViewModel(UserConnection conn, INavigationService nav)
+    public MainWindowViewModel(UserConnection conn, INavigationService navi, IServiceScopeFactory serviceScope)
     {
         _connection = conn;
-        _navi = Navi;
-        _message = string.Empty;
-        _messageLog = new ObservableCollection<string>();
-        Systems = new ObservableCollection<TabletopSystem>();
-        SendCommand = new RelayCommand(o => {
-            if (String.IsNullOrEmpty(Message)){
-                return;
-            }
-            MessageLog.Add(Message);
-            Message = ""; 
-        }, o => true );
-        BackCommand = new RelayCommand(o => { Navi.NavigateTo<SystemSelectionViewModel>(); }, o => true );
+        _navi = navi;
+        _serviceScope = serviceScope;
+        BackCommand = new RelayCommand(o => { ExecuteBackCommand(); }, o => true);
+        BackCommand.Execute(null);
+        Trace.WriteLine("MainWindowView was constructed!");
+    }
+    public void ExecuteBackCommand()
+    {
+        ((App)Application.Current).tcs.TrySetResult(true);
+        Navi.NavigateTo<SystemSelectionViewModel>();
     }
 }

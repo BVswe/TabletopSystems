@@ -1,6 +1,7 @@
 ﻿
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace TabletopSystems.Database_Access;
 
@@ -10,6 +11,6 @@ public interface ITabletopSystemRepository
     public void EditSystemName(TabletopSystem systemToAdd);
     public void Delete(TabletopSystem systemToRemove);
     public int GetIDBySystemName(string name);
-    public Dictionary<string, int> GetSystems();
+    public ObservableCollection<TabletopSystem> GetSystems();
 
 }

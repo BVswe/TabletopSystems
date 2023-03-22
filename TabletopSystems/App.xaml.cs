@@ -22,36 +22,22 @@ namespace TabletopSystems
     public partial class App : Application
     {
         public static IHost? AppHost { get; private set; }
+        public TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
 
         public App()
         {
             AppHost = Host.CreateDefaultBuilder().ConfigureServices((hostContext, services) =>
             {
+                services.AddSingleton<UserConnection>();
+                services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<MainWindow>(provider => new MainWindow
                 {
                     DataContext = provider.GetRequiredService<MainWindowViewModel>()
                 });
-                services.AddSingleton<MainWindowViewModel>();
-                services.AddSingleton<ViewToPlayWith>();
-                services.AddTransient<TestViewModel>();
-                
-                services.AddSingleton<UserConnection>();
-                services.AddScoped<ConnectToSqlViewModel>();
-                services.AddScoped<SystemSelectionViewModel>(sp =>
-                {
-                    //Factory for SystemSelectionViewModel
-                    TabletopSystem tabltp = new TabletopSystem { SystemID = 1, SystemName = "HI" };
-                    return new SystemSelectionViewModel(sp.GetService<UserConnection>(), tabltp);
-                });
-                services.AddScoped<SystemMainPageViewModel>(sp =>
-                {
-                    //Factory for SystemMainPageViewModel
-                    TabletopSystem tabltp = new TabletopSystem { SystemID = 1, SystemName = "HI" };
-                    return new SystemMainPageViewModel(sp.GetService<UserConnection>(), tabltp);
-
-                });
+                services.AddSingleton<INavigationService, NavigationService>();
+                services.AddScoped<SystemSelectionViewModel>();
+                services.AddScoped<SystemMainPageViewModel>();
                 services.AddTransient<ITabletopSystemRepository, SqlTabletopSystemRepository>();
-                services.AddScoped<INavigationService, NavigationService>();
                 services.AddSingleton<Func<Type, ObservableObject>>(
                 serviceProvider => viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
                 
@@ -64,7 +50,6 @@ namespace TabletopSystems
 
             var startupForm = AppHost.Services.GetRequiredService<MainWindow>();
             startupForm.Show();
-
             base.OnStartup(e);
         }
 
