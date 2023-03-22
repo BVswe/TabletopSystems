@@ -80,11 +80,7 @@ public class SystemSelectionViewModel : ObservableObject
     /// </summary>
     public void ExecuteSystemSelectedCommand()
     {
-        using (var scope = _serviceScope.CreateScope())
-        {
-            var model = scope.ServiceProvider.GetService<SystemMainPageViewModel>();
-            Navi.CurrentView = model;
-        }
+        Navi.NavigateTo<SystemMainPageViewModel>();
     }
 
     public void ExecuteDeleteSystemCommand()

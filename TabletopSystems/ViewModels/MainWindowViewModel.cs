@@ -11,7 +11,6 @@ public class MainWindowViewModel : ObservableObject
     private UserConnection _connection;
     
     private INavigationService _navi;
-    private IServiceScopeFactory _serviceScope;
     //tie back button to a bool
     public INavigationService Navi
     {
@@ -47,14 +46,12 @@ public class MainWindowViewModel : ObservableObject
     {
         _connection = conn;
         _navi = navi;
-        _serviceScope = serviceScope;
         BackCommand = new RelayCommand(o => { ExecuteBackCommand(); }, o => true);
         BackCommand.Execute(null);
         Trace.WriteLine("MainWindowView was constructed!");
     }
     public void ExecuteBackCommand()
     {
-        ((App)Application.Current).tcs.TrySetResult(true);
         Navi.NavigateTo<SystemSelectionViewModel>();
     }
 }

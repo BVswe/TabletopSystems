@@ -35,8 +35,8 @@ namespace TabletopSystems
                     DataContext = provider.GetRequiredService<MainWindowViewModel>()
                 });
                 services.AddSingleton<INavigationService, NavigationService>();
-                services.AddScoped<SystemSelectionViewModel>();
-                services.AddScoped<SystemMainPageViewModel>();
+                services.AddTransient<SystemSelectionViewModel>();
+                services.AddTransient<SystemMainPageViewModel>();
                 services.AddTransient<ITabletopSystemRepository, SqlTabletopSystemRepository>();
                 services.AddSingleton<Func<Type, ObservableObject>>(
                 serviceProvider => viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
