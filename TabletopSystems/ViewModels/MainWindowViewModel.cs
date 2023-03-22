@@ -8,6 +8,7 @@ namespace TabletopSystems.ViewModels;
 
 public class MainWindowViewModel : ObservableObject
 {
+    #region Fields and Properties
     private UserConnection _connection;
     
     private INavigationService _navi;
@@ -42,6 +43,7 @@ public class MainWindowViewModel : ObservableObject
     }
     public RelayCommand NavigateSystemMainPageCommand { get; set; }
     public RelayCommand BackCommand { get; set; }
+    #endregion
     public MainWindowViewModel(UserConnection conn, INavigationService navi, IServiceScopeFactory serviceScope)
     {
         _connection = conn;
@@ -50,6 +52,9 @@ public class MainWindowViewModel : ObservableObject
         BackCommand.Execute(null);
         Trace.WriteLine("MainWindowView was constructed!");
     }
+    /// <summary>
+    /// Go back to System Selection view
+    /// </summary>
     public void ExecuteBackCommand()
     {
         Navi.NavigateTo<SystemSelectionViewModel>();
