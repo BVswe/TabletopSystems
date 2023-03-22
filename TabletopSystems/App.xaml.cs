@@ -12,6 +12,7 @@ using System.Windows;
 using TabletopSystems.Database_Access;
 using TabletopSystems.Helper_Methods;
 using TabletopSystems.ViewModels;
+using TabletopSystems.Views;
 
 namespace TabletopSystems
 {
@@ -31,24 +32,26 @@ namespace TabletopSystems
                     DataContext = provider.GetRequiredService<MainWindowViewModel>()
                 });
                 services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<ViewToPlayWith>();
                 services.AddTransient<TestViewModel>();
-                services.AddTransient<ITabletopSystemRepository, SqlTabletopSystemRepository>();
+                
                 services.AddSingleton<UserConnection>();
                 services.AddScoped<ConnectToSqlViewModel>();
                 services.AddScoped<SystemSelectionViewModel>(sp =>
                 {
+                    //Factory for SystemSelectionViewModel
                     TabletopSystem tabltp = new TabletopSystem { SystemID = 1, SystemName = "HI" };
                     return new SystemSelectionViewModel(sp.GetService<UserConnection>(), tabltp);
                 });
                 services.AddScoped<SystemMainPageViewModel>(sp =>
                 {
+                    //Factory for SystemMainPageViewModel
                     TabletopSystem tabltp = new TabletopSystem { SystemID = 1, SystemName = "HI" };
                     return new SystemMainPageViewModel(sp.GetService<UserConnection>(), tabltp);
 
                 });
+                services.AddTransient<ITabletopSystemRepository, SqlTabletopSystemRepository>();
                 services.AddScoped<INavigationService, NavigationService>();
-                services.AddSingleton<Func<Type, UserConnection>>(  
-                    serviceProvider => connectionToGet => (UserConnection)serviceProvider.GetRequiredService(connectionToGet));
                 services.AddSingleton<Func<Type, ObservableObject>>(
                 serviceProvider => viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
                 

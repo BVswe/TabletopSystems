@@ -8,9 +8,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\BackArrow.png" />
+    <None Remove="Images\BackArrowNoFill.png" />
+    <None Remove="Images\Close.png" />
+    <None Remove="Images\Maximize.png" />
+    <None Remove="Images\Minimize.png" />
+    <None Remove="Images\sky-7047486.jpg" />
+    <None Remove="Images\sunset-7532726.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\BackArrow.png" />
+    <Resource Include="Images\BackArrowNoFill.png" />
+    <Resource Include="Images\Close.png" />
+    <Resource Include="Images\Maximize.png" />
+    <Resource Include="Images\Minimize.png" />
+    <Resource Include="Images\sky-7047486.jpg" />
+    <Resource Include="Images\sunset-7532726.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,12 @@
 ﻿
 
+using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using TabletopSystems.Helper_Methods;
 
@@ -11,8 +14,34 @@ namespace TabletopSystems.ViewModels;
 
 public class MainWindowViewModel : ObservableObject
 {
-    private INavigationService _navigation;
     private UserConnection _connection;
+    private string _message;
+    private ObservableCollection<string> _messageLog;
+    private INavigationService _navi;
+    public INavigationService Navi
+    {
+        get { return _navi; }
+        set
+        {
+            _navi = value;
+            OnPropertyChanged();
+        }
+    }
+    public ObservableCollection<string> MessageLog
+    {
+        get { return _messageLog; }
+        set { _messageLog = value; }
+    }
+    public ObservableCollection<TabletopSystem> Systems { get; set; }
+    public string Message
+    {
+        get { return _message; }
+        set
+        {
+            _message = value;
+            OnPropertyChanged();
+        }
+    }
     public string connection
     {
         get
@@ -31,27 +60,22 @@ public class MainWindowViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
-    public INavigationService Navigation
+    public RelayCommand SendCommand { get; set; }
+    public RelayCommand BackCommand { get; set; }
+    public MainWindowViewModel(UserConnection conn, INavigationService nav)
     {
-        get => _navigation;
-        set
-        {
-            _navigation = value;
-            OnPropertyChanged();
-        }
-    }
-    public RelayCommand GoToSystemSelectionCommand { get; set; }
-    public RelayCommand GoToSystemMainPageCommand { get; set; }
-    public RelayCommand GoToConnectionPageCommand { get; set; }
-
-
-
-    public MainWindowViewModel(UserConnection conn, INavigationService navi)
-    {
-        Navigation = navi;
         _connection = conn;
-        GoToSystemSelectionCommand = new RelayCommand(o => { Navigation.NavigateTo<SystemSelectionViewModel>(); }, o => true);
-        GoToSystemMainPageCommand = new RelayCommand(o => { Navigation.NavigateTo<SystemMainPageViewModel>(); }, o => true);
-        GoToConnectionPageCommand = new RelayCommand(o => { Navigation.NavigateTo<ConnectToSqlViewModel>(); }, o => true);
+        _navi = Navi;
+        _message = string.Empty;
+        _messageLog = new ObservableCollection<string>();
+        Systems = new ObservableCollection<TabletopSystem>();
+        SendCommand = new RelayCommand(o => {
+            if (String.IsNullOrEmpty(Message)){
+                return;
+            }
+            MessageLog.Add(Message);
+            Message = ""; 
+        }, o => true );
+        BackCommand = new RelayCommand(o => { Navi.NavigateTo<SystemSelectionViewModel>(); }, o => true );
     }
 }

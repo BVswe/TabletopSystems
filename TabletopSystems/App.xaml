@@ -5,7 +5,6 @@
              xmlns:viewModels="clr-namespace:TabletopSystems.ViewModels"
              xmlns:views="clr-namespace:TabletopSystems.Views">
     <Application.Resources>
-
         <DataTemplate DataType="{x:Type TypeName=viewModels:SystemSelectionViewModel}">
             <views:SystemSelectionView/>
         </DataTemplate>
