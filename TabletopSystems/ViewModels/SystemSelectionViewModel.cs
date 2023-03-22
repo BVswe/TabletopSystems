@@ -75,9 +75,6 @@ public class SystemSelectionViewModel : ObservableObject
         //Switch pages here later
     }
 
-    /// <summary>
-    /// I honestly don't know why this works but it creates a scoped SystemMainPageViewModel
-    /// </summary>
     public void ExecuteSystemSelectedCommand()
     {
         Navi.NavigateTo<SystemMainPageViewModel>();
