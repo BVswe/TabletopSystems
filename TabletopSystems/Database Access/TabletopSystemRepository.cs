@@ -9,10 +9,10 @@ using System.Diagnostics;
 
 namespace TabletopSystems.Database_Access;
 
-public class SqlTabletopSystemRepository : ITabletopSystemRepository
+public class TabletopSystemRepository : ITabletopSystemRepository
 {
     private readonly UserConnection _userConnection;
-    public SqlTabletopSystemRepository(UserConnection conn)
+    public TabletopSystemRepository(UserConnection conn)
     {
         _userConnection = conn;
     }
