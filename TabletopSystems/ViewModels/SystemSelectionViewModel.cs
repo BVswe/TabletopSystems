@@ -19,8 +19,7 @@ public class SystemSelectionViewModel : ObservableObject
     private INavigationService _navi;
     private TabletopSystem _selectedSystem;
     private ObservableCollection<TabletopSystem> _systems;
-    private SqlTabletopSystemRepository _tabletopSystemRepository;
-    private IServiceScopeFactory _serviceScope;
+    private TabletopSystemRepository _tabletopSystemRepository;
     public INavigationService Navi
     {
         get { return _navi; }
@@ -62,12 +61,11 @@ public class SystemSelectionViewModel : ObservableObject
         _navi = navi;
         _selectedSystem = new TabletopSystem();
         _userConnection = conn;
-        _serviceScope = serviceScope;
-        _tabletopSystemRepository = new SqlTabletopSystemRepository(_userConnection);
+        _tabletopSystemRepository = new TabletopSystemRepository(_userConnection);
         _systems = _tabletopSystemRepository.GetSystems();
         SystemSelectedCommand = new RelayCommand(o => { ExecuteSystemSelectedCommand(); }, o => true);
-        DeleteSystemCommand = new RelayCommand(p => ExecuteDeleteSystemCommand());
-        AddSystemCommand = new RelayCommand(p => ExecuteAddSystemCommand());
+        DeleteSystemCommand = new RelayCommand(o => ExecuteDeleteSystemCommand());
+        AddSystemCommand = new RelayCommand(o => ExecuteAddSystemCommand());
     }
 
     public void ExecuteAddSystemCommand()

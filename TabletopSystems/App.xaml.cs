@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
@@ -37,9 +38,12 @@ namespace TabletopSystems
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddTransient<SystemSelectionViewModel>();
                 services.AddTransient<SystemMainPageViewModel>();
-                services.AddTransient<ITabletopSystemRepository, SqlTabletopSystemRepository>();
+                services.AddTransient<ITabletopSystemRepository, TabletopSystemRepository>();
+                services.AddTransient<AddSystemViewModel>();
                 services.AddSingleton<Func<Type, ObservableObject>>(
                 serviceProvider => viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
+                //Make Character/monster viewmodels scoped so that you can switch back and forth between tabs?
+                //Might be unnecessary bc tabcontrol doesnt go out of scope and its binded?
                 
             }).Build();
         }
