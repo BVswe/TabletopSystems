@@ -17,12 +17,12 @@ public class TabletopSystemRepository : ITabletopSystemRepository
         _userConnection = conn;
     }
     /// <summary>
-    /// Adds a system to the sql database
+    /// Adds a system to the database
     /// </summary>
     /// <param name="systemToAdd"></param>
     public void Add(TabletopSystem systemToAdd)
     {
-        string cmdString = "INSERT INTO Systems VALUES (@systemName)";
+        string cmdString = "INSERT INTO Systems(SystemName) VALUES (@systemName)";
         try
         {
             if (_userConnection.connectedToSqlServer)
@@ -50,13 +50,13 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                 }
             }
         }
-        catch (Exception ex)
+        catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + ex.ToString());
+            Trace.WriteLine("An exception occured: " + e.ToString());
         }
     }
     /// <summary>
-    /// Edits a system in the sql database
+    /// Edits a system in the database
     /// </summary>
     /// <param name="systemToAdd">System containing NEW SystemName and OLD SystemID</param>
     public void EditSystemName(TabletopSystem systemToEdit)
@@ -91,18 +91,18 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                 }
             }
         }
-        catch (Exception ex)
+        catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + ex.ToString());
+            Trace.WriteLine("An exception occured: " + e.ToString());
         }
     }
     /// <summary>
-    /// Deletes a system from the sql database
+    /// Deletes a system from the database
     /// </summary>
     /// <param name="objectToRemove"></param>
     public void Delete(TabletopSystem systemToDelete)
     {
-        string cmdString = "DELETE FROM Systems WHERE SystemName=@systemName";
+        string cmdString = "DELETE FROM Systems WHERE SystemName=@systemName AND SystemID=@systemID";
         try
         {
             if (_userConnection.connectedToSqlServer)
@@ -113,6 +113,7 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                     {
                         conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToDelete.SystemName);
+                        cmd.Parameters.AddWithValue("@systemID", systemToDelete.SystemID);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -125,14 +126,15 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                     {
                         conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToDelete.SystemName);
+                        cmd.Parameters.AddWithValue("@systemID", systemToDelete.SystemID);
                         cmd.ExecuteNonQuery();
                     }
                 }
             }
         }
-        catch (Exception ex)
+        catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + ex.ToString());
+            Trace.WriteLine("An exception occured: " + e.ToString());
         }
     }
 
@@ -144,7 +146,7 @@ public class TabletopSystemRepository : ITabletopSystemRepository
     public int GetIDBySystemName(string s)
     {
         int i;
-        string cmdString = "SELECT SystemID FROM Systems WHERE SystemName=@systemName";
+        string cmdString = "SELECT SystemID FROM Systems WHERE SystemName=@systemName AND SystemID=@systemID";
         try
         {
             if (_userConnection.connectedToSqlServer)
@@ -199,14 +201,14 @@ public class TabletopSystemRepository : ITabletopSystemRepository
             }
             return i;
         }
-        catch (Exception ex)
+        catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + ex.ToString());
+            Trace.WriteLine("An exception occured: " + e.ToString());
             return 0;
         }
     }
     /// <summary>
-    /// Gets all systems from the sql database
+    /// Gets all systems from the database
     /// </summary>
     /// <returns></returns>
     public ObservableCollection<TabletopSystem> GetSystems()
@@ -253,9 +255,9 @@ public class TabletopSystemRepository : ITabletopSystemRepository
             }
             return systems;
         }
-        catch (Exception ex)
+        catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + ex.ToString());
+            Trace.WriteLine("An exception occured: " + e.ToString());
             return new ObservableCollection<TabletopSystem>();
         }
     }

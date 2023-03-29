@@ -16,9 +16,10 @@ public class UserConnection
 
     public UserConnection()
     {
-        sqlString = "Data Source=" + "Default" + "; Initial Catalog=TabletopSystems; Integrated Security=true; Encrypt=false";
-        sqliteString = "Data Source=" + Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "TabletopSystemsData.sqlite";
+        sqlString = "Data Source=" + "DESKTOP-1RS8GPM" + "; Initial Catalog=TabletopSystems; Integrated Security=true; Encrypt=false; Connection Timeout=2";
+        sqliteString = "Data Source=" + Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToString() + "\\TabletopSystemsData.sqlite";
         connectedToSqlServer = false;
+        tryConnection();
     }
 
     /// <summary>

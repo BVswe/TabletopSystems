@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace TabletopSystems.Models
 {
-    public class TTRPGActions
+    public class TTRPGAction
     {
-        public List<KeyValuePair<string, string>> SystemActions { get; set; }
+        public int SystemID { get; set; }
+        public string ActionName { get; set; }
+        public string ActionFormula { get; set; }
     }
 }
