@@ -1,0 +1,328 @@
+﻿<UserControl x:Class="TabletopSystems.Views.AddSystemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TabletopSystems.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="true" StrokeThickness="1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD"/>
+        <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#777777"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>
+        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#AAAAAA"/>
+        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
+        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
+        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Pressed.Border}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="5 0 5 5" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock FontSize="20"
+                       Margin="5"
+                       Foreground="GhostWhite"
+                       Opacity="1"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center">
+                System Name:
+            </TextBlock>
+            <TextBox Background="Transparent"
+                     Grid.Row="1"
+                     BorderBrush="#FFFFFF"
+                     Height="35"
+                     Opacity="0.8"
+                     FontSize="20"
+                     Foreground="#FFFFFF"
+                     HorizontalAlignment="Stretch"
+                     VerticalContentAlignment="Center"
+                     HorizontalContentAlignment="Center"
+                     Width="300"
+                     CaretBrush="#FFFFFF"
+                     Text="{Binding SystemToAdd.SystemName}"/>
+        </Grid>
+        
+        <Grid Grid.Row="1"
+              VerticalAlignment="Stretch"
+              HorizontalAlignment="Stretch"
+              Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+            <DataGrid Background="Transparent"
+                  x:Name="AttributesDisplay"
+                  Margin="5"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  ItemsSource="{Binding Attributes}"
+                  HorizontalGridLinesBrush="Transparent"
+                  VerticalGridLinesBrush="Transparent"
+                  BorderThickness="1"
+                  RowHeaderWidth="0"
+                  RowBackground="Transparent"
+                  >
+                <DataGrid.BorderBrush>
+                    <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
+                </DataGrid.BorderBrush>
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                           Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Attributes" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding AttributeName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                     Background="Transparent"
+                                     Foreground="GhostWhite"
+                                     CaretBrush="GhostWhite"
+                                     FontSize="20"
+                                     Padding="3 0"
+                                     TextWrapping="Wrap"
+                                     BorderBrush="#FFFFFF"
+                                     BorderThickness="1"
+                                     VerticalContentAlignment="Center"
+                                     SelectionBrush="#FFFFFF">
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Formula" Width="2*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding AttributeFormula,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                     Background="Transparent"
+                                     Foreground="GhostWhite"
+                                     CaretBrush="GhostWhite"
+                                     FontSize="20"
+                                     Padding="3 0"
+                                     TextWrapping="Wrap"
+                                     BorderBrush="#FFFFFF"
+                                     BorderThickness="1"
+                                     VerticalContentAlignment="Center"
+                                     SelectionBrush="GhostWhite"
+                                     >
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Button Grid.Column="1"
+                VerticalAlignment="Top"
+                Command="{Binding AddAttributesRowCommand}"
+                Opacity="0.8"
+                Foreground="GhostWhite"
+                Height="25"
+                Margin="0 5 0 0">
+                <Button.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.6"/>
+                </Button.Background>
+                <Button.Content>
+                    <TextBlock Margin="0 -6 0 0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
+                </Button.Content>
+            </Button>
+
+            <DataGrid Background="Transparent"
+                  Grid.Column="2"
+                  x:Name="ActionsDisplay"
+                  Margin="5"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  ItemsSource="{Binding Actions}"
+                  HorizontalGridLinesBrush="Transparent"
+                  VerticalGridLinesBrush="Transparent"
+                  BorderThickness="1"
+                  RowHeaderWidth="0"
+                  RowBackground="Transparent"
+                  >
+                <DataGrid.BorderBrush>
+                    <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
+                </DataGrid.BorderBrush>
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                           Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Actions" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding ActionName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                     Background="Transparent"
+                                     Foreground="GhostWhite"
+                                     CaretBrush="GhostWhite"
+                                     FontSize="20"
+                                     Padding="3 0"
+                                     TextWrapping="Wrap"
+                                     BorderBrush="#FFFFFF"
+                                     BorderThickness="1"
+                                     VerticalContentAlignment="Center"
+                                     SelectionBrush="#FFFFFF">
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Formula" Width="2*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding ActionFormula,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                     Background="Transparent"
+                                     Foreground="GhostWhite"
+                                     CaretBrush="GhostWhite"
+                                     FontSize="20"
+                                     Padding="3 0"
+                                     TextWrapping="Wrap"
+                                     BorderBrush="#FFFFFF"
+                                     BorderThickness="1"
+                                     VerticalContentAlignment="Center"
+                                     SelectionBrush="GhostWhite"
+                                     >
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button Grid.Column="3"
+                VerticalAlignment="Top"
+                Command="{Binding AddActionsRowCommand}"
+                Opacity="0.8"
+                Foreground="GhostWhite"
+                Height="25"
+                Margin="0 5 0 0">
+                <Button.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.6"/>
+                </Button.Background>
+                <Button.Content>
+                    <TextBlock Margin="0 -6 0 0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
+                </Button.Content>
+            </Button>
+
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Stretch"
+                Command="{Binding ConfirmedCommand}"
+                Opacity="0.8"
+                Foreground="GhostWhite"
+                Height="30"
+                Margin="0 0 0 10">
+                <Button.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.6"/>
+                </Button.Background>
+                <Button.Content>
+                    <TextBlock Padding="5" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center">Add System</TextBlock>
+                </Button.Content>
+            </Button>
+        </Grid>
+    </Grid>
+
+
+</UserControl>

@@ -35,13 +35,13 @@ namespace TabletopSystems
                 {
                     DataContext = provider.GetRequiredService<MainWindowViewModel>()
                 });
+                services.AddSingleton<Func<Type, ObservableObject>>(
+                serviceProvider => viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddTransient<SystemSelectionViewModel>();
                 services.AddTransient<SystemMainPageViewModel>();
                 services.AddTransient<ITabletopSystemRepository, TabletopSystemRepository>();
                 services.AddTransient<AddSystemViewModel>();
-                services.AddSingleton<Func<Type, ObservableObject>>(
-                serviceProvider => viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
                 //Make Character/monster viewmodels scoped so that you can switch back and forth between tabs?
                 //Might be unnecessary bc tabcontrol doesnt go out of scope and its binded?
                 
@@ -55,6 +55,7 @@ namespace TabletopSystems
             var startupForm = AppHost.Services.GetRequiredService<MainWindow>();
             startupForm.Show();
             base.OnStartup(e);
+            ((MainWindowViewModel)startupForm.DataContext).Navi.NavigateTo<SystemSelectionViewModel>();
         }
 
         protected override async void OnExit(ExitEventArgs e)

@@ -20,6 +20,7 @@ public class SystemSelectionViewModel : ObservableObject
     private TabletopSystem _selectedSystem;
     private ObservableCollection<TabletopSystem> _systems;
     private TabletopSystemRepository _tabletopSystemRepository;
+    private MainWindowViewModel _mainWindowViewModel;
     public INavigationService Navi
     {
         get { return _navi; }
@@ -56,25 +57,28 @@ public class SystemSelectionViewModel : ObservableObject
     public ICommand AddSystemCommand { get; }
     public ICommand DeleteSystemCommand { get; }
 
-    public SystemSelectionViewModel(UserConnection conn, INavigationService navi, IServiceScopeFactory serviceScope)
+    public SystemSelectionViewModel(UserConnection conn, INavigationService navi, MainWindowViewModel mainWinViewModel)
     {
         _navi = navi;
         _selectedSystem = new TabletopSystem();
         _userConnection = conn;
         _tabletopSystemRepository = new TabletopSystemRepository(_userConnection);
         _systems = _tabletopSystemRepository.GetSystems();
+        _mainWindowViewModel = mainWinViewModel;
         SystemSelectedCommand = new RelayCommand(o => { ExecuteSystemSelectedCommand(); }, o => true);
         DeleteSystemCommand = new RelayCommand(o => ExecuteDeleteSystemCommand());
         AddSystemCommand = new RelayCommand(o => ExecuteAddSystemCommand());
+        Trace.WriteLine("System Selection View Model constructed!");
     }
 
     public void ExecuteAddSystemCommand()
     {
-        //Switch pages here later
+        Navi.NavigateTo<AddSystemViewModel>();
     }
 
     public void ExecuteSystemSelectedCommand()
     {
+        _mainWindowViewModel.TbltopSys = SelectedSystem;
         Navi.NavigateTo<SystemMainPageViewModel>();
     }
 

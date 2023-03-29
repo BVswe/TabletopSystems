@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TabletopSystems.Views"
+             xmlns:vm="clr-namespace:TabletopSystems.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="900">
     <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -19,8 +20,18 @@
                     Opacity="0.8"
                     Grid.Row="1"
                     Margin="0 5 0 0"
+                    ItemsSource="{Binding ViewModels}"
                     >
             <TabControl.Resources>
+                <DataTemplate DataType="{x:Type vm:SearchViewModel}">
+                    <local:SearchView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:CharactersViewModel}">
+                    <local:CharactersView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AddTypeViewModel}">
+                    <local:AddTypeView />
+                </DataTemplate>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="BorderThickness" Value="1"/>
                     <Setter Property="Padding" Value="1"/>
@@ -29,7 +40,7 @@
                             <DataTemplate>
                                 <Border x:Name="tabs">
                                     <Border.Background>
-                                        <SolidColorBrush Color="#303030" Opacity="0.9"/>
+                                        <SolidColorBrush Color="#151515" Opacity="0.9"/>
                                     </Border.Background>
                                     <ContentPresenter>
                                         <ContentPresenter.Content>
@@ -49,8 +60,10 @@
                     </Setter>
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="Search Gear"/>
-            <TabItem Header="Search Capabilities"/>
+            <TabItem Header="Search" Padding="2"/>
+            <TabItem Header="Characters" Padding="2"/>
+            <TabItem Header="Add to System" Padding="2"/>
+            <TabItem Header="WIP Combat" Padding="2"/>
         </TabControl>
 
         <Grid Grid.Column="1" Margin="0 32 0 0">

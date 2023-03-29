@@ -45,6 +45,7 @@ public class MainWindowViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
+    public TabletopSystem TbltopSys { get; set; }
     public RelayCommand NavigateSystemMainPageCommand { get; set; }
     public RelayCommand BackCommand { get; set; }
     #endregion
@@ -52,8 +53,8 @@ public class MainWindowViewModel : ObservableObject
     {
         _connection = conn;
         _navi = navi;
+        TbltopSys = new TabletopSystem();
         BackCommand = new RelayCommand(o => { ExecuteBackCommand(); }, o => true);
-        Navi.NavigateTo<SystemSelectionViewModel>();
         CreateDB();
         Trace.WriteLine("MainWindowView was constructed!");
     }
@@ -68,6 +69,7 @@ public class MainWindowViewModel : ObservableObject
             return;
         }
         Navi.NavigateTo<SystemSelectionViewModel>();
+        GC.Collect();
     }
 
     private void CreateDB()

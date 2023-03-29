@@ -16,9 +16,4 @@ public abstract class ObservableObject : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-    /// <summary>
-    /// Dispose to get rid of references to objects that are often created/destroyed
-    /// (can't garbage collect until all references, including ones from calling class, are gone)
-    /// </summary>
-    public virtual void Dispose() { }
 }

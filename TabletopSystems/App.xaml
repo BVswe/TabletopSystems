@@ -20,6 +20,5 @@
         <DataTemplate DataType="{x:Type TypeName=viewModels:AddSystemViewModel}">
             <views:AddSystemView/>
         </DataTemplate>
-        
     </Application.Resources>
 </Application>

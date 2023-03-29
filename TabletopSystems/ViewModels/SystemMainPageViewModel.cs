@@ -16,6 +16,7 @@ namespace TabletopSystems.ViewModels
         private UserConnection _connection;
         private ObservableCollection<string> _messageLog;
         private ObservableCollection<ObservableObject> _viewModels;
+        private MainWindowViewModel _mainWindowViewModel;
         private string _message;
         private INavigationService _navi;
         public TabletopSystem CurrentSystem
@@ -70,8 +71,19 @@ namespace TabletopSystems.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public ObservableCollection<ObservableObject> ViewModels
+        {
+            get { return _viewModels; }
+            set
+            {
+                _viewModels = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand SendCommand { get; set; }
-        public SystemMainPageViewModel(UserConnection conn)
+        public SystemMainPageViewModel(UserConnection conn, AddSystemViewModel addViewModel)
         {
             _message = string.Empty;
             _messageLog = new ObservableCollection<string>();
