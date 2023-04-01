@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace TabletopSystems.Views
 {
     /// <summary>
-    /// Interaction logic for AddTypeView.xaml
+    /// Interaction logic for AddCapabilityView.xaml
     /// </summary>
-    public partial class AddTypeView : UserControl
+    public partial class AddCapabilityView : UserControl
     {
-        public AddTypeView()
+        public AddCapabilityView()
         {
             InitializeComponent();
         }

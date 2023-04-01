@@ -56,6 +56,7 @@ public class SystemSelectionViewModel : ObservableObject
     public ICommand SystemSelectedCommand { get; }
     public ICommand AddSystemCommand { get; }
     public ICommand DeleteSystemCommand { get; }
+    public ICommand ReloadCommand { get; }
 
     public SystemSelectionViewModel(UserConnection conn, INavigationService navi, MainWindowViewModel mainWinViewModel)
     {
@@ -68,7 +69,14 @@ public class SystemSelectionViewModel : ObservableObject
         SystemSelectedCommand = new RelayCommand(o => { ExecuteSystemSelectedCommand(); }, o => true);
         DeleteSystemCommand = new RelayCommand(o => ExecuteDeleteSystemCommand());
         AddSystemCommand = new RelayCommand(o => ExecuteAddSystemCommand());
-        Trace.WriteLine("System Selection View Model constructed!");
+        ReloadCommand = new RelayCommand(o => ExecuteReloadCommand());
+        MessageBox.Show("System Selection View Model constructed!");
+    }
+
+    public void ExecuteReloadCommand()
+    {
+        _userConnection.tryConnection();
+        Systems = _tabletopSystemRepository.GetSystems();
     }
 
     public void ExecuteAddSystemCommand()

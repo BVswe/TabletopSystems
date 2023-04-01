@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace TabletopSystems.ViewModels
 {
-    public class SearchViewModel : ObservableObject
+    public class AddGearViewModel : ObservableObject
     {
-        //Header is to set the name of this tab in the view
+        //Header is for dropdown to read viewmodel's name
         public string Header { get; }
-        public SearchViewModel()
+        public AddGearViewModel()
         {
-            Header = "Search";
+            Header = "Gear";
         }
     }
 }

@@ -116,8 +116,7 @@
                        HorizontalAlignment="Center">
                 System Name:
             </TextBlock>
-            <TextBox Background="Transparent"
-                     Grid.Row="1"
+            <TextBox Grid.Row="1"
                      BorderBrush="#FFFFFF"
                      Height="35"
                      Opacity="0.8"
@@ -128,7 +127,11 @@
                      HorizontalContentAlignment="Center"
                      Width="300"
                      CaretBrush="#FFFFFF"
-                     Text="{Binding SystemToAdd.SystemName}"/>
+                     Text="{Binding SystemToAdd.SystemName}">
+                <TextBox.Background>
+                    <SolidColorBrush Color="#000000" Opacity="0.3"/>
+                </TextBox.Background>
+            </TextBox>
         </Grid>
         
         <Grid Grid.Row="1"
@@ -169,7 +172,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding AttributeName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                     Background="Transparent"
+                                     
                                      Foreground="GhostWhite"
                                      CaretBrush="GhostWhite"
                                      FontSize="20"
@@ -179,6 +182,9 @@
                                      BorderThickness="1"
                                      VerticalContentAlignment="Center"
                                      SelectionBrush="#FFFFFF">
+                                    <TextBox.Background>
+                                        <SolidColorBrush Color="#000000" Opacity="0.3"/>
+                                    </TextBox.Background>
                                 </TextBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -187,7 +193,6 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding AttributeFormula,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                     Background="Transparent"
                                      Foreground="GhostWhite"
                                      CaretBrush="GhostWhite"
                                      FontSize="20"
@@ -198,6 +203,9 @@
                                      VerticalContentAlignment="Center"
                                      SelectionBrush="GhostWhite"
                                      >
+                                    <TextBox.Background>
+                                        <SolidColorBrush Color="#000000" Opacity="0.3"/>
+                                    </TextBox.Background>
                                 </TextBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -249,7 +257,6 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding ActionName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                     Background="Transparent"
                                      Foreground="GhostWhite"
                                      CaretBrush="GhostWhite"
                                      FontSize="20"
@@ -259,6 +266,9 @@
                                      BorderThickness="1"
                                      VerticalContentAlignment="Center"
                                      SelectionBrush="#FFFFFF">
+                                    <TextBox.Background>
+                                        <SolidColorBrush Color="#000000" Opacity="0.3"/>
+                                    </TextBox.Background>
                                 </TextBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -267,7 +277,6 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding ActionFormula,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                     Background="Transparent"
                                      Foreground="GhostWhite"
                                      CaretBrush="GhostWhite"
                                      FontSize="20"
@@ -278,6 +287,9 @@
                                      VerticalContentAlignment="Center"
                                      SelectionBrush="GhostWhite"
                                      >
+                                    <TextBox.Background>
+                                        <SolidColorBrush Color="#000000" Opacity="0.3"/>
+                                    </TextBox.Background>
                                 </TextBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

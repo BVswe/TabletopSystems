@@ -122,6 +122,12 @@
                     Delete
                 </Button>
             </StackPanel>
+            <Button Command="{Binding ReloadCommand}" Padding="5 0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Opacity="0.8" Foreground="GhostWhite" FontSize="15" Height="25" Margin="2 1 2 1">
+                <Button.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.6"/>
+                </Button.Background>
+                Reload
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

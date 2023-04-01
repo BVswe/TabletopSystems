@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows;
 
 namespace TabletopSystems.Database_Access;
 
@@ -52,7 +53,11 @@ public class TabletopSystemRepository : ITabletopSystemRepository
         }
         catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + e.ToString());
+            MessageBox.Show("An exception occured: " + e.ToString());
+        }
+        catch (SqliteException e)
+        {
+            MessageBox.Show("An exception occured: " + e.ToString());
         }
     }
     /// <summary>
@@ -93,7 +98,11 @@ public class TabletopSystemRepository : ITabletopSystemRepository
         }
         catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + e.ToString());
+            MessageBox.Show("An exception occured: " + e.ToString());
+        }
+        catch (SqliteException e)
+        {
+            MessageBox.Show("An exception occured: " + e.ToString());
         }
     }
     /// <summary>
@@ -134,7 +143,11 @@ public class TabletopSystemRepository : ITabletopSystemRepository
         }
         catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + e.ToString());
+            MessageBox.Show("An exception occured: " + e.ToString());
+        }
+        catch (SqliteException e)
+        {
+            MessageBox.Show("An exception occured: " + e.ToString());
         }
     }
 
@@ -162,12 +175,12 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                         {
                             if (!Int32.TryParse(firstColumn.ToString(), out i))
                             {
-                                Trace.WriteLine("Invalid Integer!");
+                                MessageBox.Show("Invalid Integer!");
                             }
                         }
                         else
                         {
-                            Trace.WriteLine("System not found!");
+                            MessageBox.Show("System not found!");
                             conn.Close();
                             return 0;
                         }
@@ -187,12 +200,12 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                         {
                             if (!Int32.TryParse(firstColumn.ToString(), out i))
                             {
-                                Trace.WriteLine("Invalid Integer!");
+                                MessageBox.Show("Invalid Integer!");
                             }
                         }
                         else
                         {
-                            Trace.WriteLine("System not found!");
+                            MessageBox.Show("System not found!");
                             conn.Close();
                             return 0;
                         }
@@ -203,7 +216,12 @@ public class TabletopSystemRepository : ITabletopSystemRepository
         }
         catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + e.ToString());
+            MessageBox.Show("An exception occured: " + e.ToString());
+            return 0;
+        }
+        catch (SqliteException e)
+        {
+            MessageBox.Show("An exception occured: " + e.ToString());
             return 0;
         }
     }
@@ -257,7 +275,12 @@ public class TabletopSystemRepository : ITabletopSystemRepository
         }
         catch (SqlException e)
         {
-            Trace.WriteLine("An exception occured: " + e.ToString());
+            MessageBox.Show("An exception occured: " + e.ToString());
+            return new ObservableCollection<TabletopSystem>();
+        }
+        catch (SqliteException e)
+        {
+            MessageBox.Show("An exception occured: " + e.ToString());
             return new ObservableCollection<TabletopSystem>();
         }
     }

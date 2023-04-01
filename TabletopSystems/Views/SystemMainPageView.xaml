@@ -12,25 +12,29 @@
             <ColumnDefinition Width="3.5*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock FontSize="20" Foreground="#FFFFFF" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding CurrentSystem.Name}"></TextBlock>
-        <Border Margin="0 37 0 0" BorderThickness="0 1 1 0" CornerRadius="0 8 0 0" Opacity="0.8" BorderBrush="#FFFFFF"/>
+        <TextBlock Margin="0 5 0 0" FontSize="20" Foreground="#FFFFFF" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding MainWinViewModel.TbltopSys.SystemName}"/>
+        <Border Margin="0 37 0 0" BorderThickness="0 1 1 0" CornerRadius="0 8 0 0">
+            <Border.BorderBrush>
+                <SolidColorBrush Opacity="0.9" Color="#FFFFFF"/>
+            </Border.BorderBrush>
+        </Border>
         <TabControl Grid.Column="0"
                     BorderThickness="0"
                     Background="Transparent"
-                    Opacity="0.8"
+                    Opacity="1"
                     Grid.Row="1"
                     Margin="0 5 0 0"
                     ItemsSource="{Binding ViewModels}"
                     >
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type vm:SearchViewModel}">
-                    <local:SearchView />
+                    <local:SearchView/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vm:CharactersViewModel}">
-                    <local:CharactersView />
+                    <local:CharactersView/>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vm:AddTypeViewModel}">
-                    <local:AddTypeView />
+                <DataTemplate DataType="{x:Type vm:AddItemMainViewModel}">
+                    <local:AddItemMainView/>
                 </DataTemplate>
                 <Style TargetType="{x:Type TabItem}">
                     <Setter Property="BorderThickness" Value="1"/>
@@ -40,11 +44,11 @@
                             <DataTemplate>
                                 <Border x:Name="tabs">
                                     <Border.Background>
-                                        <SolidColorBrush Color="#151515" Opacity="0.9"/>
+                                        <SolidColorBrush Color="#000000" Opacity="0.86"/>
                                     </Border.Background>
                                     <ContentPresenter>
                                         <ContentPresenter.Content>
-                                            <TextBlock Margin="4" Foreground="GhostWhite" FontSize="15" Text="{TemplateBinding Content}"/>
+                                            <TextBlock Margin="4" Foreground="GhostWhite" FontSize="15" Text="{Binding Header}"/>
                                         </ContentPresenter.Content>
                                     </ContentPresenter>
                                 </Border>
@@ -54,16 +58,10 @@
                                     </DataTrigger>
                                 </DataTemplate.Triggers>
                             </DataTemplate>
-
                         </Setter.Value>
-
                     </Setter>
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="Search" Padding="2"/>
-            <TabItem Header="Characters" Padding="2"/>
-            <TabItem Header="Add to System" Padding="2"/>
-            <TabItem Header="WIP Combat" Padding="2"/>
         </TabControl>
 
         <Grid Grid.Column="1" Margin="0 32 0 0">
@@ -74,11 +72,13 @@
             <Border>
                 <ListView ItemsSource="{Binding MessageLog}"
                                   Background="Transparent"
-                                  Opacity="0.8"
                                   Margin="5 5 5 2"
                                   VirtualizingStackPanel.IsVirtualizing="True"
                                   VirtualizingStackPanel.ScrollUnit="Pixel" 
                                   >
+                    <ListView.BorderBrush>
+                        <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
+                    </ListView.BorderBrush>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel VerticalAlignment="Bottom"/>

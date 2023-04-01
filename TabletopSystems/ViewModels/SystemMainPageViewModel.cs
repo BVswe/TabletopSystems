@@ -12,32 +12,13 @@ namespace TabletopSystems.ViewModels
 {
     public class SystemMainPageViewModel : ObservableObject
     {
-        private TabletopSystem _currentSystem;
         private UserConnection _connection;
         private ObservableCollection<string> _messageLog;
         private ObservableCollection<ObservableObject> _viewModels;
-        private MainWindowViewModel _mainWindowViewModel;
         private string _message;
-        private INavigationService _navi;
-        public TabletopSystem CurrentSystem
-        {
-            get { return _currentSystem; }
-            set
-            {
-                _currentSystem = value;
-                OnPropertyChanged();
-            }
-        }
-        //tie back button to a bool
-        public INavigationService Navi
-        {
-            get { return _navi; }
-            set
-            {
-                _navi = value;
-                OnPropertyChanged();
-            }
-        }
+        private readonly MainWindowViewModel _mainWinViewModel;
+        public MainWindowViewModel MainWinViewModel { get { return _mainWinViewModel; } }
+
         public ObservableCollection<string> MessageLog
         {
             get { return _messageLog; }
@@ -75,19 +56,21 @@ namespace TabletopSystems.ViewModels
         public ObservableCollection<ObservableObject> ViewModels
         {
             get { return _viewModels; }
-            set
-            {
-                _viewModels = value;
-                OnPropertyChanged();
-            }
         }
 
         public RelayCommand SendCommand { get; set; }
-        public SystemMainPageViewModel(UserConnection conn, AddSystemViewModel addViewModel)
+        public SystemMainPageViewModel(UserConnection conn, MainWindowViewModel mainWinVM, AddSystemViewModel addViewModel, SearchViewModel searchVM, CharactersViewModel charVM, AddItemMainViewModel AddTypeVM)
         {
+            _mainWinViewModel = mainWinVM;
             _message = string.Empty;
             _messageLog = new ObservableCollection<string>();
             _connection = conn;
+            _viewModels = new ObservableCollection<ObservableObject>
+            {
+                searchVM,
+                charVM,
+                AddTypeVM
+            };
             SendCommand = new RelayCommand(o => {
                 if (String.IsNullOrEmpty(Message))
                 {
@@ -96,7 +79,7 @@ namespace TabletopSystems.ViewModels
                 MessageLog.Add(Message);
                 Message = "";
             }, o => true);
-            Trace.WriteLine("SystemMainPageView was constructed!");
+            MessageBox.Show("SystemMainPageView was constructed!");
         }
     }
 }

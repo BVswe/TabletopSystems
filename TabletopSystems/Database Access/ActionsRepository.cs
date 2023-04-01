@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System;
 using TabletopSystems.Models;
+using System.Windows;
 
 namespace TabletopSystems.Database_Access
 {
@@ -66,7 +67,11 @@ namespace TabletopSystems.Database_Access
             }
             catch (SqlException e)
             {
-                Trace.WriteLine("An exception occured: " + e.ToString());
+                MessageBox.Show("An exception occured: " + e.ToString());
+            }
+            catch (SqliteException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
             }
         }
 
@@ -117,7 +122,11 @@ namespace TabletopSystems.Database_Access
             }
             catch (SqlException e)
             {
-                Trace.WriteLine("An exception occured: " + e.ToString());
+                MessageBox.Show("An exception occured: " + e.ToString());
+            }
+            catch (SqliteException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
             }
         }
 
@@ -162,7 +171,11 @@ namespace TabletopSystems.Database_Access
             }
             catch (SqlException e)
             {
-                Trace.WriteLine("An exception occured: " + e.ToString());
+                MessageBox.Show("An exception occured: " + e.ToString());
+            }
+            catch (SqliteException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
             }
         }
         /// <summary>
@@ -221,7 +234,12 @@ namespace TabletopSystems.Database_Access
             }
             catch (SqlException e)
             {
-                Trace.WriteLine("An exception occured: " + e.ToString());
+                MessageBox.Show("An exception occured: " + e.ToString());
+                return new ObservableCollection<TTRPGAction>();
+            }
+            catch (SqliteException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
                 return new ObservableCollection<TTRPGAction>();
             }
         }
