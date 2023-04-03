@@ -69,9 +69,9 @@ namespace TabletopTags.Database_Access
         /// Edits a system in the database
         /// </summary>
         /// <param name="tagToAdd">System containing NEW tagName and OLD SystemID</param>
-        public void EdittagName(TTRPGTag tagToEdit)
+        public void EditTagName(TTRPGTag tagToEdit, TTRPGTag oldTag)
         {
-            string cmdString = "UPDATE Tags SET TagName=@tagName WHERE SystemID=@systemID";
+            string cmdString = "UPDATE Tags SET TagName=@tagName WHERE SystemID=@systemID AND TagName=@oldTagName";
             try
             {
                 if (_userConnection.connectedToSqlServer)
@@ -82,7 +82,8 @@ namespace TabletopTags.Database_Access
                         {
                             conn.Open();
                             cmd.Parameters.AddWithValue("@tagName", tagToEdit.TagName);
-                            cmd.Parameters.AddWithValue("@systemID", tagToEdit.SystemID);
+                            cmd.Parameters.AddWithValue("@systemID", oldTag.SystemID);
+                            cmd.Parameters.AddWithValue("@oldTagName", oldTag.TagName);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -95,7 +96,8 @@ namespace TabletopTags.Database_Access
                         {
                             conn.Open();
                             cmd.Parameters.AddWithValue("@tagName", tagToEdit.TagName);
-                            cmd.Parameters.AddWithValue("@systemID", tagToEdit.SystemID);
+                            cmd.Parameters.AddWithValue("@systemID", oldTag.SystemID);
+                            cmd.Parameters.AddWithValue("@oldTagName", oldTag.TagName);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -160,9 +162,9 @@ namespace TabletopTags.Database_Access
         /// Gets all Tags from the database
         /// </summary>
         /// <returns></returns>
-        public ObservableCollection<TTRPGTag> GetTags()
+        public ObservableCollection<TTRPGTag> GetTags(int systemID)
         {
-            string cmdString = "SELECT * FROM Tags";
+            string cmdString = "SELECT * FROM Tags WHERE SystemID=@systemID";
             ObservableCollection<TTRPGTag> Tags = new ObservableCollection<TTRPGTag>();
             try
             {
@@ -173,12 +175,13 @@ namespace TabletopTags.Database_Access
                         using (SqlCommand cmd = new SqlCommand(cmdString, conn))
                         {
                             conn.Open();
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             SqlDataReader reader = cmd.ExecuteReader();
                             while (reader.Read())
                             {
                                 TTRPGTag temp = new TTRPGTag();
                                 temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
-                                temp.TagName = reader["tagName"].ToString();
+                                temp.TagName = reader["tagName"].ToString()!;
                                 Tags.Add(temp);
                             }
                         }
@@ -191,12 +194,13 @@ namespace TabletopTags.Database_Access
                         using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
                         {
                             conn.Open();
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             SqliteDataReader reader = cmd.ExecuteReader();
                             while (reader.Read())
                             {
                                 TTRPGTag temp = new TTRPGTag();
                                 temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
-                                temp.TagName = reader["tagName"].ToString();
+                                temp.TagName = reader["tagName"].ToString()!;
                                 Tags.Add(temp);
                             }
                         }

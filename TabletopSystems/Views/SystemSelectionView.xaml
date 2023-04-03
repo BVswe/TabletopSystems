@@ -74,20 +74,20 @@
         <StackPanel Grid.Row="0" HorizontalAlignment="Stretch">
             <TextBlock HorizontalAlignment="Center" FontSize="40" Foreground="GhostWhite" Opacity="0.8" Background="Transparent">Systems</TextBlock>
             <ListView Name="SystemsList"
-                              ItemsSource="{Binding Systems, Mode=OneWay}"
-                              DisplayMemberPath="SystemName"
-                              Background="Transparent"
-                              Opacity="0.8"
-                              Margin="5"
-                              BorderThickness="0"
-                              VirtualizingStackPanel.IsVirtualizing="True"
-                              VirtualizingStackPanel.ScrollUnit="Pixel"
-                              HorizontalContentAlignment="Center"
-                              FontSize="30"
-                              Foreground="GhostWhite"
-                              MouseDoubleClick="ListView_MouseDoubleClick"
-                              SelectionChanged="SystemsList_SelectionChanged" 
-                              >
+                      ItemsSource="{Binding Systems, Mode=OneWay}"
+                      DisplayMemberPath="SystemName"
+                      Background="Transparent"
+                      Opacity="0.8"
+                      Margin="5"
+                      BorderThickness="0"
+                      VirtualizingStackPanel.IsVirtualizing="True"
+                      VirtualizingStackPanel.ScrollUnit="Pixel"
+                      HorizontalContentAlignment="Center"
+                      FontSize="30"
+                      Foreground="GhostWhite"
+                      MouseDoubleClick="ListView_MouseDoubleClick"
+                      SelectionChanged="SystemsList_SelectionChanged" 
+                      >
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel VerticalAlignment="Center"/>

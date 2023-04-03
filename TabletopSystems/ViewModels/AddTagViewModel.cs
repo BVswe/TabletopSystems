@@ -30,6 +30,7 @@ namespace TabletopSystems.ViewModels
             _mainWinViewModel = mainWinViewModel;
             _userConnection = conn;
             _tagRepository = new TagRepository(conn);
+            _tagName = "";
             AddTagCommand = new RelayCommand(o =>
             {
                 _tagRepository.Add(new TTRPGTag() { TagName = _tagName, SystemID = _mainWinViewModel.TbltopSys.SystemID });

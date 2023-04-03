@@ -33,5 +33,9 @@
             <views:AddTagView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type TypeName=viewModels:AddCapabilityViewModel}">
+            <views:AddCapabilityView/>
+        </DataTemplate>
+
     </Application.Resources>
 </Application>

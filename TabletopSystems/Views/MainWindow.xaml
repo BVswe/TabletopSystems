@@ -83,7 +83,7 @@
         <Border>
             <Grid>
                 <Grid.Background>
-                    <SolidColorBrush Color="Black" Opacity="0.3"/>
+                    <SolidColorBrush Color="Black" Opacity="0.55"/>
                 </Grid.Background>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25"/>
@@ -91,9 +91,9 @@
                 </Grid.RowDefinitions>
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="105"/>
                     </Grid.ColumnDefinitions>
 
                     <Button Style="{StaticResource GrayHover}" Opacity="0.8" HorizontalAlignment="Left" BorderThickness="0" Width="50" Background="Transparent" Command="{Binding BackCommand}">
@@ -102,7 +102,7 @@
                         </Border>
                     </Button>
 
-                    <TextBlock Opacity="0.8" Grid.Column="1" HorizontalAlignment="Center" Text="Tabletop Manager" FontSize="16" FontStyle="Italic" Foreground="#FFFFFF" FontWeight="SemiBold"/>
+                    <TextBlock Opacity="0.8" Grid.Column="1" HorizontalAlignment="Center" Text="{Binding TbltopSys.SystemName, Mode=OneWay}" FontSize="18" FontStyle="Italic" Foreground="#FFFFFF" FontWeight="SemiBold"/>
 
                     <StackPanel Opacity="0.8" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Stretch">
 

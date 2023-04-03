@@ -206,8 +206,8 @@ namespace TabletopSystems.Database_Access
                             {
                                 TTRPGAttribute temp = new TTRPGAttribute();
                                 temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
-                                temp.AttributeName = reader["AttributeName"].ToString();
-                                temp.AttributeFormula = reader["AttributeFormula"].ToString();
+                                temp.AttributeName = reader["AttributeName"].ToString()!;
+                                temp.AttributeFormula = reader["AttributeFormula"].ToString() ?? string.Empty;
                                 attrToReturn.Add(temp);
                             }
                         }
@@ -226,8 +226,8 @@ namespace TabletopSystems.Database_Access
                             {
                                 TTRPGAttribute temp = new TTRPGAttribute();
                                 temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
-                                temp.AttributeName = reader["AttributeName"].ToString();
-                                temp.AttributeFormula = reader["AttributeFormula"].ToString();
+                                temp.AttributeName = reader["AttributeName"].ToString()!;
+                                temp.AttributeFormula = reader["AttributeFormula"].ToString() ?? string.Empty;
                                 attrToReturn.Add(temp);
                             }
                         }

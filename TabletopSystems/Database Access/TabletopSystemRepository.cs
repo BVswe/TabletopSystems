@@ -64,7 +64,7 @@ public class TabletopSystemRepository : ITabletopSystemRepository
     /// Edits a system in the database
     /// </summary>
     /// <param name="systemToAdd">System containing NEW SystemName and OLD SystemID</param>
-    public void EditSystemName(TabletopSystem systemToEdit)
+    public void EditSystemName(TabletopSystem systemToEdit, TabletopSystem oldSystem)
     {
         string cmdString = "UPDATE Systems SET SystemName=@systemName WHERE SystemID=@systemID";
         try
@@ -77,7 +77,7 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                     {
                         conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToEdit.SystemName);
-                        cmd.Parameters.AddWithValue("@systemID", systemToEdit.SystemID);
+                        cmd.Parameters.AddWithValue("@systemID", oldSystem.SystemID);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -90,7 +90,7 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                     {
                         conn.Open();
                         cmd.Parameters.AddWithValue("@systemName", systemToEdit.SystemName);
-                        cmd.Parameters.AddWithValue("@systemID", systemToEdit.SystemID);
+                        cmd.Parameters.AddWithValue("@systemID", oldSystem.SystemID);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -246,8 +246,8 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                         while (reader.Read())
                         {
                             TabletopSystem temp = new TabletopSystem();
-                            temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
-                            temp.SystemName = reader["SystemName"].ToString();
+                            temp.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                            temp.SystemName = reader["SystemName"].ToString()!;
                             systems.Add(temp);
                         }
                     }
@@ -264,8 +264,8 @@ public class TabletopSystemRepository : ITabletopSystemRepository
                         while (reader.Read())
                         {
                             TabletopSystem temp = new TabletopSystem();
-                            temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
-                            temp.SystemName = reader["SystemName"].ToString();
+                            temp.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                            temp.SystemName = reader["SystemName"].ToString()!;
                             systems.Add(temp);
                         }
                     }

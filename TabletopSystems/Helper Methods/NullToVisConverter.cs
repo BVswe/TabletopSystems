@@ -1,26 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 
 namespace TabletopSystems.Helper_Methods
 {
-    public class FontScaler : IValueConverter
+    class NullToVisConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            try
+            if (value == null)
             {
-                return ((double)value * 0.026 >= 20 ? (double)value * 0.026 : 20);
+                return Visibility.Visible;
             }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

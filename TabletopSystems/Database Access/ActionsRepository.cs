@@ -202,9 +202,9 @@ namespace TabletopSystems.Database_Access
                             while (reader.Read())
                             {
                                 TTRPGAction temp = new TTRPGAction();
-                                temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
-                                temp.ActionName = reader["ActionName"].ToString();
-                                temp.ActionFormula = reader["ActionFormula"].ToString();
+                                temp.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                                temp.ActionName = reader["ActionName"].ToString()!;
+                                temp.ActionFormula = reader["ActionFormula"].ToString() ?? string.Empty;
                                 actionsToReturn.Add(temp);
                             }
                         }
@@ -223,8 +223,8 @@ namespace TabletopSystems.Database_Access
                             {
                                 TTRPGAction temp = new TTRPGAction();
                                 temp.SystemID = Int32.Parse(reader["SystemID"].ToString());
-                                temp.ActionName = reader["ActionName"].ToString();
-                                temp.ActionFormula = reader["ActionFormula"].ToString();
+                                temp.ActionName = reader["ActionName"].ToString()!;
+                                temp.ActionFormula = reader["ActionFormula"].ToString() ?? string.Empty;
                                 actionsToReturn.Add(temp);
                             }
                         }

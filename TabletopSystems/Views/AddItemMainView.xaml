@@ -297,7 +297,7 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ComboBox Style="{DynamicResource ComboBoxColored}"
+        <ComboBox Style="{StaticResource ComboBoxColored}"
                   x:Name="AddTypeCombobox"
                   MaxWidth="700"
                   MaxHeight="30"
@@ -307,10 +307,10 @@
                   VerticalContentAlignment="Center"
                   ItemsSource="{Binding ViewModels, Mode=OneWay}"
                   DisplayMemberPath="Header"
+                  Margin="10 0"
                   >
-            
         </ComboBox>
 
-        <ContentControl Opacity="1" Grid.Row="1" Content="{Binding ElementName=AddTypeCombobox, Path=SelectedItem}"/>
+        <ContentControl Margin="0 15 0 0" Opacity="1" Grid.Row="1" Content="{Binding ElementName=AddTypeCombobox, Path=SelectedItem}"/>
     </Grid>
 </UserControl>

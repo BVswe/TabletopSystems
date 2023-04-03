@@ -14,7 +14,9 @@ public class MainWindowViewModel : ObservableObject
 {
     #region Fields and Properties
     private UserConnection _connection;
-    
+    private TabletopSystem _tbltopSys;
+
+
     private INavigationService _navi;
     //tie back button to a bool
     public INavigationService Navi
@@ -45,8 +47,11 @@ public class MainWindowViewModel : ObservableObject
             OnPropertyChanged();
         }
     }
-    public TabletopSystem TbltopSys { get; set; }
-    public RelayCommand NavigateSystemMainPageCommand { get; set; }
+    public TabletopSystem TbltopSys {
+        get { return _tbltopSys; }
+        set { _tbltopSys = value; OnPropertyChanged(); }
+    }
+    //public RelayCommand NavigateSystemMainPageCommand { get; set; }
     public RelayCommand BackCommand { get; set; }
     #endregion
     public MainWindowViewModel(UserConnection conn, INavigationService navi)
@@ -56,7 +61,7 @@ public class MainWindowViewModel : ObservableObject
         TbltopSys = new TabletopSystem();
         BackCommand = new RelayCommand(o => { ExecuteBackCommand(); }, o => true);
         CreateDB();
-        MessageBox.Show("MainWindowView was constructed!");
+        Trace.WriteLine("MainWindowView was constructed!");
     }
     /// <summary>
     /// Go back to System Selection view
@@ -69,7 +74,9 @@ public class MainWindowViewModel : ObservableObject
             return;
         }
         Navi.NavigateTo<SystemSelectionViewModel>();
-        GC.Collect();
+        TbltopSys.SystemID = 0;
+        TbltopSys.SystemName = "";
+        OnPropertyChanged("TbltopSys");
     }
 
     private void CreateDB()
@@ -83,7 +90,7 @@ public class MainWindowViewModel : ObservableObject
                 {
                     conn.Open();
                     cmd.CommandText = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.tables WHERE table_name='Systems'";
-                    if (Convert.ToInt32(cmd.ExecuteNonQuery()) == 1)
+                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 1)
                     {
                         return;
                     }
@@ -102,7 +109,7 @@ public class MainWindowViewModel : ObservableObject
                             string charactersCreation = "CREATE TABLE Characters(\r\nSystemID INT FOREIGN KEY REFERENCES Systems(SystemID),\r\nCharacterName VARCHAR(50),\r\nCharacterLevel INT,\r\nPRIMARY KEY (SystemID, CharacterName)\r\n)";
                             string gearCreation = "CREATE TABLE Gear(\r\nSystemID INT FOREIGN KEY REFERENCES Systems(SystemID),\r\nGearName VARCHAR(50),\r\nGearDescription VARCHAR(1000)\r\nPRIMARY KEY (SystemID, GearName)\r\n)";
                             string monstersCreation = "CREATE TABLE Monsters(\r\nSystemID INT FOREIGN KEY REFERENCES Systems(SystemID),\r\nMonsterName VARCHAR(50),\r\nStandardDamage INT,\r\nPRIMARY KEY (SystemID, MonsterName)\r\n)";
-                            string capabilitiesCreation = "CREATE TABLE Capabilities(\r\nSystemID INT FOREIGN KEY REFERENCES Systems(SystemID),\r\nCapabilityName VARCHAR(100),\r\nCapabilityDescription VARCHAR(2000),\r\nCapabilityArea VARCHAR(20),\r\nCapabilityRange INT,\r\nCapabilityUseTime VARCHAR(30),\r\nCapabilityCost VARCHAR(30),\r\nPRIMARY KEY (SystemID, CapabilityName)\r\n)";
+                            string capabilitiesCreation = "CREATE TABLE Capabilities(\r\nSystemID INT FOREIGN KEY REFERENCES Systems(SystemID),\r\nCapabilityName VARCHAR(100),\r\nCapabilityDescription VARCHAR(2000),\r\nCapabilityArea VARCHAR(20),\r\nCapabilityRange VARCHAR(30),\r\nCapabilityUseTime VARCHAR(30),\r\nCapabilityCost VARCHAR(30),\r\nPRIMARY KEY (SystemID, CapabilityName)\r\n)";
                             string classesCreation = "CREATE TABLE Classes(\r\nSystemID INT FOREIGN KEY REFERENCES Systems(SystemID),\r\nClassName VARCHAR(50),\r\nPRIMARY KEY (SystemID, ClassName)\r\n)";
                             string tagsCreation = "CREATE TABLE Tags(\r\nSystemID INT FOREIGN KEY REFERENCES Systems(SystemID),\r\nTagName VARCHAR(30)\r\nPRIMARY KEY (SystemID, TagName)\r\n)";
                             string racesCreation = "CREATE TABLE Races(\r\nSystemID INT FOREIGN KEY REFERENCES Systems(SystemID),\r\nRaceName VARCHAR(50),\r\nPRIMARY KEY (SystemID, RaceName)\r\n)";
@@ -218,7 +225,7 @@ public class MainWindowViewModel : ObservableObject
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Error creating datatabase.");
+                            Trace.WriteLine("Error creating database. Exception " + ex);
                         }
                     }
                 }
@@ -234,7 +241,7 @@ public class MainWindowViewModel : ObservableObject
                     conn.Open();
 
                     cmd.CommandText = "SELECT COUNT(*) FROM sqlite_master\r\nWHERE type='table'\r\nAND name='Systems';";
-                    if (Convert.ToInt32(cmd.ExecuteNonQuery()) == 1)
+                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 1)
                     {
                         return;
                     }
@@ -252,7 +259,7 @@ public class MainWindowViewModel : ObservableObject
                             string charactersCreation = "CREATE TABLE Characters(\r\nSystemID INT,\r\nCharacterName VARCHAR(50),\r\nCharacterLevel INT,\r\nPRIMARY KEY (SystemID, CharacterName),\r\nFOREIGN KEY (SystemID) REFERENCES Systems(SystemID)\r\n)";
                             string gearCreation = "CREATE TABLE Gear(\r\nSystemID INT,\r\nGearName VARCHAR(50),\r\nGearDescription VARCHAR(1000),\r\nPRIMARY KEY (SystemID, GearName),\r\nFOREIGN KEY (SystemID) REFERENCES Systems(SystemID)\r\n)";
                             string monstersCreation = "CREATE TABLE Monsters(\r\nSystemID INT,\r\nMonsterName VARCHAR(50),\r\nStandardDamage INT,\r\nPRIMARY KEY (SystemID, MonsterName),\r\nFOREIGN KEY (SystemID) REFERENCES Systems(SystemID)\r\n)";
-                            string capabilitiesCreation = "CREATE TABLE Capabilities(\r\nSystemID INT,\r\nCapabilityName VARCHAR(100),\r\nCapabilityDescription VARCHAR(2000),\r\nCapabilityArea VARCHAR(20),\r\nCapabilityRange INT,\r\nCapabilityUseTime VARCHAR(30),\r\nCapabilityCost VARCHAR(30),\r\nPRIMARY KEY (SystemID, CapabilityName),\r\nFOREIGN KEY (SystemID) REFERENCES Systems(SystemID)\r\n)";
+                            string capabilitiesCreation = "CREATE TABLE Capabilities(\r\nSystemID INT,\r\nCapabilityName VARCHAR(100),\r\nCapabilityDescription VARCHAR(2000),\r\nCapabilityArea VARCHAR(20),\r\nCapabilityRange VARCHAR(30),\r\nCapabilityUseTime VARCHAR(30),\r\nCapabilityCost VARCHAR(30),\r\nPRIMARY KEY (SystemID, CapabilityName),\r\nFOREIGN KEY (SystemID) REFERENCES Systems(SystemID)\r\n)";
                             string classesCreation = "CREATE TABLE Classes(\r\nSystemID INT,\r\nClassName VARCHAR(50),\r\nPRIMARY KEY (SystemID, ClassName),\r\nFOREIGN KEY (SystemID) REFERENCES Systems(SystemID)\r\n)";
                             string tagsCreation = "CREATE TABLE Tags(\r\nSystemID INT,\r\nTagName VARCHAR(30),\r\nPRIMARY KEY (SystemID, TagName),\r\nFOREIGN KEY (SystemID) REFERENCES Systems(SystemID)\r\n)";
                             string racesCreation = "CREATE TABLE Races(\r\nSystemID INT,\r\nRaceName VARCHAR(50),\r\nPRIMARY KEY (SystemID, RaceName),\r\nFOREIGN KEY (SystemID) REFERENCES Systems(SystemID)\r\n)";
@@ -368,7 +375,7 @@ public class MainWindowViewModel : ObservableObject
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Error creating datatabase.");
+                            Trace.WriteLine("Error creating datatabase. Exception " + ex);
                         }
                     }
                 }

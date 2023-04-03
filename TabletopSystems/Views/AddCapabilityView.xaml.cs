@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TabletopSystems.Models;
+using TabletopSystems.ViewModels;
 
 namespace TabletopSystems.Views
 {
@@ -23,6 +25,28 @@ namespace TabletopSystems.Views
         public AddCapabilityView()
         {
             InitializeComponent();
+        }
+
+        private void TagComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = (sender as ComboBox).SelectedItem;
+            if (item == null)
+            {
+                return;
+            }
+            var viewModel = (AddCapabilityViewModel)this.DataContext;
+            viewModel.SelectedTag = (TTRPGTag)item;
+        }
+
+        private void TagList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = (sender as ListView).SelectedItem;
+            if (item == null)
+            {
+                return;
+            }
+            var viewModel = (AddCapabilityViewModel)this.DataContext;
+            viewModel.RemovalTag = (TTRPGTag)item;
         }
     }
 }

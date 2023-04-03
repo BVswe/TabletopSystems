@@ -96,7 +96,7 @@ namespace TabletopSystems.ViewModels
             }
             catch(TransactionAbortedException ex)
             {
-                MessageBox.Show("Error in creating system in database");
+                MessageBox.Show("Error in creating system in database. Exception " + ex);
             }
             _mainWindowViewModel.TbltopSys = _systemToAdd;
             _navi.NavigateTo<SystemMainPageViewModel>();

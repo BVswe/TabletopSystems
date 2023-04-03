@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.Windows;
 using TabletopSystems.Helper_Methods;
 
 
@@ -79,7 +80,7 @@ namespace TabletopSystems.ViewModels
                 MessageLog.Add(Message);
                 Message = "";
             }, o => true);
-            MessageBox.Show("SystemMainPageView was constructed!");
+            Trace.WriteLine("SystemMainPageView was constructed!");
         }
     }
 }

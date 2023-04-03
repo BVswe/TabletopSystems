@@ -70,7 +70,7 @@ public class SystemSelectionViewModel : ObservableObject
         DeleteSystemCommand = new RelayCommand(o => ExecuteDeleteSystemCommand());
         AddSystemCommand = new RelayCommand(o => ExecuteAddSystemCommand());
         ReloadCommand = new RelayCommand(o => ExecuteReloadCommand());
-        MessageBox.Show("System Selection View Model constructed!");
+        Trace.WriteLine("System Selection View Model constructed!");
     }
 
     public void ExecuteReloadCommand()
