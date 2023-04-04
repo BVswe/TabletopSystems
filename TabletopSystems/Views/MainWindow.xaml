@@ -83,7 +83,7 @@
         <Border>
             <Grid>
                 <Grid.Background>
-                    <SolidColorBrush Color="Black" Opacity="0.55"/>
+                    <SolidColorBrush Color="Black" Opacity="0.65"/>
                 </Grid.Background>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="25"/>

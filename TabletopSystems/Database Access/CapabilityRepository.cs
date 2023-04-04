@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Azure;
+using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace TabletopSystems.Database_Access
                 " VALUES (@capabilityName,@systemID,@capabilityDescription,@capabilityArea,@capabilityRange,@capabilityUseTime,@capabilityCost)";
             string attachTags = "INSERT INTO Capabilities_Tags(Capabilities_SystemID, CapabilityName, Tags_SystemID, TagName)" +
                 " VALUES (@capabilitySystemID,@capabilityName,@tagSystemID,@tagName)";
+            string attachAttributes = "INSERT INTO Attributes_Capabilities(Attributes_SystemID, AttributeName, Capabilities_SystemID, CapabilityName)" +
+                " VALUES (@attributeSystemID,@attributeName,@capabilitySystemID,@capabilityName)";
             try
             {
                 //Add using sql if conencted to sql, else add using sqlite
@@ -57,6 +60,18 @@ namespace TabletopSystems.Database_Access
                                 {
                                     cmd.Parameters["@tagSystemID"].Value = tag.SystemID;
                                     cmd.Parameters["@tagName"].Value = tag.TagName;
+                                    cmd.ExecuteNonQuery();
+                                }
+                                cmd.Parameters.Clear();
+                                cmd.CommandText = attachAttributes;
+                                cmd.Parameters.AddWithValue("@capabilitySystemID", capability.SystemID);
+                                cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
+                                cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
+                                cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
+                                foreach (TTRPGAttribute attr in capability.Attributes)
+                                {
+                                    cmd.Parameters["@attributeSystemID"].Value = attr.SystemID;
+                                    cmd.Parameters["@attributeName"].Value = attr.AttributeName;
                                     cmd.ExecuteNonQuery();
                                 }
                                 transaction.Commit();
@@ -94,6 +109,18 @@ namespace TabletopSystems.Database_Access
                                     cmd.Parameters["@tagName"].Value = tag.TagName;
                                     cmd.ExecuteNonQuery();
                                 }
+                                cmd.Parameters.Clear();
+                                cmd.CommandText = attachAttributes;
+                                cmd.Parameters.AddWithValue("@capabilitySystemID", capability.SystemID);
+                                cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
+                                cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
+                                cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
+                                foreach (TTRPGAttribute attr in capability.Attributes)
+                                {
+                                    cmd.Parameters["@attributeSystemID"].Value = attr.SystemID;
+                                    cmd.Parameters["@attributeName"].Value = attr.AttributeName;
+                                    cmd.ExecuteNonQuery();
+                                }
                                 transaction.Commit();
                             }
                         }
@@ -115,6 +142,7 @@ namespace TabletopSystems.Database_Access
         /// <param name="capability"></param>
         public void Delete(TTRPGCapability capability)
         {
+            //Delete cascades in database automatically, just delete the capability
             string cmdString = "DELETE FROM Capabilities WHERE CapabilityName=@capabilityName AND SystemID=@systemID";
             try
             {
@@ -170,8 +198,14 @@ namespace TabletopSystems.Database_Access
                 " VALUES (@capabilitySystemID,@capabilityName,@tagSystemID,@tagName)";
             string removeTags = "DELETE FROM Capabilities_Tags" +
                 " WHERE Capabilities_SystemID=@oldCapabilitySystemID AND CapabilityName=@oldCapabilityName AND Tags_SystemID=@oldTagSystemID AND TagName=@oldTagName";
+            string attachAttributes = "INSERT INTO Attributes_Capabilities(Attributes_SystemID, AttributeName, Capabilities_SystemID, CapabilityName)" +
+                " VALUES (@attributeSystemID,@attributeName,@capabilitySystemID,@capabilityName";
+            string removeAttributes = "DELETE FROM Attributes_Capabilities" +
+                " WHERE Attributes_SystemID=@oldAttributeSystemID, AttributeName=@oldAttributeName, Capabilities_SystemID=@oldCapabilitySystemID, CapabilityName=@oldCapabilityName";
             List<TTRPGTag> tagsToAdd = capability.Tags.Except(oldCapability.Tags).ToList();
             List<TTRPGTag> tagsToRemove = oldCapability.Tags.Except(capability.Tags).ToList();
+            List<TTRPGAttribute> attributesToAdd = capability.Attributes.Except(oldCapability.Attributes).ToList();
+            List<TTRPGAttribute> attributesToRemove = oldCapability.Attributes.Except(capability.Attributes).ToList();
             try
             {
                 //Add using sql if conencted to sql, else add using sqlite
@@ -201,6 +235,22 @@ namespace TabletopSystems.Database_Access
                                     }
                                     cmd.Parameters.Clear();
                                 }
+                                if (attributesToRemove.Count > 0)
+                                {
+                                    cmd.Parameters.Clear();
+                                    cmd.CommandText = removeAttributes;
+                                    cmd.Parameters.AddWithValue("@oldCapabilitySystemID", capability.SystemID);
+                                    cmd.Parameters.AddWithValue("@oldCapabilityName", capability.CapabilityName);
+                                    cmd.Parameters.AddWithValue("@oldAttributeSystemID", DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@oldAttributeName", DBNull.Value);
+                                    foreach (TTRPGAttribute attr in capability.Attributes)
+                                    {
+                                        cmd.Parameters["@oldAttributeSystemID"].Value = attr.SystemID;
+                                        cmd.Parameters["@oldAttributeName"].Value = attr.AttributeName;
+                                        cmd.ExecuteNonQuery();
+                                    }
+
+                                }
                                 cmd.CommandText = updateCapability;
                                 cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
                                 cmd.Parameters.AddWithValue("@systemID", capability.SystemID);
@@ -225,6 +275,21 @@ namespace TabletopSystems.Database_Access
                                     {
                                         cmd.Parameters["@tagSystemID"].Value = tag.SystemID;
                                         cmd.Parameters["@tagName"].Value = tag.TagName;
+                                        cmd.ExecuteNonQuery();
+                                    }
+                                }
+                                if (attributesToAdd.Count > 0)
+                                {
+                                    cmd.Parameters.Clear();
+                                    cmd.CommandText = attachAttributes;
+                                    cmd.Parameters.AddWithValue("@capabilitySystemID", capability.SystemID);
+                                    cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
+                                    cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
+                                    foreach (TTRPGAttribute attr in capability.Attributes)
+                                    {
+                                        cmd.Parameters["@attributeSystemID"].Value = attr.SystemID;
+                                        cmd.Parameters["@attributeName"].Value = attr.AttributeName;
                                         cmd.ExecuteNonQuery();
                                     }
                                 }
@@ -259,7 +324,22 @@ namespace TabletopSystems.Database_Access
                                     }
                                     cmd.Parameters.Clear();
                                 }
-                                //Update capability (do after removing to avoid needless update)
+                                if (attributesToRemove.Count > 0)
+                                {
+                                    cmd.Parameters.Clear();
+                                    cmd.CommandText = removeAttributes;
+                                    cmd.Parameters.AddWithValue("@oldCapabilitySystemID", capability.SystemID);
+                                    cmd.Parameters.AddWithValue("@oldCapabilityName", capability.CapabilityName);
+                                    cmd.Parameters.AddWithValue("@oldAttributeSystemID", DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@oldAttributeName", DBNull.Value);
+                                    foreach (TTRPGAttribute attr in capability.Attributes)
+                                    {
+                                        cmd.Parameters["@oldAttributeSystemID"].Value = attr.SystemID;
+                                        cmd.Parameters["@oldAttributeName"].Value = attr.AttributeName;
+                                        cmd.ExecuteNonQuery();
+                                    }
+
+                                }
                                 cmd.CommandText = updateCapability;
                                 cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
                                 cmd.Parameters.AddWithValue("@systemID", capability.SystemID);
@@ -271,7 +351,6 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@oldCapabilityName", oldCapability.CapabilityName);
                                 cmd.Parameters.AddWithValue("@oldSystemID", oldCapability.SystemID);
                                 cmd.ExecuteNonQuery();
-                                //Add tags if necessary
                                 if (tagsToAdd.Count > 0)
                                 {
                                     cmd.Parameters.Clear();
@@ -285,6 +364,21 @@ namespace TabletopSystems.Database_Access
                                     {
                                         cmd.Parameters["@tagSystemID"].Value = tag.SystemID;
                                         cmd.Parameters["@tagName"].Value = tag.TagName;
+                                        cmd.ExecuteNonQuery();
+                                    }
+                                }
+                                if (attributesToAdd.Count > 0)
+                                {
+                                    cmd.Parameters.Clear();
+                                    cmd.CommandText = attachAttributes;
+                                    cmd.Parameters.AddWithValue("@capabilitySystemID", capability.SystemID);
+                                    cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
+                                    cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
+                                    foreach (TTRPGAttribute attr in capability.Attributes)
+                                    {
+                                        cmd.Parameters["@attributeSystemID"].Value = attr.SystemID;
+                                        cmd.Parameters["@attributeName"].Value = attr.AttributeName;
                                         cmd.ExecuteNonQuery();
                                     }
                                 }

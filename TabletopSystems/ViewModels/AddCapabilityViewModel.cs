@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TabletopSystems.Database_Access;
+using TabletopSystems.Helper_Methods;
 using TabletopSystems.Models;
 using TabletopTags.Database_Access;
 
@@ -19,9 +20,11 @@ namespace TabletopSystems.ViewModels
         private CapabilityRepository _capabilityRepository;
         private UserConnection _userConnection;
         private TTRPGCapability _capability;
+        private ObservableCollection<TTRPGTag> _tagsToAdd;
         private List<TTRPGTag> _allTags;
         private TTRPGTag _selectedTag;
         private TTRPGTag _removalTag;
+        private Dictionary<TTRPGAttribute, ObservableBool> _attributes;
         public string CapabilityName
         {
             get { return _capability.CapabilityName; }
@@ -54,15 +57,15 @@ namespace TabletopSystems.ViewModels
         }
         public ObservableCollection<TTRPGTag> CapabilityTags
         {
-            get { return _capability.Tags; }
-            set { _capability.Tags = value; OnPropertyChanged(); }
+            get { return _tagsToAdd; }
+            set { _tagsToAdd = value; OnPropertyChanged(); }
         }
         public List<TTRPGTag> AllTags
         {
             get { return _allTags; }
             set { _allTags = value; OnPropertyChanged(); }
         }
-        public TTRPGTag SelectedTag
+        public TTRPGTag? SelectedTag
         {
             get { return _selectedTag; }
             set { _selectedTag = value; OnPropertyChanged(); }
@@ -71,6 +74,11 @@ namespace TabletopSystems.ViewModels
         {
             get { return _removalTag; }
             set { _removalTag = value; OnPropertyChanged(); }
+        }
+        public Dictionary<TTRPGAttribute, ObservableBool> Attributes
+        {
+            get { return _attributes; }
+            set { _attributes = value; OnPropertyChanged(); }
         }
         public ICommand AddCapabilityCommand { get; }
         public ICommand AddToCapabilityTagsCommand { get; }
@@ -84,9 +92,28 @@ namespace TabletopSystems.ViewModels
             _capability = new TTRPGCapability();
             _capability.SystemID = _mainWinViewModel.TbltopSys.SystemID;
             TagRepository tagRepo = new TagRepository(_userConnection);
+            _tagsToAdd = new ObservableCollection<TTRPGTag>();
             _allTags = new List<TTRPGTag>(tagRepo.GetTags(_mainWinViewModel.TbltopSys.SystemID));
+            AttributesRepository tempAttrRepo = new AttributesRepository();
+            Dictionary<TTRPGAttribute, ObservableBool> tempDictionary = new Dictionary<TTRPGAttribute, ObservableBool>();
+            foreach (TTRPGAttribute attr in tempAttrRepo.GetTTRPGAttributes(_userConnection, _mainWinViewModel.TbltopSys.SystemID))
+            {
+                tempDictionary.Add(attr, new ObservableBool());
+            }
+            Attributes = tempDictionary;
             AddCapabilityCommand = new RelayCommand(o =>
             {
+                foreach(TTRPGTag tag in _tagsToAdd)
+                {
+                    _capability.Tags.Add(tag);
+                }
+                foreach(KeyValuePair<TTRPGAttribute, ObservableBool> attr in Attributes)
+                {
+                    if (attr.Value.BoolValue == true)
+                    {
+                        _capability.Attributes.Add(attr.Key);
+                    }
+                }
                 _capabilityRepository.Add(_capability);
                 CapabilityName = string.Empty;
                 CapabilityDescription = string.Empty;
@@ -95,14 +122,19 @@ namespace TabletopSystems.ViewModels
                 CapabilityUseTime = string.Empty;
                 CapabilityCost = string.Empty;
                 CapabilityTags.Clear();
+                foreach (KeyValuePair<TTRPGAttribute, ObservableBool> attr in Attributes)
+                {
+                    attr.Value.BoolValue = false;
+                }
             });
             AddToCapabilityTagsCommand = new RelayCommand(o =>
             {
-                if (_selectedTag == null || _capability.Tags.Contains(_selectedTag))
+                if (_selectedTag == null || _tagsToAdd.Contains(_selectedTag))
                 {
                     return;
                 }
-                _capability.Tags.Add(SelectedTag);
+                _tagsToAdd.Add(_selectedTag);
+                SelectedTag = null;
             });
             RemoveCapabilityTagCommand = new RelayCommand(o =>
             {
@@ -110,7 +142,7 @@ namespace TabletopSystems.ViewModels
                 {
                     return;
                 }
-                _capability.Tags.Remove(_removalTag);
+                _tagsToAdd.Remove(_removalTag);
             });
         }
     }

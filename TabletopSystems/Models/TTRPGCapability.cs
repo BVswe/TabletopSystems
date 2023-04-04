@@ -17,7 +17,8 @@ namespace TabletopSystems.Models
         public string Range { get; set; }
         public string UseTime { get; set; }
         public string Cost { get; set; }
-        public ObservableCollection<TTRPGTag> Tags { get; set; }
+        public List<TTRPGTag> Tags { get; set; }
+        public List<TTRPGAttribute> Attributes { get; set; }
 
         public TTRPGCapability() 
         {
@@ -27,7 +28,8 @@ namespace TabletopSystems.Models
             Range = string.Empty;
             UseTime = string.Empty;
             Cost = string.Empty;
-            Tags = new ObservableCollection<TTRPGTag>();
+            Tags = new List<TTRPGTag>();
+            Attributes = new List<TTRPGAttribute>();
         }
 
         public bool Equals(TTRPGCapability? other)

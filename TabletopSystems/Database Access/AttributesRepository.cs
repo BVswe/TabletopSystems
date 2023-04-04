@@ -190,7 +190,7 @@ namespace TabletopSystems.Database_Access
         public ObservableCollection<TTRPGAttribute> GetTTRPGAttributes(UserConnection userConn, int systemID)
         {
             ObservableCollection<TTRPGAttribute> attrToReturn = new ObservableCollection<TTRPGAttribute>();
-            string cmdString = "SELECT AttributeName, AttributeFormula FROM Attributes WHERE SystemID=@systemID";
+            string cmdString = "SELECT SystemID, AttributeName, AttributeFormula FROM Attributes WHERE SystemID=@systemID";
             try
             {
                 if (userConn.connectedToSqlServer)

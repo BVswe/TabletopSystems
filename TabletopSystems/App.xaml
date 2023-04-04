@@ -37,5 +37,10 @@
             <views:AddCapabilityView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type TypeName=viewModels:AddGearViewModel}">
+            <views:AddGearView/>
+        </DataTemplate>
+
+
     </Application.Resources>
 </Application>

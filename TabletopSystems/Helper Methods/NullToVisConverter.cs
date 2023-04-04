@@ -17,6 +17,9 @@ namespace TabletopSystems.Helper_Methods
             {
                 return Visibility.Visible;
             }
+            if (value is string && String.IsNullOrEmpty(value.ToString())) {
+                return Visibility.Visible;
+            }
             return Visibility.Hidden;
         }
 

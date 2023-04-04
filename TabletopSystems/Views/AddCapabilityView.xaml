@@ -49,6 +49,8 @@
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
             <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="CaretBrush" Value="#FFFFFF"/>
+            <Setter Property="Padding" Value="2 3"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBox}">
@@ -63,8 +65,8 @@
         </LinearGradientBrush>
         <SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FFACACAC"/>
         <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="#FF606060"/>
-        <SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="#FFFFFFFF"/>
-        <SolidColorBrush x:Key="ComboBox.Static.Editable.Border" Color="#FFABADB3"/>
+        <SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="#000000"/>
+        <SolidColorBrush x:Key="ComboBox.Static.Editable.Border" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Background" Color="Transparent"/>
         <SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Border" Color="Transparent"/>
         <LinearGradientBrush x:Key="ComboBox.MouseOver.Background" Opacity="0.2" EndPoint="0,1" StartPoint="0,0">
@@ -127,7 +129,7 @@
                                 <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ComboBox.Static.Editable.Button.Border}"/>
                             </MultiDataTrigger>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ComboBox.MouseOver.Glyph}"/>
+                                <Setter Property="Fill" TargetName="arrow" Value="#FFFFFF"/>
                             </Trigger>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
@@ -142,10 +144,10 @@
                                     <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
                                     <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="true"/>
                                 </MultiDataTrigger.Conditions>
-                                <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource ComboBox.MouseOver.Editable.Background}"/>
-                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource ComboBox.MouseOver.Editable.Border}"/>
-                                <Setter Property="Background" TargetName="splitBorder" Value="{StaticResource ComboBox.MouseOver.Editable.Button.Background}"/>
-                                <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource ComboBox.MouseOver.Editable.Button.Border}"/>
+                                <Setter Property="Background" TargetName="templateRoot" Value="#000000"/>
+                                <Setter Property="BorderBrush" TargetName="templateRoot" Value="#FFFFFF"/>
+                                <Setter Property="Background" TargetName="splitBorder" Value="#000000"/>
+                                <Setter Property="BorderBrush" TargetName="splitBorder" Value="#FFFFFF"/>
                             </MultiDataTrigger>
                             <Trigger Property="IsPressed" Value="true">
                                 <Setter Property="Fill" TargetName="arrow" Value="{StaticResource ComboBox.Pressed.Glyph}"/>
@@ -202,7 +204,10 @@
                 </Grid.ColumnDefinitions>
                 <Popup x:Name="PART_Popup" AllowsTransparency="true" Grid.ColumnSpan="2" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
                     <theme:SystemDropShadowChrome x:Name="shadow" Color="Transparent" MinWidth="{Binding ActualWidth, ElementName=templateRoot}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                        <Border x:Name="dropDownBorder" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1">
+                        <Border x:Name="dropDownBorder" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" BorderThickness="1">
+                            <Border.Background>
+                                <SolidColorBrush Color="#000000" Opacity="0.3"/>
+                            </Border.Background>
                             <ScrollViewer x:Name="DropDownScrollViewer">
                                 <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                     <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
@@ -318,6 +323,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -569,7 +575,63 @@
                    Foreground="#DDDDDD"
                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
                    Visibility="{Binding Text.IsEmpty,ElementName=DescriptionTextBox, Converter={StaticResource BoolToVis}}"/>
-            <Grid Grid.Column="1" Grid.Row="4">
+            <DataGrid Grid.Row="4"
+                      Grid.Column="1"
+                      Background="Transparent"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      ItemsSource="{Binding Attributes}"
+                      HorizontalGridLinesBrush="#FFFFFF"
+                      VerticalGridLinesBrush="Transparent"
+                      BorderThickness="0"
+                      RowHeaderWidth="0"
+                      RowBackground="Transparent"
+                      Margin="0 0 0 10"
+                      >
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"/>
+                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                    </Style>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                           Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
+                </DataGrid.Resources>
+                <DataGrid.BorderBrush>
+                    <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
+                </DataGrid.BorderBrush>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn IsReadOnly="True" Header="Attributes" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Key.AttributeName, Mode=OneWay}"
+                                           Foreground="#FFFFFF"
+                                           Padding="3 0"
+                                           FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Center"
+                                           />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Value.BoolValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Grid Grid.Column="1" Grid.Row="5">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -588,7 +650,10 @@
                               FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
                               ItemsSource="{Binding AllTags}"
                               DisplayMemberPath="TagName"
-                              SelectionChanged="TagComboBox_SelectionChanged"
+                              SelectedItem="{Binding SelectedTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              IsEditable="True"
+                              KeyDown="TagComboBox_KeyDown"
+                              MaxDropDownHeight="250"
                               >
                         <ComboBox.ItemContainerStyle>
                             <Style TargetType="ComboBoxItem">
@@ -605,7 +670,7 @@
                                HorizontalAlignment="Left"
                                Foreground="#DDDDDD"
                                FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                               Visibility="{Binding SelectedItem, ElementName=TagComboBox, Converter={StaticResource nullToVis}}"/>
+                               Visibility="{Binding Text, ElementName=TagComboBox, Converter={StaticResource nullToVis}}"/>
 
                     <Button Style="{StaticResource OpacityHover}"
                             Grid.Column="1"
@@ -669,7 +734,7 @@
             </Grid>
             <Button Foreground="#FFFFFF"
                     Style="{StaticResource OpacityHover}"
-                    Grid.Row="5"
+                    Grid.Row="6"
                     Grid.Column="1"
                     VerticalAlignment="Bottom"
                     HorizontalAlignment="Center"

@@ -27,73 +27,75 @@
         <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#FFFFFF" />
         <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="Transparent"/>
     </Window.Resources>
-    <Border>
-        <Border.Style>
-            <Style TargetType="{x:Type Border}">
-                <Setter Property="Margin" Value="0"/>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
-                        <Setter Property="Margin" Value="7" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
-        <Border.Background>
-            <ImageBrush ImageSource="/Images/sunset-7532726.jpg"
-                        Stretch="Fill"/>
-        </Border.Background>
-        <Border>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Opacity="1" HorizontalAlignment="Left" BorderThickness="0" Width="50" Background="Transparent" Command="{Binding BackCommand}">
-                        <Border HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image Source="/Images/BackArrow.png" Margin="0 0 0 0" Width="50" Height="18"/>
-                        </Border>
-                    </Button>
-
-                    <TextBlock Opacity="1" Grid.Column="1" HorizontalAlignment="Center" Text="Tabletop Manager" FontSize="16" FontStyle="Italic" Foreground="#FFFFFF" FontWeight="SemiBold"/>
-
-                    <StackPanel Opacity="1" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Stretch">
-
-                        <Button BorderThickness="0" Width="35" Background="Transparent" Click="Button_Minimize">
-                            <Border HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <Image Source="/Images/Minimize.png" Margin="0 6 0 0" Width="16" Height="16"/>
-                            </Border>
-                        </Button>
-
-                        <Button BorderThickness="0" Width="35" Background="Transparent" Click="Button_Maximize">
-                            <Border HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <Image Source="/Images/Maximize.png" 
-                               Width="13" 
-                               Height="13"/>
-                            </Border>
-                        </Button>
-
-                        <Button BorderThickness="0" Width="35" Background="Transparent" Click="Button_Close">
-                            <Border HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <Image Source="/Images/Close.png" 
-                               Width="16" 
-                               Height="16"/>
-                            </Border>
-                        </Button>
-
-                    </StackPanel>
-                </Grid>
-
-                <ContentControl Grid.Row="1" Content="{Binding Navi.CurrentView}"/>
-
-            </Grid>
-        </Border>
-    </Border>
+    <Grid>
+        <DataGrid Background="#333333"
+                  x:Name="AttributesDisplay"
+                  Margin="5"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  ItemsSource="{Binding Attributes}"
+                  HorizontalGridLinesBrush="Transparent"
+                  VerticalGridLinesBrush="Transparent"
+                  BorderThickness="1"
+                  RowHeaderWidth="0"
+                  RowBackground="Transparent"
+                  >
+            <DataGrid.BorderBrush>
+                <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
+            </DataGrid.BorderBrush>
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                           Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Attributes" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding AttributeName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                     
+                                     Foreground="GhostWhite"
+                                     CaretBrush="GhostWhite"
+                                     FontSize="20"
+                                     Padding="3 0"
+                                     TextWrapping="Wrap"
+                                     BorderBrush="#FFFFFF"
+                                     BorderThickness="1"
+                                     VerticalContentAlignment="Center"
+                                     SelectionBrush="#FFFFFF">
+                                <TextBox.Background>
+                                    <SolidColorBrush Color="#000000" Opacity="0.3"/>
+                                </TextBox.Background>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Formula" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding AttributeFormula,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                     Foreground="GhostWhite"
+                                     CaretBrush="GhostWhite"
+                                     FontSize="20"
+                                     Padding="3 0"
+                                     TextWrapping="Wrap"
+                                     BorderBrush="#FFFFFF"
+                                     BorderThickness="1"
+                                     VerticalContentAlignment="Center"
+                                     SelectionBrush="GhostWhite"
+                                     >
+                                <TextBox.Background>
+                                    <SolidColorBrush Color="#000000" Opacity="0.3"/>
+                                </TextBox.Background>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
 
 </Window>
