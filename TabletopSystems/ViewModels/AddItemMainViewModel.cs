@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-
+using System.Diagnostics;
+using System.Windows.Input;
+using TabletopSystems.Helper_Methods;
 
 namespace TabletopSystems.ViewModels
 {
@@ -9,33 +11,57 @@ namespace TabletopSystems.ViewModels
         public string Header { get;}
         private ObservableCollection<ObservableObject> _viewModels;
         private UserConnection _userConnection;
-        private string _selectedItemToEnter;
-        public string SelectedItemToEnter
-        {
-            get { return _selectedItemToEnter; }
-            set
-            {
-                _selectedItemToEnter = value;
-                OnPropertyChanged();
-            }
-        }
+        private INavigationService _addItemNavi;
+
         public ObservableCollection<ObservableObject> ViewModels
         {
             get { return _viewModels; }
         }
-        public AddItemMainViewModel(UserConnection conn, AddCapabilityViewModel addCapaVM, AddGearViewModel addGearVM, AddClassViewModel addClassVM, AddMonsterViewModel addMonsterVM, AddRaceViewModel addRaceVM, AddTagViewModel addTagVM)
+        public INavigationService AddItemNavi
+        {
+            get { return _addItemNavi; }
+            set
+            {
+                _addItemNavi = value;
+                OnPropertyChanged();
+            }
+        }
+        public ICommand ChangeViewModel { get; set; }
+        public AddItemMainViewModel(UserConnection conn, INavigationService navi)
         {
             Header = "Add To System";
+            _addItemNavi = navi;
             _userConnection = conn;
-            _viewModels = new ObservableCollection<ObservableObject>()
+            ChangeViewModel = new RelayCommand(o =>
             {
-                addCapaVM,
-                addGearVM,
-                addClassVM,
-                addMonsterVM,
-                addRaceVM,
-                addTagVM
-            };
+                if (o == null)
+                {
+                    return;
+                }
+                if ((o as string) != null)
+                {
+                    switch ((string)o){
+                        case "Capability":
+                            AddItemNavi.NavigateTo<AddCapabilityViewModel>();
+                            break;
+                        case "Gear":
+                            AddItemNavi.NavigateTo<AddGearViewModel>();
+                            break;
+                        case "Class":
+                            AddItemNavi.NavigateTo<AddClassViewModel>();
+                            break;
+                        case "Monster":
+                            AddItemNavi.NavigateTo<AddMonsterViewModel>();
+                            break;
+                        case "Race":
+                            AddItemNavi.NavigateTo<AddRaceViewModel>();
+                            break;
+                        case "Tag":
+                            AddItemNavi.NavigateTo<AddTagViewModel>();
+                            break;
+                    }
+                }
+            });
         }
     }
 }

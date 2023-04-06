@@ -399,7 +399,93 @@
                    Foreground="#DDDDDD"
                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
                    Visibility="{Binding Text.IsEmpty,ElementName=DescriptionTextBox, Converter={StaticResource BoolToVis}}"/>
-            <Grid Grid.Column="1" Grid.Row="4">
+
+            <DataGrid Grid.Row="4"
+                      Grid.Column="1"
+                      Background="Transparent"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      ItemsSource="{Binding Attributes}"
+                      HorizontalGridLinesBrush="Transparent"
+                      VerticalGridLinesBrush="Transparent"
+                      BorderThickness="0"
+                      RowHeaderWidth="0"
+                      RowBackground="Transparent"
+                      >
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"/>
+                        <Setter Property="Foreground" Value="#FFFFFF"/>
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                    </Style>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                           Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
+                </DataGrid.Resources>
+                <DataGrid.BorderBrush>
+                    <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
+                </DataGrid.BorderBrush>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Attributes" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Key.AttributeName, Mode=OneWay}"
+                                           Foreground="#FFFFFF"
+                                           Background="Transparent"
+                                           Padding="3 0"
+                                           FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Center"
+                                           />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Background="Transparent"
+                                         Foreground="GhostWhite"
+                                         CaretBrush="GhostWhite"
+                                         FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                                         TextWrapping="NoWrap"
+                                         VerticalContentAlignment="Center"
+                                         HorizontalContentAlignment="Center"
+                                         Height="Auto"
+                                         Width="Auto"
+                                         MinHeight="30"
+                                         MinWidth="30"
+                                         MaxWidth="150"
+                                         Padding="5"
+                                         Text="{Binding Value.IntValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          >
+                                    <TextBox.Resources>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="CornerRadius" Value="5"/>
+                                        </Style>
+                                    </TextBox.Resources>
+                                    <Validation.ErrorTemplate>
+                                        <ControlTemplate>
+                                            <AdornedElementPlaceholder>
+                                                <Border Height="{Binding ElementName=ValidationBorder, Path=ActualHeight}"
+                                                        Width="{Binding ElementName=ValidationBorder, Path=ActualWidth}"
+                                                        BorderBrush="Red"
+                                                        BorderThickness="1"
+                                                        CornerRadius="5"/>
+                                            </AdornedElementPlaceholder>
+                                        </ControlTemplate>
+                                    </Validation.ErrorTemplate>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Grid Grid.Column="1" Grid.Row="5">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -447,7 +533,8 @@
                             Foreground="#DDDDDD"
                             BorderBrush="#FFFFFF"
                             BorderThickness="1"
-                            Command="{Binding AddToCapabilityTagsCommand}">
+                            Command="{Binding AddToTagListCommand}"
+                            CommandParameter="{Binding ElementName=TagComboBox, Path=SelectedItem}">
                         <Button.Background>
                             <SolidColorBrush Color="#000000" Opacity="0.65"/>
                         </Button.Background>
@@ -458,7 +545,7 @@
 
                     <ListView Name="TagList"
                               Grid.Row="1"
-                              ItemsSource="{Binding CapabilityTags, Mode=OneWay}"
+                              ItemsSource="{Binding TagsToAdd, Mode=OneWay}"
                               DisplayMemberPath="TagName"
                               Background="Transparent"
                               VirtualizingStackPanel.IsVirtualizing="True"
@@ -467,7 +554,6 @@
                               Padding="1 0 0 0"
                               FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
                               Foreground="#FFFFFF"
-                              SelectionChanged="TagList_SelectionChanged"
                               >
                         <ListBox.BorderBrush>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
@@ -489,7 +575,8 @@
                             Foreground="#DDDDDD"
                             BorderBrush="#FFFFFF"
                             BorderThickness="1"
-                            Command="{Binding RemoveCapabilityTagCommand}">
+                            Command="{Binding RemoveFromTagListCommand}"
+                            CommandParameter="{Binding ElementName=TagList, Path=SelectedItem}">
                         <Button.Background>
                             <SolidColorBrush Color="#000000" Opacity="0.65"/>
                         </Button.Background>
@@ -499,62 +586,7 @@
                     </Button>
                 </Grid>
             </Grid>
-            <DataGrid Grid.Row="5"
-                      Grid.Column="1"
-                      Background="Transparent"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      ItemsSource="{Binding Attributes}"
-                      HorizontalGridLinesBrush="#FFFFFF"
-                      VerticalGridLinesBrush="Transparent"
-                      BorderThickness="0"
-                      RowHeaderWidth="0"
-                      RowBackground="Transparent"
-                      >
-                <DataGrid.Resources>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"/>
-                        <Setter Property="Foreground" Value="#FFFFFF"/>
-                        <Setter Property="HorizontalAlignment" Value="Left"/>
-                    </Style>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
-                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
-                           Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
-                </DataGrid.Resources>
-                <DataGrid.BorderBrush>
-                    <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
-                </DataGrid.BorderBrush>
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Attributes" Width="*">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Key.AttributeName, Mode=OneWay}"
-                                           Foreground="#FFFFFF"
-                                           Background="Transparent"
-                                           Padding="3 0"
-                                           FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                                           HorizontalAlignment="Left"
-                                           VerticalAlignment="Center"
-                                           />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding Value.BoolValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+            
             <Button Foreground="#FFFFFF"
                     Style="{StaticResource OpacityHover}"
                     Grid.Row="6"
@@ -567,7 +599,7 @@
                     BorderBrush="#FFFFFF"
                     BorderThickness="1"
                     FontSize="22"
-                    Command="{Binding AddCapabilityCommand}">
+                    Command="{Binding AddGearCommand}">
                 <Button.Background>
                     <SolidColorBrush Color="#000000" Opacity="0.8"/>
                 </Button.Background>

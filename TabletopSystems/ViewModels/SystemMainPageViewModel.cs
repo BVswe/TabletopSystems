@@ -20,6 +20,15 @@ namespace TabletopSystems.ViewModels
         private readonly MainWindowViewModel _mainWinViewModel;
         public MainWindowViewModel MainWinViewModel { get { return _mainWinViewModel; } }
 
+        public string Online
+        {
+            get
+            {
+                if (_connection.connectedToSqlServer) return "Online";
+                return "Offline";
+            }
+        }
+
         public ObservableCollection<string> MessageLog
         {
             get { return _messageLog; }

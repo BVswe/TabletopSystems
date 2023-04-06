@@ -216,7 +216,7 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (var transaction = conn.BeginTransaction())
                         {
-                            using (SqlCommand cmd = new SqlCommand(updateCapability, conn))
+                            using (SqlCommand cmd = conn.CreateCommand())
                             {
                                 cmd.Transaction = transaction;
                                 //Remove tags if necessary
@@ -237,7 +237,6 @@ namespace TabletopSystems.Database_Access
                                 }
                                 if (attributesToRemove.Count > 0)
                                 {
-                                    cmd.Parameters.Clear();
                                     cmd.CommandText = removeAttributes;
                                     cmd.Parameters.AddWithValue("@oldCapabilitySystemID", capability.SystemID);
                                     cmd.Parameters.AddWithValue("@oldCapabilityName", capability.CapabilityName);
@@ -249,7 +248,7 @@ namespace TabletopSystems.Database_Access
                                         cmd.Parameters["@oldAttributeName"].Value = attr.AttributeName;
                                         cmd.ExecuteNonQuery();
                                     }
-
+                                    cmd.Parameters.Clear();
                                 }
                                 cmd.CommandText = updateCapability;
                                 cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
@@ -400,7 +399,7 @@ namespace TabletopSystems.Database_Access
 
         public ObservableCollection<TTRPGCapability> GetTTRPGCapabilities(int systemID)
         {
-            string cmdString = "SELECT CapabilityName, CapabilityDescription, CapabilityArea, CapabilityRange, CapabilityUseTime, CapabilityCost" +
+            string cmdString = "SELECT SystemID, CapabilityName, CapabilityDescription, CapabilityArea, CapabilityRange, CapabilityUseTime, CapabilityCost" +
                 " FROM Capabilities WHERE SystemID=@systemID";
             ObservableCollection<TTRPGCapability> capabilities = new ObservableCollection<TTRPGCapability>();
             try

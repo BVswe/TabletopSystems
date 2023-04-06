@@ -35,6 +35,10 @@ namespace TabletopSystems.Database_Access
                             conn.Open();
                             foreach (TTRPGAction currentAction in actions)
                             {
+                                if (String.IsNullOrEmpty(currentAction.SystemID.ToString()) || String.IsNullOrEmpty(currentAction.ActionName))
+                                {
+                                    break;
+                                }
                                 cmd.Parameters["@systemID"].Value = currentAction.SystemID;
                                 cmd.Parameters["@actionName"].Value = currentAction.ActionName;
                                 cmd.Parameters["@actionFormula"].Value = currentAction.ActionFormula;
@@ -56,6 +60,10 @@ namespace TabletopSystems.Database_Access
                             conn.Open();
                             foreach (TTRPGAction currentAction in actions)
                             {
+                                if (String.IsNullOrEmpty(currentAction.SystemID.ToString()) || String.IsNullOrEmpty(currentAction.ActionName))
+                                {
+                                    break;
+                                }
                                 cmd.Parameters["@systemID"].Value = currentAction.SystemID;
                                 cmd.Parameters["@actionName"].Value = currentAction.ActionName;
                                 cmd.Parameters["@actionFormula"].Value = currentAction.ActionFormula;

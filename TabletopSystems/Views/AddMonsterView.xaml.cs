@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TabletopSystems.ViewModels;
 
 namespace TabletopSystems.Views
 {
@@ -23,6 +24,39 @@ namespace TabletopSystems.Views
         public AddMonsterView()
         {
             InitializeComponent();
+        }
+        private void TagComboBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var viewModel = (AddMonsterViewModel)this.DataContext;
+                viewModel.AddToTagListCommand.Execute(null);
+                e.Handled = true;
+                return;
+            }
+            (sender as ComboBox).IsDropDownOpen = true;
+        }
+        private void GearComboBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var viewModel = (AddMonsterViewModel)this.DataContext;
+                viewModel.AddToGearListCommand.Execute(null);
+                e.Handled = true;
+                return;
+            }
+            (sender as ComboBox).IsDropDownOpen = true;
+        }
+        private void CapabilityComboBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                var viewModel = (AddMonsterViewModel)this.DataContext;
+                viewModel.AddToCapabilityListCommand.Execute(null);
+                e.Handled = true;
+                return;
+            }
+            (sender as ComboBox).IsDropDownOpen = true;
         }
     }
 }

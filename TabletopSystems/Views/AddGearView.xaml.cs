@@ -26,30 +26,15 @@ namespace TabletopSystems.Views
         {
             InitializeComponent();
         }
-        private void TagComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var item = (sender as ComboBox).SelectedItem;
-            if (item == null)
-            {
-                return;
-            }
-            var viewModel = (AddGearViewModel)this.DataContext;
-            viewModel.SelectedTag = (TTRPGTag)item;
-        }
-
-        private void TagList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var item = (sender as ListView).SelectedItem;
-            if (item == null)
-            {
-                return;
-            }
-            var viewModel = (AddGearViewModel)this.DataContext;
-            viewModel.RemovalTag = (TTRPGTag)item;
-        }
-
         private void TagComboBox_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key == Key.Enter)
+            {
+                var viewModel = (AddCapabilityViewModel)this.DataContext;
+                viewModel.AddToCapabilityTagsCommand.Execute(null);
+                e.Handled = true;
+                return;
+            }
             (sender as ComboBox).IsDropDownOpen = true;
         }
     }

@@ -19,7 +19,6 @@ namespace TabletopSystems.ViewModels
         private ObservableCollection<TTRPGAction> _actions;
         private TabletopSystem _systemToAdd;
         private MainWindowViewModel _mainWindowViewModel;
-        private INavigationService _navi;
         public TabletopSystem SystemToAdd
         {
             get { return _systemToAdd; }
@@ -53,14 +52,12 @@ namespace TabletopSystems.ViewModels
         #endregion
 
         #region Constructor
-        public AddSystemViewModel(UserConnection conn, INavigationService navi,MainWindowViewModel mainWindowViewModel)
+        public AddSystemViewModel(UserConnection conn, MainWindowViewModel mainWindowViewModel)
         {
-            _navi = navi;
             _systemToAdd = new TabletopSystem();
             _userConnection = conn;
             _attributes = new ObservableCollection<TTRPGAttribute>();
             TTRPGAttribute temp = new TTRPGAttribute();
-            temp.AttributeName = "HELLO THERE";
             _attributes.Add(temp);
             _actions = new ObservableCollection<TTRPGAction>();
             _mainWindowViewModel = mainWindowViewModel;
@@ -99,7 +96,7 @@ namespace TabletopSystems.ViewModels
                 MessageBox.Show("Error in creating system in database. Exception " + ex);
             }
             _mainWindowViewModel.TbltopSys = _systemToAdd;
-            _navi.NavigateTo<SystemMainPageViewModel>();
+            _mainWindowViewModel.Navi.NavigateTo<SystemMainPageViewModel>();
         }
         /// <summary>
         /// Insert a system into the database

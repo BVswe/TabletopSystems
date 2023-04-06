@@ -52,48 +52,9 @@
                            Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
             </DataGrid.Resources>
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Attributes" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding AttributeName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                     
-                                     Foreground="GhostWhite"
-                                     CaretBrush="GhostWhite"
-                                     FontSize="20"
-                                     Padding="3 0"
-                                     TextWrapping="Wrap"
-                                     BorderBrush="#FFFFFF"
-                                     BorderThickness="1"
-                                     VerticalContentAlignment="Center"
-                                     SelectionBrush="#FFFFFF">
-                                <TextBox.Background>
-                                    <SolidColorBrush Color="#000000" Opacity="0.3"/>
-                                </TextBox.Background>
-                            </TextBox>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Formula" Width="2*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding AttributeFormula,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                                     Foreground="GhostWhite"
-                                     CaretBrush="GhostWhite"
-                                     FontSize="20"
-                                     Padding="3 0"
-                                     TextWrapping="Wrap"
-                                     BorderBrush="#FFFFFF"
-                                     BorderThickness="1"
-                                     VerticalContentAlignment="Center"
-                                     SelectionBrush="GhostWhite"
-                                     >
-                                <TextBox.Background>
-                                    <SolidColorBrush Color="#000000" Opacity="0.3"/>
-                                </TextBox.Background>
-                            </TextBox>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                <DataGridComboBoxColumn>
+                    
+                </DataGridComboBoxColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

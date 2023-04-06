@@ -650,7 +650,6 @@
                               FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
                               ItemsSource="{Binding AllTags}"
                               DisplayMemberPath="TagName"
-                              SelectedItem="{Binding SelectedTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               IsEditable="True"
                               KeyDown="TagComboBox_KeyDown"
                               MaxDropDownHeight="250"
@@ -680,7 +679,8 @@
                             Foreground="#DDDDDD"
                             BorderBrush="#FFFFFF"
                             BorderThickness="1"
-                            Command="{Binding AddToCapabilityTagsCommand}">
+                            Command="{Binding AddToCapabilityTagsCommand}"
+                            CommandParameter="{Binding ElementName=TagComboBox, Path=SelectedItem}">
                         <Button.Background>
                             <SolidColorBrush Color="#000000" Opacity="0.65"/>
                         </Button.Background>
@@ -691,7 +691,7 @@
 
                     <ListView Name="TagList"
                               Grid.Row="1"
-                              ItemsSource="{Binding CapabilityTags, Mode=OneWay}"
+                              ItemsSource="{Binding TagsToAdd, Mode=OneWay}"
                               DisplayMemberPath="TagName"
                               Background="Transparent"
                               VirtualizingStackPanel.IsVirtualizing="True"
@@ -700,7 +700,6 @@
                               Padding="1 0 0 0"
                               FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
                               Foreground="#FFFFFF"
-                              SelectionChanged="TagList_SelectionChanged"
                               >
                         <ListBox.BorderBrush>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
@@ -722,7 +721,8 @@
                             Foreground="#DDDDDD"
                             BorderBrush="#FFFFFF"
                             BorderThickness="1"
-                            Command="{Binding RemoveCapabilityTagCommand}">
+                            Command="{Binding RemoveCapabilityTagCommand}"
+                            CommandParameter="{Binding ElementName=TagList, Path=SelectedItem}">
                         <Button.Background>
                             <SolidColorBrush Color="#000000" Opacity="0.65"/>
                         </Button.Background>

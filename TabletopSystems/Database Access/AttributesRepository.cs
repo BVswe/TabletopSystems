@@ -23,7 +23,7 @@ namespace TabletopSystems.Database_Access
         /// <param name="userConn"></param>
         public void Add(ObservableCollection<TTRPGAttribute> attributes, UserConnection userConn)
         {
-            string cmdString = "INSERT INTO Attributes(SystemID,AttributeName,AttributeFormula) VALUES(@systemID, @attributeName,@attributeFormula)";
+            string cmdString = "INSERT INTO Attributes(SystemID,AttributeName,AttributeFormula) VALUES(@systemID, @attributeName, @attributeFormula)";
             try
             {
                 if (userConn.connectedToSqlServer)

@@ -159,7 +159,7 @@ public class TabletopSystemRepository : ITabletopSystemRepository
     public int GetIDBySystemName(string s)
     {
         int i;
-        string cmdString = "SELECT SystemID FROM Systems WHERE SystemName=@systemName AND SystemID=@systemID";
+        string cmdString = "SELECT SystemID FROM Systems WHERE SystemName=@systemName";
         try
         {
             if (_userConnection.connectedToSqlServer)

@@ -301,16 +301,20 @@
                   x:Name="AddTypeCombobox"
                   MaxWidth="700"
                   MaxHeight="30"
-                  SelectedIndex="0"
                   Foreground="#FFFFFF"
                   FontSize="18"
                   VerticalContentAlignment="Center"
-                  ItemsSource="{Binding ViewModels, Mode=OneWay}"
-                  DisplayMemberPath="Header"
                   Margin="10 0"
+                  SelectionChanged="AddTypeCombobox_SelectionChanged"
                   >
+            <ComboBoxItem>Capability</ComboBoxItem>
+            <ComboBoxItem>Gear</ComboBoxItem>
+            <ComboBoxItem>Class</ComboBoxItem>
+            <ComboBoxItem>Monster</ComboBoxItem>
+            <ComboBoxItem>Race</ComboBoxItem>
+            <ComboBoxItem>Tag</ComboBoxItem>
         </ComboBox>
 
-        <ContentControl Margin="0 15 0 0" Opacity="1" Grid.Row="1" Content="{Binding ElementName=AddTypeCombobox, Path=SelectedItem}"/>
+        <ContentControl Margin="0 15 0 0" Opacity="1" Grid.Row="1" Content="{Binding AddItemNavi.CurrentView}"/>
     </Grid>
 </UserControl>

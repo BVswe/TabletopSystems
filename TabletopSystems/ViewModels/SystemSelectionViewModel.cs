@@ -16,20 +16,10 @@ namespace TabletopSystems.ViewModels;
 public class SystemSelectionViewModel : ObservableObject
 {
     private readonly UserConnection _userConnection;
-    private INavigationService _navi;
     private TabletopSystem _selectedSystem;
     private ObservableCollection<TabletopSystem> _systems;
     private TabletopSystemRepository _tabletopSystemRepository;
     private MainWindowViewModel _mainWindowViewModel;
-    public INavigationService Navi
-    {
-        get { return _navi; }
-        set
-        {
-            _navi = value;
-            OnPropertyChanged();
-        }
-    }
     public TabletopSystem SelectedSystem
     {
         get { return _selectedSystem; }
@@ -58,9 +48,8 @@ public class SystemSelectionViewModel : ObservableObject
     public ICommand DeleteSystemCommand { get; }
     public ICommand ReloadCommand { get; }
 
-    public SystemSelectionViewModel(UserConnection conn, INavigationService navi, MainWindowViewModel mainWinViewModel)
+    public SystemSelectionViewModel(UserConnection conn, MainWindowViewModel mainWinViewModel)
     {
-        _navi = navi;
         _selectedSystem = new TabletopSystem();
         _userConnection = conn;
         _tabletopSystemRepository = new TabletopSystemRepository(_userConnection);
@@ -81,13 +70,13 @@ public class SystemSelectionViewModel : ObservableObject
 
     public void ExecuteAddSystemCommand()
     {
-        Navi.NavigateTo<AddSystemViewModel>();
+        _mainWindowViewModel.Navi.NavigateTo<AddSystemViewModel>();
     }
 
     public void ExecuteSystemSelectedCommand()
     {
         _mainWindowViewModel.TbltopSys = SelectedSystem;
-        Navi.NavigateTo<SystemMainPageViewModel>();
+        _mainWindowViewModel.Navi.NavigateTo<SystemMainPageViewModel>();
     }
 
     public void ExecuteDeleteSystemCommand()

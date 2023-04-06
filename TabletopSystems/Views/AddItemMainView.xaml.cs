@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TabletopSystems.ViewModels;
 
 namespace TabletopSystems.Views
 {
@@ -23,6 +24,15 @@ namespace TabletopSystems.Views
         public AddItemMainView()
         {
             InitializeComponent();
+        }
+
+        private void AddTypeCombobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.DataContext as AddItemMainViewModel != null)
+            {
+                var viewModel = (AddItemMainViewModel)this.DataContext;
+                viewModel.ChangeViewModel.Execute((sender as ComboBox).SelectedItem.ToString().Split(" ")[1]);
+            }
         }
     }
 }
