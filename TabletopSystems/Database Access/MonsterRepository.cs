@@ -24,8 +24,8 @@ namespace TabletopSystems.Database_Access
         /// <param name="monster"></param>
         public void Add(TTRPGMonster monster)
         {
-            string addToMonsters = "INSERT INTO Monsters(SystemID,MonsterName,StandardDamage)" +
-                " VALUES(@systemID,@monsterName,@damage)";
+            string addToMonsters = "INSERT INTO Monsters(SystemID,MonsterName,StandardDamage,HP)" +
+                " VALUES(@systemID,@monsterName,@damage,@hp)";
             string attachTags = "INSERT INTO Monsters_Tags(Monsters_SystemID,MonsterName,Tags_SystemID,TagName)" +
                 " VALUES(@systemID,@monsterName,@tagSystemID,@tagName)";
             string attachAttributes = "INSERT INTO Attributes_Monsters(Monsters_SystemID,MonsterName,Attributes_SystemID,AttributeName,AttributeValue)" +
@@ -50,6 +50,7 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@monsterName", monster.MonsterName);
                                 cmd.Parameters.AddWithValue("@systemID", monster.SystemID);
                                 cmd.Parameters.AddWithValue("@damage", monster.StandardDamage);
+                                cmd.Parameters.AddWithValue("@hp", monster.HP);
                                 cmd.ExecuteNonQuery();
                                 cmd.Parameters.Clear();
                                 cmd.CommandText = attachTags;
@@ -119,6 +120,7 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@monsterName", monster.MonsterName);
                                 cmd.Parameters.AddWithValue("@systemID", monster.SystemID);
                                 cmd.Parameters.AddWithValue("@damage", monster.StandardDamage);
+                                cmd.Parameters.AddWithValue("@hp", monster.HP);
                                 cmd.ExecuteNonQuery();
                                 cmd.Parameters.Clear();
                                 cmd.CommandText = attachTags;
@@ -195,7 +197,7 @@ namespace TabletopSystems.Database_Access
         {
             #region Command Strings
             string editMonster = "UPDATE Monsters" +
-                " SET SystemID=@systemID MonsterName=@monsterName StandardDamage=@damage)" +
+                " SET SystemID=@systemID MonsterName=@monsterName StandardDamage=@damage,HP=@hp)" +
                 " WHERE SystemID=@oldSystemID AND MonsterName=@oldMonsterName";
             string attachTags = "INSERT INTO Monsters_Tags(Monsters_SystemID,MonsterName,Tags_SystemID,TagName)" +
                 " VALUES(@systemID,@monsterName,@tagSystemID,@tagName)";
@@ -325,6 +327,9 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@monsterName", monster.MonsterName);
                                 cmd.Parameters.AddWithValue("@systemID", monster.SystemID);
                                 cmd.Parameters.AddWithValue("@damage", monster.StandardDamage);
+                                cmd.Parameters.AddWithValue("@hp", monster.HP);
+                                cmd.Parameters.AddWithValue("@oldMonsterName", monster.MonsterName);
+                                cmd.Parameters.AddWithValue("@oldSystemID", monster.SystemID);
                                 cmd.ExecuteNonQuery();
                                 cmd.Parameters.Clear();
                                 if (tagsToAdd.Count > 0)
@@ -484,6 +489,9 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@monsterName", monster.MonsterName);
                                 cmd.Parameters.AddWithValue("@systemID", monster.SystemID);
                                 cmd.Parameters.AddWithValue("@damage", monster.StandardDamage);
+                                cmd.Parameters.AddWithValue("@hp", monster.HP);
+                                cmd.Parameters.AddWithValue("@oldMonsterName", monster.MonsterName);
+                                cmd.Parameters.AddWithValue("@oldSystemID", monster.SystemID);
                                 cmd.ExecuteNonQuery();
                                 cmd.Parameters.Clear();
                                 if (tagsToAdd.Count > 0)
@@ -629,7 +637,7 @@ namespace TabletopSystems.Database_Access
         public ObservableCollection<TTRPGMonster> GetMonsters(int systemID)
         {
             ObservableCollection<TTRPGMonster> monsters = new ObservableCollection<TTRPGMonster>();
-            string cmdString = "SELECT SystemID,MonsterName,StandardDamage" +
+            string cmdString = "SELECT SystemID,MonsterName,StandardDamage,HP" +
                 " FROM Monsters WHERE SystemID=@systemID";
             try
             {
@@ -649,6 +657,14 @@ namespace TabletopSystems.Database_Access
                                 temp.MonsterName = reader["MonsterName"].ToString()!;
                                 int tempInt;
                                 if (Int32.TryParse(reader["StandardDamage"].ToString(), out tempInt))
+                                {
+                                    temp.StandardDamage = tempInt;
+                                }
+                                else
+                                {
+                                    temp.StandardDamage = 0;
+                                }
+                                if (Int32.TryParse(reader["HP"].ToString(), out tempInt))
                                 {
                                     temp.StandardDamage = tempInt;
                                 }
@@ -677,6 +693,14 @@ namespace TabletopSystems.Database_Access
                                 temp.MonsterName = reader["MonsterName"].ToString()!;
                                 int tempInt;
                                 if (Int32.TryParse(reader["StandardDamage"].ToString(), out tempInt))
+                                {
+                                    temp.StandardDamage = tempInt;
+                                }
+                                else
+                                {
+                                    temp.StandardDamage = 0;
+                                }
+                                if (Int32.TryParse(reader["HP"].ToString(), out tempInt))
                                 {
                                     temp.StandardDamage = tempInt;
                                 }

@@ -30,7 +30,7 @@ namespace TabletopSystems.Views
             if (e.Key == Key.Enter)
             {
                 var viewModel = (AddMonsterViewModel)this.DataContext;
-                viewModel.AddToTagListCommand.Execute(null);
+                viewModel.AddToTagListCommand.Execute((sender as ComboBox).SelectedItem);
                 e.Handled = true;
                 return;
             }
@@ -41,7 +41,7 @@ namespace TabletopSystems.Views
             if (e.Key == Key.Enter)
             {
                 var viewModel = (AddMonsterViewModel)this.DataContext;
-                viewModel.AddToGearListCommand.Execute(null);
+                viewModel.AddToGearListCommand.Execute((sender as ComboBox).SelectedItem);
                 e.Handled = true;
                 return;
             }
@@ -52,7 +52,7 @@ namespace TabletopSystems.Views
             if (e.Key == Key.Enter)
             {
                 var viewModel = (AddMonsterViewModel)this.DataContext;
-                viewModel.AddToCapabilityListCommand.Execute(null);
+                viewModel.AddToCapabilityListCommand.Execute((sender as ComboBox).SelectedItem);
                 e.Handled = true;
                 return;
             }

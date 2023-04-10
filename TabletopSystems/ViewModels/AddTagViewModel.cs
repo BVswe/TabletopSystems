@@ -11,8 +11,6 @@ namespace TabletopSystems.ViewModels
 {
     public class AddTagViewModel : ObservableObject
     {
-        //Header is for dropdown to read viewmodel's name
-        public string Header { get; }
         private readonly MainWindowViewModel _mainWinViewModel;
         private UserConnection _userConnection;
         private TagRepository _tagRepository;
@@ -26,7 +24,6 @@ namespace TabletopSystems.ViewModels
 
         public AddTagViewModel(UserConnection conn, MainWindowViewModel mainWinViewModel)
         {
-            Header = "Tag";
             _mainWinViewModel = mainWinViewModel;
             _userConnection = conn;
             _tagRepository = new TagRepository(conn);

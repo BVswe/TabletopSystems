@@ -365,7 +365,7 @@
                    HorizontalAlignment="Left"
                    Foreground="#DDDDDD"
                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                   Visibility="{Binding Text.IsEmpty,ElementName=CapabilityNameTextBox, Converter={StaticResource BoolToVis}}"/>
+                   Visibility="{Binding Text,ElementName=CapabilityNameTextBox, Converter={StaticResource nullToVis}}"/>
 
             <Grid Grid.Column="1" Grid.Row="1">
                 <Grid.ColumnDefinitions>
@@ -412,7 +412,7 @@
                            HorizontalAlignment="Left"
                            Foreground="#DDDDDD"
                            FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                           Visibility="{Binding Text.IsEmpty,ElementName=AreaTextBox, Converter={StaticResource BoolToVis}}"/>
+                           Visibility="{Binding Text,ElementName=AreaTextBox, Converter={StaticResource nullToVis}}"/>
 
                 <TextBox Background="Transparent"
                          Grid.Column="2"
@@ -453,7 +453,7 @@
                            HorizontalAlignment="Left"
                            Foreground="#DDDDDD"
                            FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                           Visibility="{Binding Text.IsEmpty,ElementName=RangeTextBox, Converter={StaticResource BoolToVis}}"/>
+                           Visibility="{Binding Text,ElementName=RangeTextBox, Converter={StaticResource nullToVis}}"/>
             </Grid>
             <Grid Grid.Column="1" Grid.Row="2">
                 <Grid.ColumnDefinitions>
@@ -499,7 +499,7 @@
                            HorizontalAlignment="Left"
                            Foreground="#DDDDDD"
                            FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                           Visibility="{Binding Text.IsEmpty,ElementName=CostTextBox, Converter={StaticResource BoolToVis}}"/>
+                           Visibility="{Binding Text,ElementName=CostTextBox, Converter={StaticResource nullToVis}}"/>
 
                 <TextBox Background="Transparent"
                          Grid.Column="1"
@@ -540,7 +540,7 @@
                            HorizontalAlignment="Left"
                            Foreground="#DDDDDD"
                            FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                           Visibility="{Binding Text.IsEmpty,ElementName=UseTimeTextBox, Converter={StaticResource BoolToVis}}"/>
+                           Visibility="{Binding Text,ElementName=UseTimeTextBox, Converter={StaticResource nullToVis}}"/>
             </Grid>
             <TextBox Background="Transparent"
                  Grid.Column="1"
@@ -574,7 +574,7 @@
                    HorizontalAlignment="Left"
                    Foreground="#DDDDDD"
                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                   Visibility="{Binding Text.IsEmpty,ElementName=DescriptionTextBox, Converter={StaticResource BoolToVis}}"/>
+                   Visibility="{Binding Text,ElementName=DescriptionTextBox, Converter={StaticResource nullToVis}}"/>
             <DataGrid Grid.Row="4"
                       Grid.Column="1"
                       Background="Transparent"

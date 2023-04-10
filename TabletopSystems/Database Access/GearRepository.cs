@@ -28,8 +28,8 @@ namespace TabletopSystems.Database_Access
                 " VALUES(@systemID,@gearName,@description)";
             string attachTags = "INSERT INTO Gear_Tags(Gear_SystemID,GearName,Tags_SystemID,TagName)" +
                 " VALUES(@systemID,@gearName,@tagSystemID,@tagName)";
-            string attachAttributes = "INSERT INTO Attributes_Gear(Gear_SystemID,GearName,Attributes_SystemID,AttributeName,AttributeValue)" +
-                " VALUES(@systemID,@gearName,@attributeSystemID,@attributeName,@attributeValue)";
+            string attachAttributes = "INSERT INTO Attributes_Gear(Gear_SystemID,GearName,Attributes_SystemID,AttributeName,AttributeValue,AttributeUsed)" +
+                " VALUES(@systemID,@gearName,@attributeSystemID,@attributeName,@attributeValue,@attributeUsed)";
             try
             {
                 //Add using sql if conencted to sql, else add using sqlite
@@ -66,11 +66,13 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeValue", DBNull.Value);
-                                foreach (KeyValuePair<TTRPGAttribute, int> kvp in gear.Attributes)
+                                cmd.Parameters.AddWithValue("@attributeUsed", DBNull.Value);
+                                foreach (AttributeValueAndBool attr in gear.Attributes)
                                 {
-                                    cmd.Parameters["@attributeSystemID"].Value = kvp.Key.SystemID;
-                                    cmd.Parameters["@attributeName"].Value = kvp.Key.AttributeName;
-                                    cmd.Parameters["@attributeValue"].Value =  kvp.Value;
+                                    cmd.Parameters["@attributeSystemID"].Value = attr.Attribute.SystemID;
+                                    cmd.Parameters["@attributeName"].Value = attr.Attribute.AttributeName;
+                                    cmd.Parameters["@attributeValue"].Value = attr.Value;
+                                    cmd.Parameters["@attributeUsed"].Value = attr.BoolValue;
                                     cmd.ExecuteNonQuery();
                                 }
                                 transaction.Commit();
@@ -111,11 +113,13 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeValue", DBNull.Value);
-                                foreach (KeyValuePair<TTRPGAttribute, int> kvp in gear.Attributes)
+                                cmd.Parameters.AddWithValue("@attributeUsed", DBNull.Value);
+                                foreach (AttributeValueAndBool attr in gear.Attributes)
                                 {
-                                    cmd.Parameters["@attributeSystemID"].Value = kvp.Key.SystemID;
-                                    cmd.Parameters["@attributeName"].Value = kvp.Key.AttributeName;
-                                    cmd.Parameters["@attributeValue"].Value = kvp.Value;
+                                    cmd.Parameters["@attributeSystemID"].Value = attr.Attribute.SystemID;
+                                    cmd.Parameters["@attributeName"].Value = attr.Attribute.AttributeName;
+                                    cmd.Parameters["@attributeValue"].Value = attr.Value;
+                                    cmd.Parameters["@attributeUsed"].Value = attr.BoolValue;
                                     cmd.ExecuteNonQuery();
                                 }
                                 transaction.Commit();
@@ -144,38 +148,38 @@ namespace TabletopSystems.Database_Access
                 " VALUES(@systemID,@gearName,@tagSystemID,@tagName)";
             string removeTags = "DELETE FROM Gear_Tags" +
                 " WHERE Gear_SystemID=@oldSystemID AND GearName=@oldGearName AND Tags_SystemID=@oldTagSystemID AND TagName=@oldTagName";
-            string attachAttributes = "INSERT INTO Attributes_Gear(Gear_SystemID,GearName,Attributes_SystemID,AttributeName,AttributeValue)" +
-                " VALUES(@systemID,@gearName,@attributeSystemID,@attributeName,@attributeValue)";
+            string attachAttributes = "INSERT INTO Attributes_Gear(Gear_SystemID,GearName,Attributes_SystemID,AttributeName,AttributeValue,AttributeUsed)" +
+                " VALUES(@systemID,@gearName,@attributeSystemID,@attributeName,@attributeValue,@attributeUsed)";
             string removeAttributes = "DELETE FROM Attributes_Gear" +
                 " WHERE Gear_SystemID=@oldSystemID AND GearName=@oldGearName AND Attributes_SystemID=@oldAttributeSystemID AND AttributeName=@oldAttributeName";
             string editAttributeValues = "UPDATE Attributes_Gear" +
-                " SET AttributeValue=@attributeValue" +
+                " SET AttributeValue=@attributeValue, AttributeUsed=@attributeUsed" +
                 " WHERE Gear_SystemID=@systemID AND GearName=@gearName AND Attributes_SystemID=@attributeSystemID AND AttributeName=@attributeName";
             #endregion
             #region Lists/Dictionaries of differences
             List<TTRPGTag> tagsToAdd = gear.Tags.Except(oldGear.Tags).ToList();
             List<TTRPGTag> tagsToRemove = oldGear.Tags.Except(gear.Tags).ToList();
-            Dictionary<TTRPGAttribute, int> attributesToAdd = new Dictionary<TTRPGAttribute, int>();
-            Dictionary<TTRPGAttribute, int> attributesToRemove = new Dictionary<TTRPGAttribute, int>();
-            Dictionary<TTRPGAttribute, int> attributesToEdit = new Dictionary<TTRPGAttribute, int>();
+            List<AttributeValueAndBool> attributesToAdd = new List<AttributeValueAndBool>();
+            List<AttributeValueAndBool> attributesToRemove = new List<AttributeValueAndBool>();
+            List<AttributeValueAndBool> attributesToEdit = new List<AttributeValueAndBool>();
             #endregion
             #region Populating dictionaries with differences (add/edit/remove)
-            foreach (KeyValuePair<TTRPGAttribute, int> kvp in gear.Attributes)
+            foreach (AttributeValueAndBool attr in gear.Attributes)
             {
-                if (!oldGear.Attributes.ContainsKey(kvp.Key))
+                if (!oldGear.Attributes.Contains(attr))
                 {
-                    attributesToAdd.Add(kvp.Key, kvp.Value);
+                    attributesToAdd.Add(attr);
                 }
-                else if (oldGear.Attributes.ContainsKey(kvp.Key) && oldGear.Attributes[kvp.Key] != gear.Attributes[kvp.Key])
+                else if (oldGear.Attributes.Contains(attr) && (oldGear.Attributes.Find(x => x == attr).Value != attr.Value || oldGear.Attributes.Find(x => x == attr).BoolValue != attr.BoolValue))
                 {
-                    attributesToEdit.Add(kvp.Key, kvp.Value);
+                    attributesToEdit.Add(attr);
                 }
             }
-            foreach (KeyValuePair<TTRPGAttribute, int> kvp in oldGear.Attributes)
+            foreach (AttributeValueAndBool attr in oldGear.Attributes)
             {
-                if (!gear.Attributes.ContainsKey(kvp.Key))
+                if (!gear.Attributes.Contains(attr))
                 {
-                    attributesToRemove.Add(kvp.Key, kvp.Value);
+                    attributesToRemove.Add(attr);
                 }
             }
             #endregion
@@ -214,10 +218,10 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@oldSystemID", oldGear.SystemID);
                                 cmd.Parameters.AddWithValue("@oldAttributeSystemID", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@oldAttributeName", DBNull.Value);
-                                foreach (KeyValuePair<TTRPGAttribute, int> kvp in attributesToRemove)
+                                foreach (AttributeValueAndBool attr in attributesToRemove)
                                 {
-                                    cmd.Parameters["@oldTagSystemID"].Value = kvp.Key.SystemID;
-                                    cmd.Parameters["@oldTagName"].Value = kvp.Key.AttributeName;
+                                    cmd.Parameters["@oldAttributeSystemID"].Value = attr.Attribute.SystemID;
+                                    cmd.Parameters["@oldAttributeName"].Value = attr.Attribute.AttributeName;
                                     cmd.ExecuteNonQuery();
                                 }
                                 cmd.Parameters.Clear();
@@ -253,11 +257,13 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeValue", DBNull.Value);
-                                foreach (KeyValuePair<TTRPGAttribute, int> kvp in gear.Attributes)
+                                cmd.Parameters.AddWithValue("@attributeUsed", DBNull.Value);
+                                foreach (AttributeValueAndBool attr in gear.Attributes)
                                 {
-                                    cmd.Parameters["@attributeSystemID"].Value = kvp.Key.SystemID;
-                                    cmd.Parameters["@attributeName"].Value = kvp.Key.AttributeName;
-                                    cmd.Parameters["@attributeValue"].Value = kvp.Value;
+                                    cmd.Parameters["@attributeSystemID"].Value = attr.Attribute.SystemID;
+                                    cmd.Parameters["@attributeName"].Value = attr.Attribute.AttributeName;
+                                    cmd.Parameters["@attributeValue"].Value = attr.Value;
+                                    cmd.Parameters["@attributeUsed"].Value = attr.BoolValue;
                                     cmd.ExecuteNonQuery();
                                 }
                                 cmd.Parameters.Clear();
@@ -269,15 +275,16 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@gearName", gear.GearName);
                                 cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
-                                cmd.Parameters.AddWithValue("@attributeValue", DBNull.Value);
-                                foreach (KeyValuePair<TTRPGAttribute, int> kvp in gear.Attributes)
+                                cmd.Parameters.AddWithValue("@attributeUsed", DBNull.Value);
+                                foreach (AttributeValueAndBool attr in gear.Attributes)
                                 {
-                                    cmd.Parameters["@attributeSystemID"].Value = kvp.Key.SystemID;
-                                    cmd.Parameters["@attributeName"].Value = kvp.Key.AttributeName;
-                                    cmd.Parameters["@attributeValue"].Value = kvp.Value;
+                                    cmd.Parameters["@attributeSystemID"].Value = attr.Attribute.SystemID;
+                                    cmd.Parameters["@attributeName"].Value = attr.Attribute.AttributeName;
+                                    cmd.Parameters["@attributeValue"].Value = attr.Value;
+                                    cmd.Parameters["@attributeUsed"].Value = attr.BoolValue;
                                     cmd.ExecuteNonQuery();
                                 }
-                            }
+                                }
                             transaction.Commit();
                         }
                     }
@@ -315,10 +322,10 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@oldSystemID", oldGear.SystemID);
                                 cmd.Parameters.AddWithValue("@oldAttributeSystemID", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@oldAttributeName", DBNull.Value);
-                                foreach (KeyValuePair<TTRPGAttribute, int> kvp in attributesToRemove)
+                                foreach (AttributeValueAndBool attr in attributesToRemove)
                                 {
-                                    cmd.Parameters["@oldTagSystemID"].Value = kvp.Key.SystemID;
-                                    cmd.Parameters["@oldTagName"].Value = kvp.Key.AttributeName;
+                                    cmd.Parameters["@oldAttributeSystemID"].Value = attr.Attribute.SystemID;
+                                    cmd.Parameters["@oldAttributeName"].Value = attr.Attribute.AttributeName;
                                     cmd.ExecuteNonQuery();
                                 }
                                 cmd.Parameters.Clear();
@@ -354,11 +361,13 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeValue", DBNull.Value);
-                                foreach (KeyValuePair<TTRPGAttribute, int> kvp in gear.Attributes)
+                                cmd.Parameters.AddWithValue("@attributeUsed", DBNull.Value);
+                                foreach (AttributeValueAndBool attr in gear.Attributes)
                                 {
-                                    cmd.Parameters["@attributeSystemID"].Value = kvp.Key.SystemID;
-                                    cmd.Parameters["@attributeName"].Value = kvp.Key.AttributeName;
-                                    cmd.Parameters["@attributeValue"].Value = kvp.Value;
+                                    cmd.Parameters["@attributeSystemID"].Value = attr.Attribute.SystemID;
+                                    cmd.Parameters["@attributeName"].Value = attr.Attribute.AttributeName;
+                                    cmd.Parameters["@attributeValue"].Value = attr.Value;
+                                    cmd.Parameters["@attributeUsed"].Value = attr.BoolValue;
                                     cmd.ExecuteNonQuery();
                                 }
                                 cmd.Parameters.Clear();
@@ -370,17 +379,18 @@ namespace TabletopSystems.Database_Access
                                 cmd.Parameters.AddWithValue("@gearName", gear.GearName);
                                 cmd.Parameters.AddWithValue("@attributeSystemID", DBNull.Value);
                                 cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
-                                cmd.Parameters.AddWithValue("@attributeValue", DBNull.Value);
-                                foreach (KeyValuePair<TTRPGAttribute, int> kvp in gear.Attributes)
+                                cmd.Parameters.AddWithValue("@attributeUsed", DBNull.Value);
+                                foreach (AttributeValueAndBool attr in gear.Attributes)
                                 {
-                                    cmd.Parameters["@attributeSystemID"].Value = kvp.Key.SystemID;
-                                    cmd.Parameters["@attributeName"].Value = kvp.Key.AttributeName;
-                                    cmd.Parameters["@attributeValue"].Value = kvp.Value;
+                                    cmd.Parameters["@attributeSystemID"].Value = attr.Attribute.SystemID;
+                                    cmd.Parameters["@attributeName"].Value = attr.Attribute.AttributeName;
+                                    cmd.Parameters["@attributeValue"].Value = attr.Value;
+                                    cmd.Parameters["@attributeUsed"].Value = attr.BoolValue;
                                     cmd.ExecuteNonQuery();
                                 }
                             }
                             transaction.Commit();
-                        }
+                            }
                     }
                 }
             }

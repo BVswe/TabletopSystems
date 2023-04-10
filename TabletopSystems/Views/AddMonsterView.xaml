@@ -370,7 +370,7 @@
                    HorizontalAlignment="Left"
                    Foreground="#DDDDDD"
                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                   Visibility="{Binding Text.IsEmpty, ElementName=MonsterNameTextBox, Converter={StaticResource BoolToVis}}"/>
+                   Visibility="{Binding Text, ElementName=MonsterNameTextBox, Converter={StaticResource nullToVis}}"/>
             
             <Grid Grid.Row="1"
                   Grid.Column="1"
@@ -378,8 +378,51 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
+                
+                <TextBox Background="Transparent"
+                         Grid.Column="1"
+                         x:Name="HPTextBox"
+                         Foreground="GhostWhite"
+                         CaretBrush="GhostWhite"
+                         Padding="5 3"
+                         Margin="0 0 15 0"
+                         FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                         TextWrapping="Wrap"
+                         VerticalContentAlignment="Center"
+                         HorizontalContentAlignment="Center"
+                         MinHeight="30"
+                         Height="Auto"
+                         MinWidth="30"
+                         Width="Auto"
+                         Text="{Binding HP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </TextBox.Resources>
+                    <Validation.ErrorTemplate>
+                        <ControlTemplate>
+                            <AdornedElementPlaceholder>
+                                <Border BorderBrush="Red"
+                                        BorderThickness="1"
+                                        CornerRadius="5"/>
+                            </AdornedElementPlaceholder>
+                        </ControlTemplate>
+                    </Validation.ErrorTemplate>
+                </TextBox>
                 <TextBlock Grid.Column="0"
+                           IsHitTestVisible="False"
+                           Text="HP: "
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Foreground="#FFFFFF"
+                           FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                           />
+
+                <TextBlock Grid.Column="2"
                            IsHitTestVisible="False"
                            Text="Damage: "
                            VerticalAlignment="Center"
@@ -388,10 +431,11 @@
                            FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
                            />
                 <TextBox Background="Transparent"
-                         Grid.Column="1"
+                         Grid.Column="3"
                          x:Name="StandardDamageTextBox"
                          Foreground="GhostWhite"
                          CaretBrush="GhostWhite"
+                         Margin="0 0 5 0"
                          Padding="5 3"
                          FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
                          TextWrapping="Wrap"
@@ -550,7 +594,7 @@
                                HorizontalAlignment="Left"
                                Foreground="#DDDDDD"
                                FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                               Visibility="{Binding SelectedItem, ElementName=GearComboBox, Converter={StaticResource nullToVis}}"/>
+                               Visibility="{Binding Text, ElementName=GearComboBox, Converter={StaticResource nullToVis}}"/>
 
                     <Button Style="{StaticResource OpacityHover}"
                             Grid.Column="1"
@@ -657,7 +701,7 @@
                                HorizontalAlignment="Left"
                                Foreground="#DDDDDD"
                                FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                               Visibility="{Binding SelectedItem, ElementName=CapabilityComboBox, Converter={StaticResource nullToVis}}"/>
+                               Visibility="{Binding Text, ElementName=CapabilityComboBox, Converter={StaticResource nullToVis}}"/>
 
                     <Button Style="{StaticResource OpacityHover}"
                             Grid.Column="1"
@@ -759,7 +803,7 @@
                                HorizontalAlignment="Left"
                                Foreground="#DDDDDD"
                                FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                               Visibility="{Binding SelectedItem, ElementName=TagComboBox, Converter={StaticResource nullToVis}}"/>
+                               Visibility="{Binding Text, ElementName=TagComboBox, Converter={StaticResource nullToVis}}"/>
 
                     <Button Style="{StaticResource OpacityHover}"
                             Grid.Column="1"
@@ -811,7 +855,8 @@
                             Foreground="#DDDDDD"
                             BorderBrush="#FFFFFF"
                             BorderThickness="1"
-                            Command="{Binding RemoveFromTagListCommand}">
+                            Command="{Binding RemoveFromTagListCommand}"
+                            CommandParameter="{Binding ElementName=TagList, Path=SelectedItem}">
                         <Button.Background>
                             <SolidColorBrush Color="#000000" Opacity="0.65"/>
                         </Button.Background>

@@ -15,7 +15,6 @@ namespace TabletopSystems.ViewModels
     public class AddCapabilityViewModel : ObservableObject
     {
         //Header is for dropdown to read viewmodel's name
-        public string Header { get; }
         private readonly MainWindowViewModel _mainWinViewModel;
         private CapabilityRepository _capabilityRepository;
         private UserConnection _userConnection;
@@ -75,7 +74,6 @@ namespace TabletopSystems.ViewModels
         #endregion
         public AddCapabilityViewModel(UserConnection conn, MainWindowViewModel mainWinViewModel)
         {
-            Header = "Capability";
             _mainWinViewModel = mainWinViewModel;
             _userConnection = conn;
             _capabilityRepository = new CapabilityRepository(_userConnection);

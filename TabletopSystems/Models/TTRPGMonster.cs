@@ -15,11 +15,13 @@ namespace TabletopSystems.Models
         public List<TTRPGGear> Gear { get; set; }
         public List<TTRPGCapability> Capabilities { get; set; }
         public Dictionary<TTRPGAttribute, int> Attributes { get; set; }
+        public int HP { get; set; }
 
         public TTRPGMonster()
         {
             MonsterName = string.Empty;
             StandardDamage = 0;
+            HP = 0;
             Tags = new List<TTRPGTag>();
             Attributes = new Dictionary<TTRPGAttribute, int>();
             Capabilities = new List<TTRPGCapability>();

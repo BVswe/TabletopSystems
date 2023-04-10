@@ -12,12 +12,12 @@ namespace TabletopSystems.Models
         public string GearName { get; set; }
         public string Description { get; set; }
         public List<TTRPGTag> Tags { get; set; }
-        public Dictionary<TTRPGAttribute, int> Attributes { get; set; }
+        public List<AttributeValueAndBool> Attributes { get; set; }
         public TTRPGGear()
         {
             GearName = string.Empty;
             Description = string.Empty;
-            Attributes = new Dictionary<TTRPGAttribute, int>();
+            Attributes = new List<AttributeValueAndBool>();
             Tags = new List<TTRPGTag>();
         }
     }

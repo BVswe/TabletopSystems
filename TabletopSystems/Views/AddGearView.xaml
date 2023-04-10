@@ -365,24 +365,25 @@
                    HorizontalAlignment="Left"
                    Foreground="#DDDDDD"
                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                   Visibility="{Binding Text.IsEmpty,ElementName=GearNameTextBox, Converter={StaticResource BoolToVis}}"/>
+                   Visibility="{Binding Text,ElementName=GearNameTextBox, Converter={StaticResource nullToVis}}"/>
             <TextBox Background="Transparent"
-                 Grid.Column="1"
-                 Grid.Row="3"
-                 x:Name="DescriptionTextBox"
-                 Foreground="GhostWhite"
-                 CaretBrush="GhostWhite"
-                 Padding="5 3"
-                 FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                 TextWrapping="Wrap"
-                 AcceptsReturn="True"
-                 VerticalScrollBarVisibility="Hidden"
-                 VerticalContentAlignment="Center"
-                 MinHeight="30"
-                 Height="Auto"
-                 HorizontalAlignment="Stretch"
-                 Margin="0 0 0 10"
-                 Text="{Binding GearDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                     Grid.Column="1"
+                     Grid.Row="3"
+                     x:Name="DescriptionTextBox"
+                     Foreground="GhostWhite"
+                     CaretBrush="GhostWhite"
+                     Padding="5 3"
+                     FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     VerticalScrollBarVisibility="Hidden"
+                     VerticalContentAlignment="Center"
+                     MinHeight="30"
+                     Height="Auto"
+                     HorizontalAlignment="Stretch"
+                     Margin="0 0 0 10"
+                     MaxLength="2000"
+                     Text="{Binding GearDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="8"/>
@@ -398,7 +399,7 @@
                    HorizontalAlignment="Left"
                    Foreground="#DDDDDD"
                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                   Visibility="{Binding Text.IsEmpty,ElementName=DescriptionTextBox, Converter={StaticResource BoolToVis}}"/>
+                   Visibility="{Binding Text,ElementName=DescriptionTextBox, Converter={StaticResource nullToVis}}"/>
 
             <DataGrid Grid.Row="4"
                       Grid.Column="1"
@@ -417,7 +418,8 @@
                         <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"/>
                         <Setter Property="Foreground" Value="#FFFFFF"/>
-                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="Margin" Value="5 0"/>
                     </Style>
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
@@ -433,7 +435,7 @@
                     <DataGridTemplateColumn Header="Attributes" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Key.AttributeName, Mode=OneWay}"
+                                <TextBlock Text="{Binding Attribute.AttributeName, Mode=OneWay}"
                                            Foreground="#FFFFFF"
                                            Background="Transparent"
                                            Padding="3 0"
@@ -444,7 +446,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Bonus">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Background="Transparent"
@@ -460,7 +462,7 @@
                                          MinWidth="30"
                                          MaxWidth="150"
                                          Padding="5"
-                                         Text="{Binding Value.IntValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                           >
                                     <TextBox.Resources>
                                         <Style TargetType="{x:Type Border}">
@@ -479,6 +481,17 @@
                                         </ControlTemplate>
                                     </Validation.ErrorTemplate>
                                 </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    <DataGridTemplateColumn IsReadOnly="True" Header="Stats Used">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding BoolValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -523,7 +536,7 @@
                                HorizontalAlignment="Left"
                                Foreground="#DDDDDD"
                                FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                               Visibility="{Binding SelectedItem, ElementName=TagComboBox, Converter={StaticResource nullToVis}}"/>
+                               Visibility="{Binding Text, ElementName=TagComboBox, Converter={StaticResource nullToVis}}"/>
 
                     <Button Style="{StaticResource OpacityHover}"
                             Grid.Column="1"

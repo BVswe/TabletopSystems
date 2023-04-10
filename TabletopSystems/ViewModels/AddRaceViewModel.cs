@@ -9,10 +9,9 @@ namespace TabletopSystems.ViewModels
     public class AddRaceViewModel : ObservableObject
     {
         //Header is for dropdown to read viewmodel's name
-        public string Header { get; }
         public AddRaceViewModel()
         {
-            Header = "Race";
+
         }
     }
 }

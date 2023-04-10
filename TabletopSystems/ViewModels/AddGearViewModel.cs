@@ -14,13 +14,11 @@ namespace TabletopSystems.ViewModels
 {
     public class AddGearViewModel : ObservableObject
     {
-        //Header is for dropdown to read viewmodel's name
-        public string Header { get; }
         private UserConnection _userConnection;
         private List<TTRPGTag> _allTags;
         private ObservableCollection<TTRPGTag> _tagsToAdd;
         private TTRPGGear _gear;
-        private Dictionary<TTRPGAttribute, ObservableInt> _attributes;
+        private ObservableCollection<AttributeValueAndBool> _attributes;
         private MainWindowViewModel _mainWinViewModel;
         private GearRepository _gearRepository;
 
@@ -47,7 +45,7 @@ namespace TabletopSystems.ViewModels
         }
 
         //Attributes to choose from and their value (reset after adding)
-        public Dictionary<TTRPGAttribute, ObservableInt> Attributes
+        public ObservableCollection<AttributeValueAndBool> Attributes
         {
             get { return _attributes; }
             set { _attributes = value; OnPropertyChanged(); }
@@ -59,37 +57,35 @@ namespace TabletopSystems.ViewModels
         #endregion
         public AddGearViewModel(UserConnection conn, MainWindowViewModel mainWinVM)
         {
-            Header = "Gear";
             _userConnection = conn;
             _mainWinViewModel = mainWinVM;
             _gear = new TTRPGGear();
             _tagsToAdd = new ObservableCollection<TTRPGTag>();
-            _attributes = new Dictionary<TTRPGAttribute, ObservableInt>();
+            _attributes = new ObservableCollection<AttributeValueAndBool>();
             _gearRepository = new GearRepository(_userConnection);
             _gear.SystemID = _mainWinViewModel.TbltopSys.SystemID;
 
             AttributesRepository tempAttrRepo = new AttributesRepository();
             TagRepository tempTagRepo = new TagRepository(_userConnection);
-            Dictionary<TTRPGAttribute, ObservableInt> tempDictionary = new Dictionary<TTRPGAttribute, ObservableInt>();
 
             _allTags = new List<TTRPGTag>(tempTagRepo.GetTags(_mainWinViewModel.TbltopSys.SystemID));
 
             foreach (TTRPGAttribute attr in tempAttrRepo.GetTTRPGAttributes(_userConnection, _mainWinViewModel.TbltopSys.SystemID))
             {
-                tempDictionary.Add(attr, new ObservableInt());
+                _attributes.Add(new AttributeValueAndBool(attr));
             }
             //Using property to trigger OnPropertyChanged()
-            Attributes = tempDictionary;
 
             #region Commands
             AddGearCommand = new RelayCommand(o =>
             {
-                foreach(KeyValuePair<TTRPGAttribute, ObservableInt> kvp in _attributes)
+                foreach(AttributeValueAndBool attr in _attributes)
                 {
-                    if (kvp.Value.IntValue != 0)
+                    if (attr.Value == 0 && attr.BoolValue == false)
                     {
-                        _gear.Attributes.Add(kvp.Key, kvp.Value.IntValue);
+                        continue;
                     }
+                    _gear.Attributes.Add(attr);
                 }
                 foreach(TTRPGTag tag in TagsToAdd)
                 {
@@ -99,9 +95,10 @@ namespace TabletopSystems.ViewModels
                 _gearRepository.Add(_gear);
 
                 #region Reset to default
-                foreach (KeyValuePair<TTRPGAttribute, ObservableInt> kvp in _attributes)
+                foreach (AttributeValueAndBool attr in _attributes)
                 {
-                    kvp.Value.IntValue = 0;
+                    attr.Value = 0;
+                    attr.BoolValue = false;
                 }
                 GearName = "";
                 GearDescription = "";

@@ -14,8 +14,6 @@ namespace TabletopSystems.ViewModels
 {
     public class AddMonsterViewModel : ObservableObject
     {
-        //Header is for dropdown to read viewmodel's name
-        public string Header { get; }
         private MainWindowViewModel _mainWinViewModel;
         private UserConnection _userConnection;
         private TTRPGMonster _monster;
@@ -37,6 +35,11 @@ namespace TabletopSystems.ViewModels
         {
             get { return _monster.StandardDamage; }
             set { _monster.StandardDamage = value; OnPropertyChanged(); }
+        }
+        public int HP
+        {
+            get { return _monster.HP; }
+            set { _monster.HP = value; OnPropertyChanged(); }
         }
         public List<TTRPGGear> AllGear
         {
@@ -83,7 +86,6 @@ namespace TabletopSystems.ViewModels
         public ICommand RemoveFromCapabilityListCommand { get; set; }
         public AddMonsterViewModel(UserConnection conn, MainWindowViewModel mainWinVM)
         {
-            Header = "Monster";
             _userConnection = conn;
             _mainWinViewModel = mainWinVM;
             _gearToAdd = new ObservableCollection<TTRPGGear>();
@@ -135,12 +137,21 @@ namespace TabletopSystems.ViewModels
                 }
                 //Add to database
                 _monsterRepo.Add(_monster);
+
                 #region Reset to default
-                MonsterName = "";
+                MonsterName = string.Empty;
+                HP = 0;
                 StandardDamage = 0;
+
                 TagsToAdd.Clear();
                 CapabilitiesToAdd.Clear();
                 GearToAdd.Clear();
+
+                _monster.Tags.Clear();
+                _monster.Capabilities.Clear();
+                _monster.Gear.Clear();
+                _monster.Attributes.Clear();
+                
                 foreach (KeyValuePair<TTRPGAttribute, ObservableInt> kvp in _attributes)
                 {
                     kvp.Value.IntValue = 0;

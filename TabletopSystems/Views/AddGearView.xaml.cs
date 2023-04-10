@@ -31,7 +31,7 @@ namespace TabletopSystems.Views
             if (e.Key == Key.Enter)
             {
                 var viewModel = (AddCapabilityViewModel)this.DataContext;
-                viewModel.AddToCapabilityTagsCommand.Execute(null);
+                viewModel.AddToCapabilityTagsCommand.Execute((sender as ComboBox).SelectedItem);
                 e.Handled = true;
                 return;
             }
