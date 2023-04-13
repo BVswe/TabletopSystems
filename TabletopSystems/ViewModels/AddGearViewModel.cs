@@ -20,7 +20,6 @@ namespace TabletopSystems.ViewModels
         private TTRPGGear _gear;
         private ObservableCollection<AttributeValueAndBool> _attributes;
         private MainWindowViewModel _mainWinViewModel;
-        private GearRepository _gearRepository;
 
         #region Properties
         public string GearName
@@ -62,7 +61,6 @@ namespace TabletopSystems.ViewModels
             _gear = new TTRPGGear();
             _tagsToAdd = new ObservableCollection<TTRPGTag>();
             _attributes = new ObservableCollection<AttributeValueAndBool>();
-            _gearRepository = new GearRepository(_userConnection);
             _gear.SystemID = _mainWinViewModel.TbltopSys.SystemID;
 
             AttributesRepository tempAttrRepo = new AttributesRepository();
@@ -92,7 +90,8 @@ namespace TabletopSystems.ViewModels
                     _gear.Tags.Add(tag);
                 }
                 //Add to database
-                _gearRepository.Add(_gear);
+                GearRepository gr = new GearRepository(_userConnection);
+                gr.Add(_gear);
 
                 #region Reset to default
                 foreach (AttributeValueAndBool attr in _attributes)

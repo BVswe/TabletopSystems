@@ -13,7 +13,6 @@ namespace TabletopSystems.ViewModels
     {
         private readonly MainWindowViewModel _mainWinViewModel;
         private UserConnection _userConnection;
-        private TagRepository _tagRepository;
         private string _tagName;
         public string TagName
         {
@@ -26,11 +25,11 @@ namespace TabletopSystems.ViewModels
         {
             _mainWinViewModel = mainWinViewModel;
             _userConnection = conn;
-            _tagRepository = new TagRepository(conn);
             _tagName = "";
             AddTagCommand = new RelayCommand(o =>
             {
-                _tagRepository.Add(new TTRPGTag() { TagName = _tagName, SystemID = _mainWinViewModel.TbltopSys.SystemID });
+                TagRepository tr = new TagRepository(_userConnection);
+                tr.Add(new TTRPGTag() { TagName = _tagName, SystemID = _mainWinViewModel.TbltopSys.SystemID });
                 TagName = "";
             });
         }

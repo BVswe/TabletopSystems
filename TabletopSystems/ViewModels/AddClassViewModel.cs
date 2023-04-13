@@ -18,7 +18,6 @@ namespace TabletopSystems.ViewModels
         private MainWindowViewModel _mainWinViewModel;
         private UserConnection _userConnection;
         private TTRPGClass _class;
-        private ClassRepository _classRepo;
         private List<TTRPGCapability> _allCapabilities;
         private ObservableCollection<CapabilityAndLevel> _capabilitiesToAdd;
         private Dictionary<TTRPGAttribute, ObservableInt> _attributes;
@@ -57,7 +56,6 @@ namespace TabletopSystems.ViewModels
             _userConnection = conn;
             _mainWinViewModel = mainWinVM;
             _class = new TTRPGClass();
-            _classRepo = new ClassRepository(_userConnection);
             _attributes = new Dictionary<TTRPGAttribute, ObservableInt>();
             _class.SystemID = _mainWinViewModel.TbltopSys.SystemID;
             _capabilitiesToAdd = new ObservableCollection<CapabilityAndLevel>();
@@ -92,7 +90,8 @@ namespace TabletopSystems.ViewModels
                 }
 
                 //Add to database
-                _classRepo.Add(_class);
+                ClassRepository cr = new ClassRepository(_userConnection);
+                cr.Add(_class);
 
                 #region Reset to default
                 ClassName = string.Empty;
@@ -130,38 +129,6 @@ namespace TabletopSystems.ViewModels
                 CapabilitiesToAdd.Remove((CapabilityAndLevel)o);
             });
             #endregion
-        }
-    }
-    //Class to store Capability associated with level so properties can notify when they are changed
-    //Allows use of ObservableCollection (don't have to make an ObservableDictionary)
-    public class CapabilityAndLevel : ObservableObject, IEquatable<CapabilityAndLevel>
-    {
-        private TTRPGCapability _capability;
-        private int _level;
-        public TTRPGCapability Capability
-        {
-          get { return _capability; }
-          set { _capability = value; OnPropertyChanged(); } 
-        }
-        public int Level
-        {
-            get { return _level; }
-            set { _level = value; OnPropertyChanged(); }
-        }
-        public CapabilityAndLevel()
-        {
-            _capability = new TTRPGCapability();
-            _level = 0;
-        }
-        public CapabilityAndLevel(TTRPGCapability capability)
-        {
-            _capability = capability;
-        }
-
-        public bool Equals(CapabilityAndLevel? other)
-        {
-            if (other is null) return false;
-            return this.Capability == other.Capability;
         }
     }
 }

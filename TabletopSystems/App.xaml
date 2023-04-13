@@ -49,6 +49,10 @@
             <views:AddClassView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type TypeName=viewModels:AddRaceViewModel}">
+            <views:AddRaceView/>
+        </DataTemplate>
+
 
     </Application.Resources>
 </Application>

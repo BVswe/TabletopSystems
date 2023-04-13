@@ -16,7 +16,6 @@ namespace TabletopSystems.ViewModels
     {
         //Header is for dropdown to read viewmodel's name
         private readonly MainWindowViewModel _mainWinViewModel;
-        private CapabilityRepository _capabilityRepository;
         private UserConnection _userConnection;
         private TTRPGCapability _capability;
         private ObservableCollection<TTRPGTag> _tagsToAdd;
@@ -76,7 +75,7 @@ namespace TabletopSystems.ViewModels
         {
             _mainWinViewModel = mainWinViewModel;
             _userConnection = conn;
-            _capabilityRepository = new CapabilityRepository(_userConnection);
+            
             _capability = new TTRPGCapability();
             _capability.SystemID = _mainWinViewModel.TbltopSys.SystemID;
             _tagsToAdd = new ObservableCollection<TTRPGTag>();
@@ -108,8 +107,12 @@ namespace TabletopSystems.ViewModels
                         _capability.Attributes.Add(attr.Key);
                     }
                 }
+
+                //Add to database
+                CapabilityRepository cr = new CapabilityRepository(_userConnection);
+                cr.Add(_capability);
+
                 #region Reset to default
-                _capabilityRepository.Add(_capability);
                 CapabilityName = string.Empty;
                 CapabilityDescription = string.Empty;
                 CapabilityArea = string.Empty;
@@ -118,6 +121,7 @@ namespace TabletopSystems.ViewModels
                 CapabilityCost = string.Empty;
                 TagsToAdd.Clear();
                 _capability.Attributes.Clear();
+                _capability.Tags.Clear();
                 foreach (KeyValuePair<TTRPGAttribute, ObservableBool> attr in Attributes)
                 {
                     attr.Value.BoolValue = false;

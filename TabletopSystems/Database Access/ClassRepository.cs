@@ -520,7 +520,7 @@ namespace TabletopSystems.Database_Access
                                 TTRPGClass temp = new TTRPGClass();
                                 temp.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
                                 temp.ClassName = reader["ClassName"].ToString()!;
-                                temp.ClassDescription = reader["ClassDescription"].ToString()!;
+                                temp.ClassDescription = reader["ClassDescription"].ToString() ?? string.Empty;
                                 classes.Add(temp);
                             }
                         }
@@ -540,7 +540,7 @@ namespace TabletopSystems.Database_Access
                                 TTRPGClass temp = new TTRPGClass();
                                 temp.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
                                 temp.ClassName = reader["ClassName"].ToString()!;
-                                temp.ClassDescription = reader["ClassDescription"].ToString()!;
+                                temp.ClassDescription = reader["ClassDescription"].ToString() ?? string.Empty;
                                 classes.Add(temp);
                             }
                         }
