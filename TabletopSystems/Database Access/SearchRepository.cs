@@ -17,7 +17,13 @@ namespace TabletopSystems.Database_Access
         {
             _userConnection = conn;
         }
-        public DataTable SearchDatabase(string query)
+        /// <summary>
+        /// Searches database using given query and search term
+        /// </summary>
+        /// <param name="query">Query to be executed</param>
+        /// <param name="searchTerm">Term to be searched</param>
+        /// <returns></returns>
+        public DataTable SearchDatabase(string query, string searchTerm)
         {
             DataTable table = new DataTable();
             try
@@ -29,6 +35,7 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqlDataAdapter adapter = new SqlDataAdapter(query, conn))
                         {
+                            adapter.SelectCommand.Parameters.AddWithValue("@searchTerm", "%" + searchTerm + "%");
                             adapter.Fill(table);
                         }
                     }
@@ -41,6 +48,7 @@ namespace TabletopSystems.Database_Access
                         using (SqliteCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = query;
+                            cmd.Parameters.AddWithValue("@searchTerm", "%" + searchTerm + "%");
                             using (SqliteDataReader reader = cmd.ExecuteReader())
                             {
                                 table.Load(reader);

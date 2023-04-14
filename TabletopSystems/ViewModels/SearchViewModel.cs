@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using TabletopSystems.Database_Access;
 using TabletopSystems.Helper_Methods;
 using TabletopSystems.Models;
 using TabletopTags.Database_Access;
@@ -18,6 +20,7 @@ namespace TabletopSystems.ViewModels
         private MainWindowViewModel _mainWinViewModel;
         private Dictionary<string, ObservableBool> _categories;
         private Dictionary<string, ObservableBool> _tags;
+        private DataTable _searchResults;
         private string _searchTerm;
 
         public Dictionary<string, ObservableBool> Categories
@@ -34,6 +37,11 @@ namespace TabletopSystems.ViewModels
         {
             get { return _searchTerm; }
             set { _searchTerm = value; OnPropertyChanged(); }
+        }
+        public DataTable SearchResults
+        {
+            get { return _searchResults; }
+            set { _searchResults = value; OnPropertyChanged(); }
         }
 
         //Header is to set the name of this tab in the view
@@ -53,6 +61,7 @@ namespace TabletopSystems.ViewModels
             _categories.Add("Gear", new ObservableBool());
             _categories.Add("Monster", new ObservableBool());
             _categories.Add("Race", new ObservableBool());
+            _searchResults = new DataTable();
 
             TagRepository tempTagRepo = new TagRepository(_userConnection);
             foreach(TTRPGTag tag in tempTagRepo.GetTags(_mainWinViewModel.TbltopSys.SystemID))
@@ -61,7 +70,9 @@ namespace TabletopSystems.ViewModels
             }
             SearchCommand = new RelayCommand(o => {
                 string query = BuildQuery();
+                SearchRepository searchRepo = new SearchRepository(_userConnection);
                 Trace.WriteLine(query);
+                SearchResults = searchRepo.SearchDatabase(query, _searchTerm);
             });
         }
 
@@ -73,7 +84,7 @@ namespace TabletopSystems.ViewModels
                 string returnString = "";
                 if (!String.IsNullOrEmpty(_searchTerm))
                 {
-                    returnString += $" WHERE {name}=@searchTerm";
+                    returnString += $" WHERE {name} LIKE @searchTerm";
                 }
                 else
                 {
@@ -147,10 +158,18 @@ namespace TabletopSystems.ViewModels
                                 }
                                 if (!firstQuery)
                                 {
+                                    if (!String.IsNullOrEmpty(query))
+                                    {
+                                        classQuery += " WHERE ClassName LIKE @searchTerm";
+                                    }
                                     query += " UNION " + classQuery;
                                 }
                                 else
                                 {
+                                    if (!String.IsNullOrEmpty(query))
+                                    {
+                                        classQuery += " WHERE ClassName LIKE @searchTerm";
+                                    }
                                     query = classQuery;
                                     firstQuery = false;
                                 }
@@ -201,6 +220,10 @@ namespace TabletopSystems.ViewModels
                     query = capaQuery + formatter("Capabilities", "CapabilityName", "Capabilities_Tags", tagsToSearch);
                     if (tagsToSearch.Count == 0)
                     {
+                        if (!String.IsNullOrEmpty(query))
+                        {
+                            classQuery += " WHERE ClassName LIKE @searchTerm";
+                        }
                         query += " UNION " + classQuery;
                     }
                     query += " UNION " + gearQuery + formatter("Gear", "GearName", "Gear_Tags", tagsToSearch);
