@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TabletopSystems.Helper_Methods;
+using TabletopSystems.Models;
+using TabletopSystems.ViewModels;
 
 namespace TabletopSystems.Views
 {
@@ -23,6 +26,19 @@ namespace TabletopSystems.Views
         public SearchView()
         {
             InitializeComponent();
+        }
+
+        private void Tags_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            //Change bool value and refresh results here
+            var viewModel = (SearchViewModel)this.DataContext;
+            viewModel.Tags[(sender as TextBlock).Text].BoolValue = !viewModel.Tags[(sender as TextBlock).Text].BoolValue;
+        }
+        private void Categories_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            //Change bool value and refresh results here
+            var viewModel = (SearchViewModel)this.DataContext;
+            viewModel.Categories[(sender as TextBlock).Text].BoolValue = !viewModel.Categories[(sender as TextBlock).Text].BoolValue;
         }
     }
 }

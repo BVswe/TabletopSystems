@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TabletopSystems.Helper_Methods
 {
-    public class ObservableBool : INotifyPropertyChanged
+    public class ObservableBool : INotifyPropertyChanged, IEquatable<ObservableBool>
     {
         private bool _value;
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -22,6 +22,16 @@ namespace TabletopSystems.Helper_Methods
         public ObservableBool()
         {
             _value = false;
+        }
+        public ObservableBool(bool givenBool)
+        {
+            _value = givenBool;
+        }
+
+        public bool Equals(ObservableBool? other)
+        {
+            if (other is null) return false;
+            return _value == other._value;
         }
     }
 }

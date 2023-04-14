@@ -30,13 +30,13 @@ namespace TabletopSystems.Database_Access
                 {
                     using (SqlConnection conn = new SqlConnection(userConn.sqlString))
                     {
+                        conn.Open();
                         using (SqlCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = cmdString;
                             cmd.Parameters.AddWithValue("@systemID", DBNull.Value);
                             cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
                             cmd.Parameters.AddWithValue("@attributeFormula", DBNull.Value);
-                            conn.Open();
                             foreach (TTRPGAttribute currentAttribute in attributes)
                             {
                                 if (String.IsNullOrEmpty(currentAttribute.SystemID.ToString()) || String.IsNullOrEmpty(currentAttribute.AttributeName))
@@ -55,13 +55,13 @@ namespace TabletopSystems.Database_Access
                 {
                     using (SqliteConnection conn = new SqliteConnection(userConn.sqliteString))
                     {
+                        conn.Open();
                         using (SqliteCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = cmdString;
                             cmd.Parameters.AddWithValue("@systemID", DBNull.Value);
                             cmd.Parameters.AddWithValue("@attributeName", DBNull.Value);
                             cmd.Parameters.AddWithValue("@attributeFormula", DBNull.Value);
-                            conn.Open();
                             foreach (TTRPGAttribute currentAttribute in attributes)
                             {
                                 cmd.Parameters["@systemID"].Value = currentAttribute.SystemID;
@@ -93,10 +93,10 @@ namespace TabletopSystems.Database_Access
                 {
                     using (SqlConnection conn = new SqlConnection(userConn.sqlString))
                     {
+                        conn.Open();
                         using (SqlCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = cmdString;
-                            conn.Open();
                             cmd.Parameters.AddWithValue("@oldSystemID", oldAttribute.SystemID);
                             cmd.Parameters.AddWithValue("@oldAttributeName", oldAttribute.AttributeName);
                             cmd.Parameters.AddWithValue("@attributeName", attribute.AttributeName);
@@ -109,10 +109,10 @@ namespace TabletopSystems.Database_Access
                 {
                     using (SqliteConnection conn = new SqliteConnection(userConn.sqliteString))
                     {
+                        conn.Open();
                         using (SqliteCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = cmdString;
-                            conn.Open();
                             cmd.Parameters.AddWithValue("@oldSystemID", oldAttribute.SystemID);
                             cmd.Parameters.AddWithValue("@oldAttributeName", oldAttribute.AttributeName);
                             cmd.Parameters.AddWithValue("@attributeName", attribute.AttributeName);
@@ -147,10 +147,10 @@ namespace TabletopSystems.Database_Access
                 {
                     using (SqlConnection conn = new SqlConnection(userConn.sqlString))
                     {
+                        conn.Open();
                         using (SqlCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = cmdString;
-                            conn.Open();
                             cmd.Parameters.AddWithValue("@systemID", attribute.SystemID);
                             cmd.Parameters.AddWithValue("@attributeName", attribute.AttributeName);
                             cmd.ExecuteNonQuery();
@@ -161,10 +161,10 @@ namespace TabletopSystems.Database_Access
                 {
                     using (SqliteConnection conn = new SqliteConnection(userConn.sqliteString))
                     {
+                        conn.Open();
                         using (SqliteCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = cmdString;
-                            conn.Open();
                             cmd.Parameters.AddWithValue("@systemID", attribute.SystemID);
                             cmd.Parameters.AddWithValue("@attributeName", attribute.AttributeName);
                             cmd.ExecuteNonQuery();
