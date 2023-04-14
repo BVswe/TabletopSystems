@@ -11,6 +11,25 @@
     <UserControl.Resources>
         <helpers:FontScaler x:Key="fontScaler"></helpers:FontScaler>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <Style x:Key="OpacityHover" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid>
+                            <Border x:Name="bg" Background="{TemplateBinding Background}"/>
+                            <Border x:Name="border" BorderBrush="#FFFFFF" BorderThickness="1" Opacity="0.8"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.85" TargetName="bg"/>
+                                <Setter Property="Opacity" Value="1" TargetName="border"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -310,20 +329,40 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBox Background="Transparent"
-                 Grid.Column="0"
-                 Margin="5 0 5 5"
-                 x:Name="SearchTermTextBox"
-                 Foreground="#FFFFFF"
-                 CaretBrush="#FFFFFF"
-                 Padding="5 3"
-                 FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
-                 MinHeight="30"
-                 Height="Auto"
-                 TextWrapping="NoWrap"
-                 HorizontalAlignment="Stretch"
-                 Text="{Binding SearchTerm, Mode=OneWay}"/>
+        <Grid Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Background="Transparent"
+                     Margin="5 0 5 5"
+                     x:Name="SearchTermTextBox"
+                     Foreground="#FFFFFF"
+                     CaretBrush="#FFFFFF"
+                     Padding="5 3"
+                     FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                     MinHeight="30"
+                     Height="Auto"
+                     TextWrapping="NoWrap"
+                     HorizontalAlignment="Stretch"
+                     KeyDown="SearchTermTextBox_KeyDown"
+                     Text="{Binding SearchTerm, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Grid.Column="1"
+                    Style="{StaticResource OpacityHover}"
+                    Content="Search"
+                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                    Foreground="#FFFFFF"
+                    BorderBrush="#FFFFFF"
+                    BorderThickness="1"
+                    Margin="0 0 0 5"
+                    Command="{Binding SearchCommand}">
+                <Button.Background>
+                    <SolidColorBrush Color="#000000" Opacity="0.8"/>
+                </Button.Background>
+            </Button>
 
+        </Grid>
+        
         <StackPanel Grid.Row="1"
                     Margin="5 0 5 5"
                     Orientation="Horizontal">

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using TabletopSystems.Helper_Methods;
 using TabletopSystems.Models;
@@ -36,6 +38,7 @@ namespace TabletopSystems.ViewModels
 
         //Header is to set the name of this tab in the view
         public string Header { get; }
+        public ICommand SearchCommand { get; set; }
         
         public SearchViewModel(UserConnection conn, MainWindowViewModel mainWinVM)
         {
@@ -56,6 +59,10 @@ namespace TabletopSystems.ViewModels
             {
                 _tags.Add(tag.TagName, new ObservableBool());
             }
+            SearchCommand = new RelayCommand(o => {
+                string query = BuildQuery();
+                Trace.WriteLine(query);
+            });
         }
 
         public string BuildQuery()
@@ -85,6 +92,7 @@ namespace TabletopSystems.ViewModels
             string query = string.Empty;
             if (_userConnection.connectedToSqlServer)
             {
+                #region Queries with no WHERE clause
                 string capaQuery = "SELECT CapabilityName as [Name], 'Capability' as [Category]," +
                     " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Capabilities_Tags WHERE CapabilityName=Capabilities.CapabilityName),'') as [Tags]" +
                     " FROM Capabilities";
@@ -99,8 +107,11 @@ namespace TabletopSystems.ViewModels
                 string raceQuery = "SELECT RaceName as [Name], 'Race' as [Category]," +
                     " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Races_Tags WHERE RaceName=Races.RaceName), '') as [Tags]" +
                     " FROM Races";
+                #endregion
+
                 List<string> tagsToSearch = new List<string>();
                 bool firstQuery = true;
+                bool noCategoryFilter = true;
                 foreach(KeyValuePair<string, ObservableBool> kvp in _tags)
                 {
                     if (kvp.Value.BoolValue)
@@ -110,8 +121,11 @@ namespace TabletopSystems.ViewModels
                 }
                 foreach(KeyValuePair<string, ObservableBool> kvp in _categories)
                 {
+                    //Check if filter is enabled
                     if (kvp.Value.BoolValue)
                     {
+                        noCategoryFilter = false;
+                        //Add where clause taking filters into account
                         switch (kvp.Key)
                         {
                             case ("Capability"):
@@ -181,6 +195,17 @@ namespace TabletopSystems.ViewModels
                                 break;
                         }
                     }
+                }
+                if (noCategoryFilter)
+                {
+                    query = capaQuery + formatter("Capabilities", "CapabilityName", "Capabilities_Tags", tagsToSearch);
+                    if (tagsToSearch.Count == 0)
+                    {
+                        query += " UNION " + classQuery;
+                    }
+                    query += " UNION " + gearQuery + formatter("Gear", "GearName", "Gear_Tags", tagsToSearch);
+                    query += " UNION " + monsterQuery + formatter("Monsters", "MonsterName", "Monsters_Tags", tagsToSearch);
+                    query += " UNION " + raceQuery + formatter("Races", "RaceName", "Races_Tags", tagsToSearch);
                 }
                 return query;
             }

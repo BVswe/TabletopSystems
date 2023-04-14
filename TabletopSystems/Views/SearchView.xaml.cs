@@ -40,5 +40,14 @@ namespace TabletopSystems.Views
             var viewModel = (SearchViewModel)this.DataContext;
             viewModel.Categories[(sender as TextBlock).Text].BoolValue = !viewModel.Categories[(sender as TextBlock).Text].BoolValue;
         }
+
+        private void SearchTermTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            var viewModel = (SearchViewModel)this.DataContext;
+            if (e.Key == Key.Enter)
+            {
+                viewModel.SearchCommand.Execute(null);
+            }
+        }
     }
 }
