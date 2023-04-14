@@ -27,19 +27,26 @@ namespace TabletopSystems.Views
         }
         private void CapabilityComboBox_KeyDown(object sender, KeyEventArgs e)
         {
-            /*if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter)
             {
-                var viewModel = (AddMonsterViewModel)this.DataContext;
+                var viewModel = (AddRaceViewModel)this.DataContext;
                 viewModel.AddToCapabilityListCommand.Execute((sender as ComboBox).SelectedItem);
                 e.Handled = true;
                 return;
             }
-            (sender as ComboBox).IsDropDownOpen = true;*/
+            (sender as ComboBox).IsDropDownOpen = true;
         }
 
         private void TagComboBox_KeyDown(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Enter)
+            {
+                var viewModel = (AddRaceViewModel)this.DataContext;
+                viewModel.AddToTagListCommand.Execute((sender as ComboBox).SelectedItem);
+                e.Handled = true;
+                return;
+            }
+            (sender as ComboBox).IsDropDownOpen = true;
         }
     }
 }
