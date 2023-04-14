@@ -327,7 +327,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -503,7 +502,8 @@
                                                Foreground="#FFFFFF"
                                                Margin="5 0 5 5"
                                                Padding="5 0 0 0"
-                                               FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"/>
+                                               FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                                               />
                                     <Viewbox Grid.Column="1" Margin="5">
                                         <CheckBox IsChecked="{Binding Value.BoolValue}"
                                           VerticalAlignment="Center"
@@ -527,24 +527,70 @@
                   BorderThickness="0"
                   RowHeaderWidth="0"
                   RowBackground="Transparent"
+                  ItemsSource="{Binding SearchResults}"
                   >
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"/>
                     <Setter Property="Foreground" Value="#FFFFFF"/>
-                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="5 0 5 5"/>
                 </Style>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
                 <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
                 <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
-                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
-                           Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
+                <Style TargetType="DataGridRow">
+                    <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+                </Style>
             </DataGrid.Resources>
             <DataGrid.BorderBrush>
                 <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
             </DataGrid.BorderBrush>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Name" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"
+                                       HorizontalAlignment="Left"
+                                       Foreground="#FFFFFF"
+                                       FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                                       Margin="2"
+                                       Padding="5 0 5 0"
+                                       />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Category" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Category}"
+                                       HorizontalAlignment="Left"
+                                       Foreground="#FFFFFF"
+                                       FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                                       Margin="2"
+                                       Padding="5 0 5 0"
+                                       />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Tags" Width="*" x:Name="TagsColumn">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Tags}"
+                                       HorizontalAlignment="Left"
+                                       Foreground="#FFFFFF"
+                                       FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                                       Margin="2"
+                                       TextWrapping="Wrap"
+                                       Padding="5 0 5 0"
+                                       Width="{Binding ElementName=TagsColumn, Path=ActualWidth}"
+                                       />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
         </DataGrid>
     </Grid>
 </UserControl>

@@ -425,8 +425,7 @@
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
-                           Color="{Binding Path=Color, Source={x:Static SystemColors.HighlightBrushKey}}"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#000000" Opacity="0.3"/>
                 </DataGrid.Resources>
                 <DataGrid.BorderBrush>
                     <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>

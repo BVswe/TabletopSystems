@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,6 +49,12 @@ namespace TabletopSystems.Views
             {
                 viewModel.SearchCommand.Execute(null);
             }
+        }
+
+        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            //Open edit/view here
+            Trace.WriteLine("Double Clicked");
         }
     }
 }
