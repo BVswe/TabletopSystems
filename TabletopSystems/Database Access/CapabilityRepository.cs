@@ -441,7 +441,7 @@ namespace TabletopSystems.Database_Access
                             {
                                 TTRPGCapability temp = new TTRPGCapability();
                                 temp.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
-                                temp.CapabilityName = reader["AttributeName"].ToString()!;
+                                temp.CapabilityName = reader["CapabilityName"].ToString()!;
                                 temp.Description = reader["CapabilityDescription"].ToString() ?? string.Empty;
                                 temp.Area = reader["CapabilityArea"].ToString() ?? string.Empty;
                                 temp.Range = reader["CapabilityRange"].ToString() ?? string.Empty;

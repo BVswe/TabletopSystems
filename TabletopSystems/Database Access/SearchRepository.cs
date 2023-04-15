@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Azure;
+using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TabletopSystems.Helper_Methods;
 
 namespace TabletopSystems.Database_Access
 {
@@ -23,7 +25,7 @@ namespace TabletopSystems.Database_Access
         /// <param name="query">Query to be executed</param>
         /// <param name="searchTerm">Term to be searched</param>
         /// <returns></returns>
-        public DataTable SearchDatabase(string query, string searchTerm)
+        public DataTable SearchDatabase(string query, string searchTerm, Dictionary<string, ObservableBool> tags)
         {
             DataTable table = new DataTable();
             try
@@ -36,19 +38,34 @@ namespace TabletopSystems.Database_Access
                         using (SqlDataAdapter adapter = new SqlDataAdapter(query, conn))
                         {
                             adapter.SelectCommand.Parameters.AddWithValue("@searchTerm", "%" + searchTerm + "%");
+                            int i = 0;
+                            foreach(KeyValuePair<string, ObservableBool> kvp in tags)
+                            {
+                                adapter.SelectCommand.Parameters.AddWithValue($"@tag{i}", kvp.Key);
+                                i++;
+                            }
                             adapter.Fill(table);
                         }
                     }
                 }
                 else
                 {
-                    using (SqliteConnection conn = new SqliteConnection(_userConnection.sqlString))
+                    using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
                     {
                         conn.Open();
                         using (SqliteCommand cmd = conn.CreateCommand())
                         {
                             cmd.CommandText = query;
                             cmd.Parameters.AddWithValue("@searchTerm", "%" + searchTerm + "%");
+                            int i = 0;
+                            foreach (KeyValuePair<string, ObservableBool> kvp in tags)
+                            {
+                                if (kvp.Value.BoolValue)
+                                {
+                                    cmd.Parameters.AddWithValue($"@tag{i}", kvp.Key);
+                                    i++;
+                                }
+                            }
                             using (SqliteDataReader reader = cmd.ExecuteReader())
                             {
                                 table.Load(reader);

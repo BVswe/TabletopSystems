@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using TabletopSystems.Database_Access;
@@ -72,7 +74,7 @@ namespace TabletopSystems.ViewModels
                 string query = BuildQuery();
                 SearchRepository searchRepo = new SearchRepository(_userConnection);
                 Trace.WriteLine(query);
-                SearchResults = searchRepo.SearchDatabase(query, _searchTerm);
+                SearchResults = searchRepo.SearchDatabase(query, _searchTerm, _tags);
             });
         }
 
@@ -92,149 +94,169 @@ namespace TabletopSystems.ViewModels
                 }
                 if (tags.Count > 0)
                 {
-                    foreach (string s in tags)
+                    for (int i = 0; i < tags.Count; i++)
                     {
-                        returnString += $" AND EXISTS (SELECT {name} FROM {tagTable} WHERE {tagTable}.{name} = {table}.{name} AND {tagTable}.TagName = @{s})";
+                        returnString += $" AND EXISTS (SELECT {name} FROM {tagTable} WHERE {tagTable}.{name} = {table}.{name} AND {tagTable}.TagName = @tag{i})";
                     }
                 }
                 return returnString;
             }
 
             string query = string.Empty;
+            string capaQuery;
+            string classQuery;
+            string gearQuery;
+            string monsterQuery;
+            string raceQuery;
             if (_userConnection.connectedToSqlServer)
             {
                 #region Queries with no WHERE clause
-                string capaQuery = "SELECT CapabilityName as [Name], 'Capability' as [Category]," +
+                capaQuery = "SELECT CapabilityName as [Name], 'Capability' as [Category]," +
                     " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Capabilities_Tags WHERE CapabilityName=Capabilities.CapabilityName),'') as [Tags]" +
                     " FROM Capabilities";
-                string classQuery = "SELECT ClassName as [Name], 'Class' as [Category], '' as [Tags]" +
+                classQuery = "SELECT ClassName as [Name], 'Class' as [Category], '' as [Tags]" +
                     " FROM Classes";
-                string gearQuery = "SELECT GearName as [Name], 'Gear' as [Category]," +
+                gearQuery = "SELECT GearName as [Name], 'Gear' as [Category]," +
                     " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Gear_Tags WHERE GearName=Gear.GearName),'') as [Tags]" +
                     " FROM Gear";
-                string monsterQuery = "SELECT MonsterName as [Name], 'Monster' as [Category]," +
+                monsterQuery = "SELECT MonsterName as [Name], 'Monster' as [Category]," +
                     " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Monsters_Tags WHERE MonsterName=Monsters.MonsterName),'') as [Tags]" +
                     " FROM Monsters";
-                string raceQuery = "SELECT RaceName as [Name], 'Race' as [Category]," +
+                raceQuery = "SELECT RaceName as [Name], 'Race' as [Category]," +
                     " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Races_Tags WHERE RaceName=Races.RaceName), '') as [Tags]" +
                     " FROM Races";
                 #endregion
-
-                List<string> tagsToSearch = new List<string>();
-                bool firstQuery = true;
-                bool noCategoryFilter = true;
-                foreach(KeyValuePair<string, ObservableBool> kvp in _tags)
-                {
-                    if (kvp.Value.BoolValue)
-                    {
-                        tagsToSearch.Add(kvp.Key);
-                    }
-                }
-                foreach(KeyValuePair<string, ObservableBool> kvp in _categories)
-                {
-                    //Check if filter is enabled
-                    if (kvp.Value.BoolValue)
-                    {
-                        noCategoryFilter = false;
-                        //Add where clause taking filters into account
-                        switch (kvp.Key)
-                        {
-                            case ("Capability"):
-                                capaQuery += formatter("Capabilities", "CapabilityName", "Capabilities_Tags", tagsToSearch);
-                                if (!firstQuery)
-                                {
-                                    query += " UNION " + capaQuery;
-                                }
-                                else
-                                {
-                                    query = capaQuery;
-                                    firstQuery = false;
-                                }
-                                break;
-                            case ("Class"):
-                                if (tagsToSearch.Count > 0)
-                                {
-                                    break;
-                                }
-                                if (!firstQuery)
-                                {
-                                    if (!String.IsNullOrEmpty(query))
-                                    {
-                                        classQuery += " WHERE ClassName LIKE @searchTerm";
-                                    }
-                                    query += " UNION " + classQuery;
-                                }
-                                else
-                                {
-                                    if (!String.IsNullOrEmpty(query))
-                                    {
-                                        classQuery += " WHERE ClassName LIKE @searchTerm";
-                                    }
-                                    query = classQuery;
-                                    firstQuery = false;
-                                }
-                                break;
-                            case ("Gear"):
-                                gearQuery += formatter("Gear", "GearName", "Gear_Tags", tagsToSearch);
-                                if (!firstQuery)
-                                {
-                                    query += " UNION " + gearQuery;
-                                }
-                                else
-                                {
-                                    query = gearQuery;
-                                    firstQuery = false;
-                                }
-                                break;
-                            case ("Monster"):
-                                monsterQuery += formatter("Monsters", "MonsterName", "Monsters_Tags", tagsToSearch);
-                                if (!firstQuery)
-                                {
-                                    query += " UNION " + monsterQuery;
-                                }
-                                else
-                                {
-                                    query = monsterQuery;
-                                    firstQuery = false;
-                                }
-                                break;
-                            case ("Race"):
-                                raceQuery += formatter("Races", "RaceName", "Races_Tags", tagsToSearch);
-                                if (!firstQuery)
-                                {
-                                    query += " UNION " + raceQuery;
-                                }
-                                else
-                                {
-                                    query = raceQuery;
-                                    firstQuery = false;
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                if (noCategoryFilter)
-                {
-                    query = capaQuery + formatter("Capabilities", "CapabilityName", "Capabilities_Tags", tagsToSearch);
-                    if (tagsToSearch.Count == 0)
-                    {
-                        if (!String.IsNullOrEmpty(query))
-                        {
-                            classQuery += " WHERE ClassName LIKE @searchTerm";
-                        }
-                        query += " UNION " + classQuery;
-                    }
-                    query += " UNION " + gearQuery + formatter("Gear", "GearName", "Gear_Tags", tagsToSearch);
-                    query += " UNION " + monsterQuery + formatter("Monsters", "MonsterName", "Monsters_Tags", tagsToSearch);
-                    query += " UNION " + raceQuery + formatter("Races", "RaceName", "Races_Tags", tagsToSearch);
-                }
-                return query;
             }
             else
             {
+                //SQLITE queries go here
+                #region Queries with no WHERE clause
+                capaQuery = "SELECT CapabilityName as [Name], 'Capability' as [Category],"+
+                    " Coalesce((SELECT group_concat(TagName) FROM(SELECT TagName FROM Capabilities_Tags WHERE Capabilities.CapabilityName = Capabilities_Tags.CapabilityName ORDER BY TagName)), '') as [Tags]" +
+                    " FROM Capabilities";
+                classQuery = "SELECT ClassName as [Name], 'Class' as [Category], '' as [Tags]" +
+                " FROM Classes";
+                gearQuery = "SELECT GearName as [Name], 'Gear' as [Category]," +
+                    " Coalesce((SELECT group_concat(TagName) FROM(SELECT TagName FROM Gear_Tags WHERE Gear.GearName = Gear_Tags.GearName ORDER BY TagName)), '') as [Tags]" +
+                    " FROM Gear";
+                monsterQuery = "SELECT MonsterName as [Name], 'Monster' as [Category]," +
+                    " Coalesce((SELECT group_concat(TagName) FROM(SELECT TagName FROM Monsters_Tags WHERE Monsters.MonsterName = Monsters_Tags.MonsterName ORDER BY TagName)), '') as [Tags]" +
+                    " FROM Monsters";
+                raceQuery = "SELECT RaceName as [Name], 'Race' as [Category]," +
+                    " Coalesce((SELECT group_concat(TagName) FROM(SELECT TagName FROM Races_Tags WHERE Races.RaceName = Races_Tags.RaceName ORDER BY TagName)), '') as [Tags]" +
+                    " FROM Races";
+                #endregion
+            }
 
+            List<string> tagsToSearch = new List<string>();
+            bool firstQuery = true;
+            bool noCategoryFilter = true;
+            foreach (KeyValuePair<string, ObservableBool> kvp in _tags)
+            {
+                if (kvp.Value.BoolValue)
+                {
+                    tagsToSearch.Add(kvp.Key);
+                }
+            }
+            foreach (KeyValuePair<string, ObservableBool> kvp in _categories)
+            {
+                //Check if filter is enabled
+                if (kvp.Value.BoolValue)
+                {
+                    noCategoryFilter = false;
+                    //Add where clause taking filters into account
+                    switch (kvp.Key)
+                    {
+                        case ("Capability"):
+                            capaQuery += formatter("Capabilities", "CapabilityName", "Capabilities_Tags", tagsToSearch);
+                            if (!firstQuery)
+                            {
+                                query += " UNION " + capaQuery;
+                            }
+                            else
+                            {
+                                query = capaQuery;
+                                firstQuery = false;
+                            }
+                            break;
+                        case ("Class"):
+                            if (tagsToSearch.Count > 0)
+                            {
+                                break;
+                            }
+                            if (!firstQuery)
+                            {
+                                if (!String.IsNullOrEmpty(query))
+                                {
+                                    classQuery += " WHERE ClassName LIKE @searchTerm";
+                                }
+                                query += " UNION " + classQuery;
+                            }
+                            else
+                            {
+                                if (!String.IsNullOrEmpty(query))
+                                {
+                                    classQuery += " WHERE ClassName LIKE @searchTerm";
+                                }
+                                query = classQuery;
+                                firstQuery = false;
+                            }
+                            break;
+                        case ("Gear"):
+                            gearQuery += formatter("Gear", "GearName", "Gear_Tags", tagsToSearch);
+                            if (!firstQuery)
+                            {
+                                query += " UNION " + gearQuery;
+                            }
+                            else
+                            {
+                                query = gearQuery;
+                                firstQuery = false;
+                            }
+                            break;
+                        case ("Monster"):
+                            monsterQuery += formatter("Monsters", "MonsterName", "Monsters_Tags", tagsToSearch);
+                            if (!firstQuery)
+                            {
+                                query += " UNION " + monsterQuery;
+                            }
+                            else
+                            {
+                                query = monsterQuery;
+                                firstQuery = false;
+                            }
+                            break;
+                        case ("Race"):
+                            raceQuery += formatter("Races", "RaceName", "Races_Tags", tagsToSearch);
+                            if (!firstQuery)
+                            {
+                                query += " UNION " + raceQuery;
+                            }
+                            else
+                            {
+                                query = raceQuery;
+                                firstQuery = false;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            if (noCategoryFilter)
+            {
+                query = capaQuery + formatter("Capabilities", "CapabilityName", "Capabilities_Tags", tagsToSearch);
+                if (tagsToSearch.Count == 0)
+                {
+                    if (!String.IsNullOrEmpty(query))
+                    {
+                        classQuery += " WHERE ClassName LIKE @searchTerm";
+                    }
+                    query += " UNION " + classQuery;
+                }
+                query += " UNION " + gearQuery + formatter("Gear", "GearName", "Gear_Tags", tagsToSearch);
+                query += " UNION " + monsterQuery + formatter("Monsters", "MonsterName", "Monsters_Tags", tagsToSearch);
+                query += " UNION " + raceQuery + formatter("Races", "RaceName", "Races_Tags", tagsToSearch);
             }
             return query;
         }
