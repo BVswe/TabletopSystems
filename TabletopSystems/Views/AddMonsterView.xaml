@@ -874,7 +874,7 @@
                     HorizontalAlignment="Center"
                     Height="30"
                     Width="70"
-                    Margin="0 10 0 0"
+                    Margin="0 10 0 10"
                     BorderBrush="#FFFFFF"
                     BorderThickness="1"
                     FontSize="22"

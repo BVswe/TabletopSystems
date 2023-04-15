@@ -110,7 +110,7 @@ namespace TabletopSystems.ViewModels
             string raceQuery;
             if (_userConnection.connectedToSqlServer)
             {
-                #region Queries with no WHERE clause
+                #region SQL Queries with no WHERE clause
                 capaQuery = "SELECT CapabilityName as [Name], 'Capability' as [Category]," +
                     " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Capabilities_Tags WHERE CapabilityName=Capabilities.CapabilityName),'') as [Tags]" +
                     " FROM Capabilities";
@@ -130,7 +130,7 @@ namespace TabletopSystems.ViewModels
             else
             {
                 //SQLITE queries go here
-                #region Queries with no WHERE clause
+                #region SQLite Queries with no WHERE clause
                 capaQuery = "SELECT CapabilityName as [Name], 'Capability' as [Category],"+
                     " Coalesce((SELECT group_concat(TagName) FROM(SELECT TagName FROM Capabilities_Tags WHERE Capabilities.CapabilityName = Capabilities_Tags.CapabilityName ORDER BY TagName)), '') as [Tags]" +
                     " FROM Capabilities";
