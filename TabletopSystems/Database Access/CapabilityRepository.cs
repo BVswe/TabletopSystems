@@ -4,6 +4,7 @@ using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -140,7 +141,7 @@ namespace TabletopSystems.Database_Access
         /// Delete a capability from the database
         /// </summary>
         /// <param name="capability"></param>
-        public void Delete(TTRPGCapability capability)
+        public void Delete(string capabilityName, int systemID)
         {
             //Delete cascades in database automatically, just delete the capability
             string cmdString = "DELETE FROM Capabilities WHERE CapabilityName=@capabilityName AND SystemID=@systemID";
@@ -154,8 +155,8 @@ namespace TabletopSystems.Database_Access
                         using (SqlCommand cmd = new SqlCommand(cmdString, conn))
                         {
                             conn.Open();
-                            cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
-                            cmd.Parameters.AddWithValue("@systemID", capability.SystemID);
+                            cmd.Parameters.AddWithValue("@capabilityName", capabilityName);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -167,8 +168,8 @@ namespace TabletopSystems.Database_Access
                         using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
                         {
                             conn.Open();
-                            cmd.Parameters.AddWithValue("@capabilityName", capability.CapabilityName);
-                            cmd.Parameters.AddWithValue("@systemID", capability.SystemID);
+                            cmd.Parameters.AddWithValue("@capabilityName", capabilityName);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -466,5 +467,128 @@ namespace TabletopSystems.Database_Access
             }
         }
 
+        public TTRPGCapability SearchCapability(string capabilityName, int systemID)
+        {
+            string cmdString = "SELECT SystemID, CapabilityName, CapabilityDescription, CapabilityArea, CapabilityRange, CapabilityUseTime, CapabilityCost," +
+                " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Capabilities_Tags WHERE CapabilityName=Capabilities.CapabilityName),'') as [Tags]," +
+                " Coalesce((SELECT STRING_AGG(AttributeName, ',') as [Attributes] FROM Attributes_Capabilities WHERE CapabilityName=Capabilities.CapabilityName),'') as [Attributes]" +
+                " FROM Capabilities WHERE SystemID=@systemID AND CapabilityName=@capabilityName";
+            TTRPGCapability capability = new TTRPGCapability();
+            try
+            {
+                if (_userConnection.connectedToSqlServer)
+                {
+                    using (SqlConnection conn = new SqlConnection(_userConnection.sqlString))
+                    {
+                        using (SqlCommand cmd = new SqlCommand(cmdString, conn))
+                        {
+                            conn.Open();
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
+                            cmd.Parameters.AddWithValue("@capabilityName", capabilityName);
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            if (reader.Read())
+                            {
+                                capability.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                                capability.CapabilityName = reader["CapabilityName"].ToString()!;
+                                capability.Description = reader["CapabilityDescription"].ToString() ?? string.Empty;
+                                capability.Area = reader["CapabilityArea"].ToString() ?? string.Empty;
+                                capability.Range = reader["CapabilityRange"].ToString() ?? string.Empty;
+                                capability.UseTime = reader["CapabilityUseTime"].ToString() ?? string.Empty;
+                                capability.Cost = reader["CapabilityCost"].ToString() ?? string.Empty;
+                                string temp = reader["Tags"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split(','))
+                                    {
+                                        TTRPGTag tempTag = new TTRPGTag();
+                                        tempTag.TagName = s;
+                                        tempTag.SystemID = capability.SystemID;
+                                        capability.Tags.Add(tempTag);
+                                    }
+                                }
+                                temp = reader["Attributes"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split(','))
+                                    {
+                                        TTRPGAttribute tempAttribute = new TTRPGAttribute();
+                                        tempAttribute.AttributeName = s;
+                                        tempAttribute.SystemID = capability.SystemID;
+                                        capability.Attributes.Add(tempAttribute);
+                                    }
+                                }
+                            }
+                            if (reader.Read()) throw new DataException("multiple rows returned from query");
+                        }
+                    }
+                }
+                else
+                {
+                    cmdString = "SELECT SystemID, c.CapabilityName, CapabilityDescription, CapabilityArea, CapabilityRange, CapabilityUseTime, CapabilityCost, t.Tags, a.Attributes" +
+                        " FROM Capabilities as c" +
+                        " INNER JOIN (SELECT ct.CapabilityName, group_concat(TagName) as Tags" +
+                        " FROM (SELECT CapabilityName, TagName FROM Capabilities_Tags ORDER BY TagName) as ct" +
+                        " GROUP BY ct.CapabilityName) t ON t.CapabilityName=c.CapabilityName" +
+                        " INNER JOIN (SELECT ac.CapabilityName, group_concat(AttributeName) as Attributes" +
+                        " FROM (SELECT CapabilityName, AttributeName FROM Attributes_Capabilities ORDER BY AttributeName) as ac" +
+                        " GROUP BY ac.CapabilityName) a ON a.CapabilityName=c.CapabilityName" +
+                        " WHERE c.CapabilityName=@capabilityName AND c.SystemID=@systemID";
+                    using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
+                    {
+                        using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
+                        {
+                            conn.Open();
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
+                            cmd.Parameters.AddWithValue("@capabilityName", capabilityName);
+                            SqliteDataReader reader = cmd.ExecuteReader();
+                            if (reader.Read())
+                            {
+                                capability.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                                capability.CapabilityName = reader["CapabilityName"].ToString()!;
+                                capability.Description = reader["CapabilityDescription"].ToString() ?? string.Empty;
+                                capability.Area = reader["CapabilityArea"].ToString() ?? string.Empty;
+                                capability.Range = reader["CapabilityRange"].ToString() ?? string.Empty;
+                                capability.UseTime = reader["CapabilityUseTime"].ToString() ?? string.Empty;
+                                capability.Cost = reader["CapabilityCost"].ToString() ?? string.Empty;
+                                string temp = reader["Tags"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split(','))
+                                    {
+                                        TTRPGTag tempTag = new TTRPGTag();
+                                        tempTag.TagName = s;
+                                        tempTag.SystemID = capability.SystemID;
+                                        capability.Tags.Add(tempTag);
+                                    }
+                                }
+                                temp = reader["Attributes"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split(','))
+                                    {
+                                        TTRPGAttribute tempAttribute = new TTRPGAttribute();
+                                        tempAttribute.AttributeName = s;
+                                        tempAttribute.SystemID = capability.SystemID;
+                                        capability.Attributes.Add(tempAttribute);
+                                    }
+                                }
+                            }
+                            if (reader.Read()) throw new DataException("Multiple rows returned from query.");
+                        }
+                    }
+                }
+                return capability;
+            }
+            catch (SqlException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
+                return new TTRPGCapability();
+            }
+            catch (SqliteException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
+                return new TTRPGCapability();
+            }
+        }
     }
 }

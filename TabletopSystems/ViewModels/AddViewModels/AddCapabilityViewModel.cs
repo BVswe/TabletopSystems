@@ -12,15 +12,17 @@ using TabletopTags.Database_Access;
 
 namespace TabletopSystems.ViewModels
 {
-    public class AddCapabilityViewModel : ObservableObject
+    public class AddCapabilityViewModel : ObservableObject, IEditVM
     {
         //Header is for dropdown to read viewmodel's name
         private readonly MainWindowViewModel _mainWinViewModel;
         private UserConnection _userConnection;
         private TTRPGCapability _capability;
+        private TTRPGCapability _oldCapability;
         private ObservableCollection<TTRPGTag> _tagsToAdd;
         private List<TTRPGTag> _allTags;
         private Dictionary<TTRPGAttribute, ObservableBool> _attributes;
+        private bool _isEditing;
         #region Properties
         public string CapabilityName
         {
@@ -67,6 +69,10 @@ namespace TabletopSystems.ViewModels
             get { return _attributes; }
             set { _attributes = value; OnPropertyChanged(); }
         }
+        public bool IsEditing
+        {
+            get { return _isEditing; }
+        }
         public ICommand AddCapabilityCommand { get; }
         public ICommand AddToCapabilityTagsCommand { get; }
         public ICommand RemoveCapabilityTagCommand { get; }
@@ -80,6 +86,7 @@ namespace TabletopSystems.ViewModels
             _capability.SystemID = _mainWinViewModel.TbltopSys.SystemID;
             _tagsToAdd = new ObservableCollection<TTRPGTag>();
             _attributes = new Dictionary<TTRPGAttribute, ObservableBool>();
+            _isEditing = false;
 
             TagRepository tagRepo = new TagRepository(_userConnection);
             AttributesRepository tempAttrRepo = new AttributesRepository();
@@ -149,6 +156,34 @@ namespace TabletopSystems.ViewModels
                 TagsToAdd.Remove((TTRPGTag)o);
             });
             #endregion
+        }
+
+        public void FillFromDatabase(string itemName, int systemID)
+        {
+            CapabilityRepository cr = new CapabilityRepository(_userConnection);
+            _oldCapability = cr.SearchCapability(itemName, systemID);
+            CapabilityName = _oldCapability.CapabilityName;
+            CapabilityDescription = _oldCapability.Description;
+            CapabilityArea = _oldCapability.Area;
+            CapabilityCost = _oldCapability.Cost;
+            CapabilityRange = _oldCapability.Range;
+            CapabilityUseTime = _oldCapability.UseTime;
+            foreach (TTRPGTag tag in _oldCapability.Tags)
+            {
+                _capability.Tags.Add(tag);
+            }
+            foreach (TTRPGAttribute attr in _oldCapability.Attributes)
+            {
+                if (_oldCapability.Attributes.Contains(attr))
+                {
+                    Attributes[attr].BoolValue = true;
+                }
+            }
+        }
+
+        public void SetEditing()
+        {
+            _isEditing = true;
         }
     }
 }

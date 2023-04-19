@@ -456,7 +456,7 @@ namespace TabletopSystems.Database_Access
                 MessageBox.Show("An exception occured: " + e.ToString());
             }
         }
-        public void Delete(TTRPGClass rpgClass)
+        public void Delete(string className, int systemID)
         {
             string deleteClasses = "DELETE FROM Classes" +
                " WHERE SystemID=@systemID AND ClassName=@className";
@@ -470,8 +470,8 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqlCommand cmd = new SqlCommand(deleteClasses, conn))
                         {
-                            cmd.Parameters.AddWithValue("@className", rpgClass.ClassName);
-                            cmd.Parameters.AddWithValue("@systemID", rpgClass.SystemID);
+                            cmd.Parameters.AddWithValue("@className", className);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -483,8 +483,8 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqliteCommand cmd = new SqliteCommand(deleteClasses, conn))
                         {
-                            cmd.Parameters.AddWithValue("@className", rpgClass.ClassName);
-                            cmd.Parameters.AddWithValue("@systemID", rpgClass.SystemID);
+                            cmd.Parameters.AddWithValue("@className", className);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }

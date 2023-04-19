@@ -10,6 +10,8 @@
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
     <UserControl.Resources>
         <helpers:FontScaler x:Key="fontScaler"></helpers:FontScaler>
+        <helpers:EditVisConverter x:Key="EditVis"></helpers:EditVisConverter>
+        <helpers:AddVisConverter x:Key="AddVis"></helpers:AddVisConverter>
         <helpers:NullToVisConverter x:Key="nullToVis"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <Style x:Key="OpacityHover" TargetType="{x:Type Button}">
@@ -743,11 +745,31 @@
                     BorderBrush="#FFFFFF"
                     BorderThickness="1"
                     FontSize="22"
+                    Visibility="{Binding IsEditing, Converter={StaticResource AddVis}}"
                     Command="{Binding AddCapabilityCommand}">
                 <Button.Background>
                     <SolidColorBrush Color="#000000" Opacity="0.8"/>
                 </Button.Background>
                 Add
+            </Button>
+            <Button Foreground="#FFFFFF"
+                    Style="{StaticResource OpacityHover}"
+                    Grid.Row="6"
+                    Grid.Column="1"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Center"
+                    Height="30"
+                    Width="70"
+                    Margin="0 10 0 10"
+                    BorderBrush="#FFFFFF"
+                    BorderThickness="1"
+                    FontSize="22"
+                    Visibility="{Binding IsEditing, Converter={StaticResource EditVis}}"
+                    Command="{Binding EditCapabilityCommand}">
+                <Button.Background>
+                    <SolidColorBrush Color="#000000" Opacity="0.8"/>
+                </Button.Background>
+                Edit
             </Button>
         </Grid>
     </ScrollViewer>

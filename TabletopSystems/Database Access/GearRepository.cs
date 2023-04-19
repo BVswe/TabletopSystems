@@ -405,7 +405,7 @@ namespace TabletopSystems.Database_Access
             }
         }
 
-        public void Delete (TTRPGGear gear)
+        public void Delete (string gearName, int systemID)
         {
             string deleteGear = "DELETE FROM Gear" +
                 " WHERE SystemID=@systemID AND GearName=@gearName";
@@ -419,8 +419,8 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqlCommand cmd = new SqlCommand(deleteGear, conn))
                         {
-                            cmd.Parameters.AddWithValue("@gearName", gear.GearName);
-                            cmd.Parameters.AddWithValue("@systemID", gear.SystemID);
+                            cmd.Parameters.AddWithValue("@gearName", gearName);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -432,8 +432,8 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqliteCommand cmd = new SqliteCommand(deleteGear, conn))
                         {
-                            cmd.Parameters.AddWithValue("@gearName", gear.GearName);
-                            cmd.Parameters.AddWithValue("@systemID", gear.SystemID);
+                            cmd.Parameters.AddWithValue("@gearName", gearName);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -507,6 +507,62 @@ namespace TabletopSystems.Database_Access
             {
                 MessageBox.Show("An exception occured: " + e.ToString());
                 return new ObservableCollection<TTRPGGear>();
+            }
+        }
+        public TTRPGGear SearchGear(string gearName, int systemID)
+        {
+            TTRPGGear gear = new TTRPGGear();
+            string cmdString = "SELECT SystemID,GearName,GearDescription" +
+                " FROM Gear WHERE SystemID=@systemID";
+            try
+            {
+                if (_userConnection.connectedToSqlServer)
+                {
+                    using (SqlConnection conn = new SqlConnection(_userConnection.sqlString))
+                    {
+                        using (SqlCommand cmd = new SqlCommand(cmdString, conn))
+                        {
+                            conn.Open();
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            while (reader.Read())
+                            {
+                                gear.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                                gear.GearName = reader["GearName"].ToString()!;
+                                gear.Description = reader["GearDescription"].ToString() ?? string.Empty;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
+                    {
+                        using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
+                        {
+                            conn.Open();
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
+                            SqliteDataReader reader = cmd.ExecuteReader();
+                            while (reader.Read())
+                            {
+                                gear.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                                gear.GearName = reader["GearName"].ToString()!;
+                                gear.Description = reader["GearDescription"].ToString() ?? string.Empty;
+                            }
+                        }
+                    }
+                }
+                return gear;
+            }
+            catch (SqlException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
+                return new TTRPGGear();
+            }
+            catch (SqliteException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
+                return new TTRPGGear();
             }
         }
     }

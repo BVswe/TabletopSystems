@@ -180,7 +180,7 @@ namespace TabletopSystems.Database_Access
             }
         }
 
-        public void Delete(TTRPGRace race)
+        public void Delete(string raceName, int systemID)
         {
             string deleteRace = "DELETE FROM Races" +
                 " WHERE SystemID=@systemID AND RaceName=@raceName";
@@ -194,8 +194,8 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqlCommand cmd = new SqlCommand(deleteRace, conn))
                         {
-                            cmd.Parameters.AddWithValue("@raceName", race.RaceName);
-                            cmd.Parameters.AddWithValue("@systemID", race.SystemID);
+                            cmd.Parameters.AddWithValue("@raceName", raceName);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -207,8 +207,8 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqliteCommand cmd = new SqliteCommand(deleteRace, conn))
                         {
-                            cmd.Parameters.AddWithValue("@raceName", race.RaceName);
-                            cmd.Parameters.AddWithValue("@systemID", race.SystemID);
+                            cmd.Parameters.AddWithValue("@raceName", raceName);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }

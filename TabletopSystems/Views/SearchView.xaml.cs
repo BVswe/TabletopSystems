@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -51,10 +52,13 @@ namespace TabletopSystems.Views
             }
         }
 
-        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void SearchDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            //Open edit/view here
-            Trace.WriteLine("Double Clicked");
+            var viewModel = (SearchViewModel)this.DataContext;
+            viewModel.DisplayItemCommand.Execute(((DataGrid)sender).SelectedItem);
+            var window = new DisplayItemView();
+            window.DataContext = viewModel.ItemToDisplay;
+            window.Show();
         }
     }
 }

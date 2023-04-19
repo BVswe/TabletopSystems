@@ -519,6 +519,7 @@
         </StackPanel>
 
         <DataGrid Grid.Row="2"
+                  x:Name="SearchDataGrid"
                   Background="Transparent"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
@@ -528,6 +529,7 @@
                   RowHeaderWidth="0"
                   RowBackground="Transparent"
                   ItemsSource="{Binding SearchResults}"
+                  MouseDoubleClick="SearchDataGrid_MouseDoubleClick"
                   >
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
@@ -542,9 +544,6 @@
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
                 <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#000000" Opacity="0.6"/>
-                <Style TargetType="DataGridRow">
-                    <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
-                </Style>
             </DataGrid.Resources>
             <DataGrid.BorderBrush>
                 <SolidColorBrush Color="#FFFFFF" Opacity="0.8"/>
@@ -588,6 +587,27 @@
                                        Padding="5 0 5 0"
                                        Width="{Binding ElementName=TagsColumn, Path=ActualWidth}"
                                        />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="40">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource OpacityHover}"
+                                    Content="X"
+                                    FontSize="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"
+                                    Foreground="#FFFFFF"
+                                    BorderBrush="#FFFFFF"
+                                    BorderThickness="1"
+                                    Margin="5"
+                                    Padding="5"
+                                    DataContext="{Binding ElementName=SearchDataGrid, Path=DataContext}"
+                                    Command="{Binding DeleteItemCommand}"
+                                    CommandParameter="{Binding ElementName=SearchDataGrid, Path=SelectedItem}">
+                                <Button.Background>
+                                    <SolidColorBrush Color="#000000" Opacity="0.8"/>
+                                </Button.Background>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

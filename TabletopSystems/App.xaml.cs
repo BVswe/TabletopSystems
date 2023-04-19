@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using TabletopSystems.Database_Access;
+using TabletopSystems.Factories;
 using TabletopSystems.Helper_Methods;
 using TabletopSystems.ViewModels;
 using TabletopSystems.Views;
@@ -37,7 +38,10 @@ namespace TabletopSystems
                 });
                 services.AddSingleton<Func<Type, ObservableObject>>(
                 serviceProvider => viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
-                //NavigationService is transient because MainWindow and AddItemMainView both need a separate NavigationService
+                //NavigationService is transient because some screens need a separate NavigationService
+                services.AddSingleton<Func<Type, IViewVM>>(
+                serviceProvider => viewModelType => (IViewVM)serviceProvider.GetRequiredService(viewModelType));
+                services.AddSingleton<DisplayItemViewFactory>();
                 services.AddTransient<INavigationService, NavigationService>();
                 services.AddTransient<SystemSelectionViewModel>();
                 services.AddTransient<SystemMainPageViewModel>();
@@ -52,6 +56,7 @@ namespace TabletopSystems
                 services.AddTransient<AddRaceViewModel>();
                 services.AddTransient<AddTagViewModel>();
                 services.AddTransient<AddMonsterViewModel>();
+                services.AddTransient<DisplayCapabilityViewModel>();
 
                 //Make Character/monster viewmodels scoped so that you can switch back and forth between tabs?
                 //Might be unnecessary bc tabcontrol doesnt go out of scope and its binded?

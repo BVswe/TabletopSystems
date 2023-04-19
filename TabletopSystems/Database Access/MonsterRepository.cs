@@ -591,7 +591,7 @@ namespace TabletopSystems.Database_Access
         /// Delete monster from database
         /// </summary>
         /// <param name="monster"></param>
-        public void Delete (TTRPGMonster monster)
+        public void Delete (string monsterName, int systemID)
         {
             string deleteMonster = "DELETE FROM Monsters" +
                 " WHERE SystemID=@systemID AND MonsterName=@monsterName";
@@ -605,8 +605,8 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqlCommand cmd = new SqlCommand(deleteMonster, conn))
                         {
-                            cmd.Parameters.AddWithValue("@gearName", monster.MonsterName);
-                            cmd.Parameters.AddWithValue("@systemID", monster.SystemID);
+                            cmd.Parameters.AddWithValue("@monsterName", monsterName);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -618,8 +618,8 @@ namespace TabletopSystems.Database_Access
                         conn.Open();
                         using (SqliteCommand cmd = new SqliteCommand(deleteMonster, conn))
                         {
-                            cmd.Parameters.AddWithValue("@gearName", monster.MonsterName);
-                            cmd.Parameters.AddWithValue("@systemID", monster.SystemID);
+                            cmd.Parameters.AddWithValue("@monsterName", monsterName);
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
                             cmd.ExecuteNonQuery();
                         }
                     }

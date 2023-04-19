@@ -19,7 +19,11 @@ namespace TabletopSystems.Models
         public bool Equals(TTRPGAttribute? other)
         {
             if (other is null) return false;
-            return this.AttributeName == other.AttributeName && this.SystemID == other.SystemID;
+            return (this.AttributeName == other.AttributeName) && (this.SystemID == other.SystemID);
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.AttributeName, this.SystemID);
         }
     }
 }

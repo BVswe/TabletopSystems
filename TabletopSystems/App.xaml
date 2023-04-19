@@ -53,6 +53,10 @@
             <views:AddRaceView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type TypeName=viewModels:DisplayCapabilityViewModel}">
+            <views:DisplayCapabilityView/>
+        </DataTemplate>
+
 
     </Application.Resources>
 </Application>

@@ -13,6 +13,8 @@ using TabletopSystems.Database_Access;
 using TabletopSystems.Helper_Methods;
 using TabletopSystems.Models;
 using TabletopTags.Database_Access;
+using TabletopSystems.Factories;
+using System.Windows;
 
 namespace TabletopSystems.ViewModels
 {
@@ -22,6 +24,8 @@ namespace TabletopSystems.ViewModels
         private MainWindowViewModel _mainWinViewModel;
         private Dictionary<string, ObservableBool> _categories;
         private Dictionary<string, ObservableBool> _tags;
+        private DisplayItemViewFactory _itemFactory;
+        private DisplayItemViewModel _itemToDisplay;
         private DataTable _searchResults;
         private string _searchTerm;
 
@@ -45,12 +49,19 @@ namespace TabletopSystems.ViewModels
             get { return _searchResults; }
             set { _searchResults = value; OnPropertyChanged(); }
         }
+        public DisplayItemViewModel ItemToDisplay
+        {
+            get { return _itemToDisplay; }
+            set { _itemToDisplay = value; OnPropertyChanged(); }
+        }
 
         //Header is to set the name of this tab in the view
         public string Header { get; }
         public ICommand SearchCommand { get; set; }
-        
-        public SearchViewModel(UserConnection conn, MainWindowViewModel mainWinVM)
+        public ICommand DisplayItemCommand { get; set; }
+        public ICommand DeleteItemCommand { get; set; }
+
+        public SearchViewModel(UserConnection conn, MainWindowViewModel mainWinVM, DisplayItemViewFactory itemFactory)
         {
             Header = "Search";
             _userConnection = conn;
@@ -64,6 +75,7 @@ namespace TabletopSystems.ViewModels
             _categories.Add("Monster", new ObservableBool());
             _categories.Add("Race", new ObservableBool());
             _searchResults = new DataTable();
+            _itemFactory = itemFactory;
 
             TagRepository tempTagRepo = new TagRepository(_userConnection);
             foreach(TTRPGTag tag in tempTagRepo.GetTags(_mainWinViewModel.TbltopSys.SystemID))
@@ -73,8 +85,53 @@ namespace TabletopSystems.ViewModels
             SearchCommand = new RelayCommand(o => {
                 string query = BuildQuery();
                 SearchRepository searchRepo = new SearchRepository(_userConnection);
-                Trace.WriteLine(query);
+                //Trace.WriteLine(query);
                 SearchResults = searchRepo.SearchDatabase(query, _searchTerm, _tags);
+            });
+            DisplayItemCommand = new RelayCommand(o =>
+            {
+                if (o as DataRowView == null)
+                {
+                    return;
+                }
+                _itemToDisplay = _itemFactory.GetViewModel(((DataRowView)o)["Category"].ToString()!);
+                _itemToDisplay.ViewModel.GetItem(((DataRowView)o)["Name"].ToString()!, _mainWinViewModel.TbltopSys.SystemID);
+            });
+            DeleteItemCommand = new RelayCommand(o =>
+            {
+                if (o as DataRowView == null)
+                {
+                    return;
+                }
+                if (MessageBox.Show("Are you sure you want to delete " + ((DataRowView)o)["Name"].ToString() + "?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                {
+                    return;
+                }
+                switch (((DataRowView)o)["Category"].ToString()) {
+                    case "Capability":
+                        CapabilityRepository cr = new CapabilityRepository(_userConnection);
+                        cr.Delete(((DataRowView)o)["Name"].ToString()!, _mainWinViewModel.TbltopSys.SystemID);
+                        break;
+                    case "Gear":
+                        GearRepository gr = new GearRepository(_userConnection);
+                        gr.Delete(((DataRowView)o)["Name"].ToString()!, _mainWinViewModel.TbltopSys.SystemID);
+                        break;
+                    case "Monster":
+                        MonsterRepository mr = new MonsterRepository(_userConnection);
+                        mr.Delete(((DataRowView)o)["Name"].ToString()!, _mainWinViewModel.TbltopSys.SystemID);
+                        break;
+                    case "Class":
+                        ClassRepository clr = new ClassRepository(_userConnection);
+                        clr.Delete(((DataRowView)o)["Name"].ToString()!, _mainWinViewModel.TbltopSys.SystemID);
+                        break;
+                    case "Race":
+                        RaceRepository rr = new RaceRepository(_userConnection);
+                        rr.Delete(((DataRowView)o)["Name"].ToString()!, _mainWinViewModel.TbltopSys.SystemID);
+                        break;
+                    default:
+                        throw new Exception("Program has enocuntered an error. Attempted to open an invalid item");
+                }
+                SearchCommand.Execute(null);
             });
         }
 
