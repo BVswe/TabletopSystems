@@ -25,11 +25,11 @@ namespace TabletopSystems.Factories
                 case "Gear":
                     return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(DisplayGearViewModel)));
                 case "Monster":
-                    return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(AddMonsterViewModel)));
+                    return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(DisplayMonsterViewModel)));
                 case "Class":
                     return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(AddClassViewModel)));
                 case "Race":
-                    return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(AddRaceViewModel)));
+                    return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(DisplayRaceViewModel)));
                 default:
                     throw new Exception("Program has enocuntered an error. Attempted to open an invalid item");
             }

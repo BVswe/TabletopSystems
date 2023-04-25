@@ -118,10 +118,7 @@ namespace TabletopSystems.ViewModels
             {
                 foreach (KeyValuePair<TTRPGAttribute, ObservableInt> kvp in _attributes)
                 {
-                    if (kvp.Value.IntValue != 0)
-                    {
-                        _monster.Attributes.Add(kvp.Key, kvp.Value.IntValue);
-                    }
+                    _monster.Attributes.Add(kvp.Key, kvp.Value.IntValue);
                 }
                 foreach (TTRPGTag tag in TagsToAdd)
                 {

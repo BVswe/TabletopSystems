@@ -514,10 +514,10 @@ namespace TabletopSystems.Database_Access
         {
             TTRPGGear gear = new TTRPGGear();
             string cmdString = "SELECT SystemID, GearName, GearDescription," +
-                " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Gear_Tags WHERE GearName=Gear.GearName),'') as Tags," +
-                " Coalesce((SELECT STRING_AGG(AttributeName, ',') as [Attributes] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as Attributes," +
-                " Coalesce((SELECT STRING_AGG(AttributeValue, ',') as [AttributeValues] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeValues," +
-                " Coalesce((SELECT STRING_AGG(AttributeUsed, ',') as [AttributeUsed] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeUsed" +
+                " Coalesce((SELECT STRING_AGG(TagName, '|') as [Tags] FROM Gear_Tags WHERE GearName=Gear.GearName),'') as Tags," +
+                " Coalesce((SELECT STRING_AGG(AttributeName, '|') as [Attributes] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as Attributes," +
+                " Coalesce((SELECT STRING_AGG(AttributeValue, '|') as [AttributeValues] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeValues," +
+                " Coalesce((SELECT STRING_AGG(AttributeUsed, '|') as [AttributeUsed] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeUsed" +
                 " FROM Gear WHERE GearName=@gearName AND SystemID=@systemID;";
             try
             {
@@ -539,7 +539,7 @@ namespace TabletopSystems.Database_Access
                                 string temp = reader["Tags"].ToString() ?? string.Empty;
                                 if (!String.IsNullOrEmpty(temp))
                                 {
-                                    foreach (string s in temp.Split(','))
+                                    foreach (string s in temp.Split('|'))
                                     {
                                         TTRPGTag tempTag = new TTRPGTag();
                                         tempTag.TagName = s;
@@ -552,9 +552,9 @@ namespace TabletopSystems.Database_Access
                                 string temp3 = reader["AttributeUsed"].ToString() ?? string.Empty;
                                 if (!String.IsNullOrEmpty(temp))
                                 {
-                                    string[] attributeList = temp.Split(',');
-                                    string[] valueList = temp2.Split(',');
-                                    string[] boolList = temp3.Split(',');
+                                    string[] attributeList = temp.Split('|');
+                                    string[] valueList = temp2.Split('|');
+                                    string[] boolList = temp3.Split('|');
                                     for (int i = 0; i <  attributeList.Length; i++)
                                     {
                                         AttributeValueAndBool tempAttribute = new AttributeValueAndBool();
@@ -573,10 +573,10 @@ namespace TabletopSystems.Database_Access
                 else
                 {
                     cmdString = "SELECT SystemID, GearName, GearDescription," +
-                        " Coalesce((SELECT group_concat(TagName) as [Tags] FROM Gear_Tags WHERE GearName=Gear.GearName),'') as Tags," +
-                        " Coalesce((SELECT group_concat(AttributeName) as [Attributes] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as Attributes," +
-                        " Coalesce((SELECT group_concat(AttributeValue) as [AttributeValues] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeValues," +
-                        " Coalesce((SELECT group_concat(AttributeUsed) as [AttributeUsed] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeUsed" +
+                        " Coalesce((SELECT group_concat(TagName, '|') as [Tags] FROM Gear_Tags WHERE GearName=Gear.GearName),'') as Tags," +
+                        " Coalesce((SELECT group_concat(AttributeName, '|') as [Attributes] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as Attributes," +
+                        " Coalesce((SELECT group_concat(AttributeValue, '|') as [AttributeValues] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeValues," +
+                        " Coalesce((SELECT group_concat(AttributeUsed, '|') as [AttributeUsed] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeUsed" +
                         " FROM Gear WHERE GearName=@gearName AND SystemID=@systemID;";
                     using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
                     {
@@ -594,7 +594,7 @@ namespace TabletopSystems.Database_Access
                                 string temp = reader["Tags"].ToString() ?? string.Empty;
                                 if (!String.IsNullOrEmpty(temp))
                                 {
-                                    foreach (string s in temp.Split(','))
+                                    foreach (string s in temp.Split('|'))
                                     {
                                         TTRPGTag tempTag = new TTRPGTag();
                                         tempTag.TagName = s;
@@ -607,9 +607,9 @@ namespace TabletopSystems.Database_Access
                                 string temp3 = reader["AttributeUsed"].ToString() ?? string.Empty;
                                 if (!String.IsNullOrEmpty(temp))
                                 {
-                                    string[] attributeList = temp.Split(',');
-                                    string[] valueList = temp2.Split(',');
-                                    string[] boolList = temp3.Split(',');
+                                    string[] attributeList = temp.Split('|');
+                                    string[] valueList = temp2.Split('|');
+                                    string[] boolList = temp3.Split('|');
                                     for (int i = 0; i < attributeList.Length; i++)
                                     {
                                         AttributeValueAndBool tempAttribute = new AttributeValueAndBool();

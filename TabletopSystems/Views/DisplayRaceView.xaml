@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="TabletopSystems.Views.DisplayGearView"
+﻿<UserControl x:Class="TabletopSystems.Views.DisplayRaceView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TabletopSystems.Views"
+             mc:Ignorable="d"
              xmlns:helpers="clr-namespace:TabletopSystems.Helper_Methods"
-             mc:Ignorable="d" 
              d:DesignHeight="575" d:DesignWidth="400">
     <UserControl.Resources>
         <helpers:FontScaler x:Key="fontScaler"></helpers:FontScaler>
@@ -52,10 +52,10 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
     </UserControl.Resources>
-
     <ScrollViewer FocusVisualStyle="{x:Null}" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
         <Grid Margin="1">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -74,13 +74,13 @@
                            VerticalAlignment="Center"/>
                 <TextBlock Style="{StaticResource MyTextBlock}"
                            Grid.Column="1"
-                           Text="{Binding GearName}"/>
+                           Text="{Binding RaceName}"/>
             </Grid>
             <TextBlock Style="{StaticResource MyTextBlock}"
                        Text="Description:"
-                       Grid.Row="2"
+                       Grid.Row="1"
                        Margin="5 5 5 5"/>
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.05*"/>
                     <ColumnDefinition Width="*"/>
@@ -90,24 +90,24 @@
                            Grid.Row="3"
                            Grid.Column="1"
                            TextWrapping="Wrap"
-                           Text="{Binding GearDescription}"/>
+                           Text="{Binding RaceDescription}"/>
             </Grid>
-            
-            <Grid Grid.Row="4">
+
+            <Grid Grid.Row="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Style="{StaticResource MyTextBlock}"
                            Margin="5 0 0 0"
-                           Text="Bonuses:"
+                           Text="Subraces:"
                            Grid.Row="0"/>
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.05*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ItemsControl ItemsSource="{Binding AttributeBonuses}"
+                    <ItemsControl ItemsSource="{Binding Subraces}"
                                   Grid.Column="1"
                                   Grid.IsSharedSizeScope="True">
                         <ItemsControl.ItemsPanel>
@@ -126,14 +126,52 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Style="{StaticResource MyTextBlock}"
-                                               Text="{Binding Attribute.AttributeName}"
+                                               Text="{Binding SubraceName}"
                                                HorizontalAlignment="Center"
                                                />
-                                    <TextBlock Style="{StaticResource MyTextBlock}"
-                                               Text="{Binding Value}"
-                                               HorizontalAlignment="Center"
-                                               Grid.Row="1"
-                                             />
+                                    <Grid Grid.Row="1">
+                                        <ItemsControl Grid.Column="0"
+                                                  Grid.IsSharedSizeScope="True"
+                                                  ItemsSource="{Binding SubraceAttributes}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" SharedSizeGroup="StatSize"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Style="{StaticResource MyTextBlock}"
+                                                                   Text="{Binding Key.AttributeName}"
+                                                                   HorizontalAlignment="Center"
+                                                                   Grid.Column="0"
+                                                                   />
+                                                        <TextBlock Style="{StaticResource MyTextBlock}"
+                                                                   Text="  "
+                                                                   HorizontalAlignment="Center"
+                                                                   Grid.Column="1"
+                                                                   />
+                                                        <Border BorderThickness="0 0 0 1"
+                                                                CornerRadius="0"
+                                                                Grid.Column="2">
+                                                            <Border.BorderBrush>
+                                                                <SolidColorBrush Color="#FFFFFF"/>
+                                                            </Border.BorderBrush>
+                                                            <TextBlock Style="{StaticResource MyTextBlock}"
+                                                                       Text="{Binding Value.IntValue}"
+                                                                       HorizontalAlignment="Center"
+                                                                       />
+                                                        </Border>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -146,35 +184,64 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Style="{StaticResource MyTextBlock}"
-                           Margin="5 5 5 5"
-                           Text="Attributes Used:"/>
+                           Margin="5"
+                           Text="Capabilities:"/>
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.05*"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="0.05*"/>
                     </Grid.ColumnDefinitions>
-                    <ItemsControl ItemsSource="{Binding AttributesUsed}"
-                                  Grid.Column="1"
-                                  Grid.IsSharedSizeScope="True">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" SharedSizeGroup="ColumnSize"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Style="{StaticResource MyTextBlock}"
-                                           Text="{Binding AttributeName}"
-                                           Margin="0 0 15 0"
-                                           HorizontalAlignment="Center"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <DataGrid Grid.Column="1"
+                              Background="Transparent"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              x:Name="CapabilityList"
+                              ItemsSource="{Binding Capabilities}"
+                              HorizontalGridLinesBrush="Transparent"
+                              VerticalGridLinesBrush="Transparent"
+                              BorderThickness="0"
+                              RowHeaderWidth="0"
+                              RowBackground="Transparent"
+                              HorizontalScrollBarVisibility="Hidden"
+                              >
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource fontScaler} }"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="0 0 20 0"/>
+                            </Style>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#000000" Opacity="0.3"/>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#000000" Opacity="0.3"/>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000" Opacity="0.3" />
+                            <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" Opacity="0.3"/>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#000000" Opacity="0.3"/>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Capability Name" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource MyTextBlock}"
+                                               Text="{Binding Capability.CapabilityName}"
+                                               HorizontalAlignment="Center"
+                                               />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Level Gained" Width="Auto">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{StaticResource MyTextBlock}"
+                                               Text="{Binding Level}"
+                                               HorizontalAlignment="Center"
+                                               />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
             </Grid>
             <Grid Grid.Row="6">

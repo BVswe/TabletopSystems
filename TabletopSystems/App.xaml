@@ -61,6 +61,14 @@
             <views:DisplayGearView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type TypeName=viewModels:DisplayMonsterViewModel}">
+            <views:DisplayMonsterView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type TypeName=viewModels:DisplayRaceViewModel}">
+            <views:DisplayRaceView/>
+        </DataTemplate>
+
 
     </Application.Resources>
 </Application>

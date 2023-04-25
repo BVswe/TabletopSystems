@@ -32,6 +32,12 @@ namespace TabletopSystems.Models
             _capability = capability;
         }
 
+        public CapabilityAndLevel(TTRPGCapability capability, int level)
+        {
+            _capability = capability;
+            _level = level;
+        }
+
         public bool Equals(CapabilityAndLevel? other)
         {
             if (other is null) return false;

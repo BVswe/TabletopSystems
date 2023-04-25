@@ -3,6 +3,7 @@ using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -724,6 +725,165 @@ namespace TabletopSystems.Database_Access
             {
                 MessageBox.Show("An exception occured: " + e.ToString());
                 return new ObservableCollection<TTRPGMonster>();
+            }
+        }
+
+        public TTRPGMonster SearchMonster(string monsterName, int systemID)
+        {
+            TTRPGMonster monster = new TTRPGMonster();
+            string cmdString = "SELECT SystemID, MonsterName, StandardDamage, HP," +
+                " Coalesce((SELECT STRING_AGG(TagName, '|') as [Tags] FROM Monsters_Tags WHERE MonsterName=Monsters.MonsterName),'') as Tags," +
+                " Coalesce((SELECT STRING_AGG(AttributeName, '|') as [Attributes] FROM Attributes_Monsters WHERE MonsterName=Monsters.MonsterName GROUP BY MonsterName),'') as Attributes," +
+                " Coalesce((SELECT STRING_AGG(AttributeValue, '|') as [AttributeValues] FROM Attributes_Monsters WHERE MonsterName=Monsters.MonsterName GROUP BY MonsterName),'') as AttributeValues," +
+                " Coalesce((SELECT STRING_AGG(GearName, '|') as [Gear] FROM Monsters_Gear WHERE MonsterName=Monsters.MonsterName GROUP BY MonsterName),'') as Gear," +
+                " Coalesce((SELECT STRING_AGG(CapabilityName, '|') as [Capabilities] FROM Monsters_Capabilities WHERE MonsterName=Monsters.MonsterName GROUP BY MonsterName),'') as Capabilities" +
+                " FROM Monsters WHERE MonsterName=@monsterName AND SystemID=@systemID";
+            try
+            {
+                if (_userConnection.connectedToSqlServer)
+                {
+                    using (SqlConnection conn = new SqlConnection(_userConnection.sqlString))
+                    {
+                        using (SqlCommand cmd = new SqlCommand(cmdString, conn))
+                        {
+                            conn.Open();
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
+                            cmd.Parameters.AddWithValue("@monsterName", monsterName);
+                            SqlDataReader reader = cmd.ExecuteReader();
+                            if (reader.Read())
+                            {
+                                monster.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                                monster.MonsterName = reader["MonsterName"].ToString()!;
+                                monster.StandardDamage = Int32.Parse(reader["StandardDamage"].ToString() ?? "0");
+                                monster.HP = Int32.Parse(reader["HP"].ToString() ?? "0");
+                                string temp = reader["Tags"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split('|'))
+                                    {
+                                        TTRPGTag tempTag = new TTRPGTag();
+                                        tempTag.TagName = s;
+                                        tempTag.SystemID = monster.SystemID;
+                                        monster.Tags.Add(tempTag);
+                                    }
+                                }
+                                temp = reader["Attributes"].ToString() ?? string.Empty;
+                                string temp2 = reader["AttributeValues"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp) && !String.IsNullOrEmpty(temp2))
+                                {
+                                    string[] attributeList = temp.Split('|');
+                                    string[] valueList = temp2.Split('|');
+                                    for (int i = 0; i < attributeList.Length; i++)
+                                    {
+                                        TTRPGAttribute tempAttribute = new TTRPGAttribute { SystemID = monster.SystemID, AttributeName = attributeList[i] };
+                                        monster.Attributes.Add(tempAttribute, Int32.Parse(valueList[i] ?? "0"));
+                                    }
+                                }
+                                temp = reader["Gear"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split('|'))
+                                    {
+                                        TTRPGGear tempGear = new TTRPGGear() { GearName = s, SystemID=monster.SystemID };
+                                        monster.Gear.Add(tempGear);
+                                    }
+                                }
+                                temp = reader["Capabilities"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split('|'))
+                                    {
+                                        TTRPGCapability tempCapability = new TTRPGCapability() { CapabilityName = s, SystemID = monster.SystemID };
+                                        monster.Capabilities.Add(tempCapability);
+                                    }
+                                }
+
+                            }
+                            if (reader.Read()) throw new DataException("multiple rows returned from query");
+                        }
+                    }
+                }
+                else
+                {
+                    cmdString = "SELECT SystemID, MonsterName, StandardDamage, HP," +
+                    " Coalesce((SELECT group_concat(TagName, '|') as [Tags] FROM Monsters_Tags WHERE MonsterName=Monsters.MonsterName),'') as Tags," +
+                    " Coalesce((SELECT group_concat(AttributeName, '|') as [Attributes] FROM Attributes_Monsters WHERE MonsterName=Monsters.MonsterName GROUP BY MonsterName),'') as Attributes," +
+                    " Coalesce((SELECT group_concat(AttributeValue, '|') as [AttributeValues] FROM Attributes_Monsters WHERE MonsterName=Monsters.MonsterName GROUP BY MonsterName),'') as AttributeValues," +
+                    " Coalesce((SELECT group_concat(GearName, '|') as [Gear] FROM Monsters_Gear WHERE MonsterName=Monsters.MonsterName GROUP BY MonsterName),'') as Gear," +
+                    " Coalesce((SELECT group_concat(CapabilityName, '|') as [Capabilities] FROM Monsters_Capabilities WHERE MonsterName=Monsters.MonsterName GROUP BY MonsterName),'') as Capabilities" +
+                    " FROM Monsters WHERE MonsterName=@monsterName AND SystemID=@systemID";
+                    using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
+                    {
+                        using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
+                        {
+                            conn.Open();
+                            cmd.Parameters.AddWithValue("@systemID", systemID);
+                            cmd.Parameters.AddWithValue("@monsterName", monsterName);
+                            SqliteDataReader reader = cmd.ExecuteReader();
+                            if (reader.Read())
+                            {
+                                monster.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
+                                monster.MonsterName = reader["MonsterName"].ToString()!;
+                                monster.StandardDamage = Int32.Parse(reader["StandardDamage"].ToString() ?? "0");
+                                monster.HP = Int32.Parse(reader["HP"].ToString() ?? "0");
+                                string temp = reader["Tags"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split('|'))
+                                    {
+                                        TTRPGTag tempTag = new TTRPGTag();
+                                        tempTag.TagName = s;
+                                        tempTag.SystemID = monster.SystemID;
+                                        monster.Tags.Add(tempTag);
+                                    }
+                                }
+                                temp = reader["Attributes"].ToString() ?? string.Empty;
+                                string temp2 = reader["AttributeValues"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp) && !String.IsNullOrEmpty(temp2))
+                                {
+                                    string[] attributeList = temp.Split('|');
+                                    string[] valueList = temp2.Split('|');
+                                    for (int i = 0; i < attributeList.Length; i++)
+                                    {
+                                        TTRPGAttribute tempAttribute = new TTRPGAttribute { SystemID = monster.SystemID, AttributeName = attributeList[i] };
+                                        monster.Attributes.Add(tempAttribute, Int32.Parse(valueList[i] ?? "0"));
+                                    }
+                                }
+                                temp = reader["Gear"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split('|'))
+                                    {
+                                        TTRPGGear tempGear = new TTRPGGear() { GearName = s, SystemID = monster.SystemID };
+                                        monster.Gear.Add(tempGear);
+                                    }
+                                }
+                                temp = reader["Capabilities"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split('|'))
+                                    {
+                                        TTRPGCapability tempCapability = new TTRPGCapability() { CapabilityName = s, SystemID = monster.SystemID };
+                                        monster.Capabilities.Add(tempCapability);
+                                    }
+                                }
+
+                            }
+                            if (reader.Read()) throw new DataException("multiple rows returned from query");
+                        }
+                    }
+                }
+                return monster;
+            }
+            catch (SqlException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
+                return new TTRPGMonster();
+            }
+            catch (SqliteException e)
+            {
+                MessageBox.Show("An exception occured: " + e.ToString());
+                return new TTRPGMonster();
             }
         }
     }

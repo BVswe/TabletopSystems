@@ -470,8 +470,8 @@ namespace TabletopSystems.Database_Access
         public TTRPGCapability SearchCapability(string capabilityName, int systemID)
         {
             string cmdString = "SELECT SystemID, CapabilityName, CapabilityDescription, CapabilityArea, CapabilityRange, CapabilityUseTime, CapabilityCost," +
-                " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Capabilities_Tags WHERE CapabilityName=Capabilities.CapabilityName),'') as [Tags]," +
-                " Coalesce((SELECT STRING_AGG(AttributeName, ',') as [Attributes] FROM Attributes_Capabilities WHERE CapabilityName=Capabilities.CapabilityName),'') as [Attributes]" +
+                " Coalesce((SELECT STRING_AGG(TagName, '|') as [Tags] FROM Capabilities_Tags WHERE CapabilityName=Capabilities.CapabilityName),'') as [Tags]," +
+                " Coalesce((SELECT STRING_AGG(AttributeName, '|') as [Attributes] FROM Attributes_Capabilities WHERE CapabilityName=Capabilities.CapabilityName),'') as [Attributes]" +
                 " FROM Capabilities WHERE SystemID=@systemID AND CapabilityName=@capabilityName";
             TTRPGCapability capability = new TTRPGCapability();
             try
@@ -498,7 +498,7 @@ namespace TabletopSystems.Database_Access
                                 string temp = reader["Tags"].ToString() ?? string.Empty;
                                 if (!String.IsNullOrEmpty(temp))
                                 {
-                                    foreach (string s in temp.Split(','))
+                                    foreach (string s in temp.Split('|'))
                                     {
                                         TTRPGTag tempTag = new TTRPGTag();
                                         tempTag.TagName = s;
@@ -509,7 +509,7 @@ namespace TabletopSystems.Database_Access
                                 temp = reader["Attributes"].ToString() ?? string.Empty;
                                 if (!String.IsNullOrEmpty(temp))
                                 {
-                                    foreach (string s in temp.Split(','))
+                                    foreach (string s in temp.Split('|'))
                                     {
                                         TTRPGAttribute tempAttribute = new TTRPGAttribute();
                                         tempAttribute.AttributeName = s;
@@ -524,15 +524,10 @@ namespace TabletopSystems.Database_Access
                 }
                 else
                 {
-                    cmdString = "SELECT SystemID, c.CapabilityName, CapabilityDescription, CapabilityArea, CapabilityRange, CapabilityUseTime, CapabilityCost, t.Tags, a.Attributes" +
-                        " FROM Capabilities as c" +
-                        " INNER JOIN (SELECT ct.CapabilityName, group_concat(TagName) as Tags" +
-                        " FROM (SELECT CapabilityName, TagName FROM Capabilities_Tags ORDER BY TagName) as ct" +
-                        " GROUP BY ct.CapabilityName) t ON t.CapabilityName=c.CapabilityName" +
-                        " INNER JOIN (SELECT ac.CapabilityName, group_concat(AttributeName) as Attributes" +
-                        " FROM (SELECT CapabilityName, AttributeName FROM Attributes_Capabilities ORDER BY AttributeName) as ac" +
-                        " GROUP BY ac.CapabilityName) a ON a.CapabilityName=c.CapabilityName" +
-                        " WHERE c.CapabilityName=@capabilityName AND c.SystemID=@systemID";
+                    cmdString = "SELECT SystemID, CapabilityName, CapabilityDescription, CapabilityArea, CapabilityRange, CapabilityUseTime, CapabilityCost," +
+                " Coalesce((SELECT group_concat(TagName, '|') as [Tags] FROM Capabilities_Tags WHERE CapabilityName=Capabilities.CapabilityName),'') as [Tags]," +
+                " Coalesce((SELECT group_concat(AttributeName, '|') as [Attributes] FROM Attributes_Capabilities WHERE CapabilityName=Capabilities.CapabilityName),'') as [Attributes]" +
+                " FROM Capabilities WHERE SystemID=@systemID AND CapabilityName=@capabilityName";
                     using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
                     {
                         using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
@@ -553,7 +548,7 @@ namespace TabletopSystems.Database_Access
                                 string temp = reader["Tags"].ToString() ?? string.Empty;
                                 if (!String.IsNullOrEmpty(temp))
                                 {
-                                    foreach (string s in temp.Split(','))
+                                    foreach (string s in temp.Split('|'))
                                     {
                                         TTRPGTag tempTag = new TTRPGTag();
                                         tempTag.TagName = s;
@@ -564,7 +559,7 @@ namespace TabletopSystems.Database_Access
                                 temp = reader["Attributes"].ToString() ?? string.Empty;
                                 if (!String.IsNullOrEmpty(temp))
                                 {
-                                    foreach (string s in temp.Split(','))
+                                    foreach (string s in temp.Split('|'))
                                     {
                                         TTRPGAttribute tempAttribute = new TTRPGAttribute();
                                         tempAttribute.AttributeName = s;
