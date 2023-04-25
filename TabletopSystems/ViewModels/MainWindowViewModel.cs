@@ -59,7 +59,7 @@ public class MainWindowViewModel : ObservableObject
         TbltopSys = new TabletopSystem();
         BackCommand = new RelayCommand(o => { ExecuteBackCommand(); }, o => true);
         CreateDB();
-        Trace.WriteLine("MainWindowView was constructed!");
+        //Trace.WriteLine("MainWindowView was constructed!");
     }
     /// <summary>
     /// Go back to System Selection view

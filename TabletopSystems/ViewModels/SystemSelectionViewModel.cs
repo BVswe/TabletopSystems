@@ -20,6 +20,7 @@ public class SystemSelectionViewModel : ObservableObject
     private ObservableCollection<TabletopSystem> _systems;
     private TabletopSystemRepository _tabletopSystemRepository;
     private MainWindowViewModel _mainWindowViewModel;
+    private string _hostName;
     public TabletopSystem SelectedSystem
     {
         get { return _selectedSystem; }
@@ -42,16 +43,23 @@ public class SystemSelectionViewModel : ObservableObject
     {
         get { return _userConnection; }
     }
+    public string HostName
+    {
+        get { return _hostName; }
+        set { _hostName = value; OnPropertyChanged(); }
+    }
 
     public ICommand SystemSelectedCommand { get; }
     public ICommand AddSystemCommand { get; }
     public ICommand DeleteSystemCommand { get; }
     public ICommand ReloadCommand { get; }
+    public ICommand ConnectCommand { get; }
 
     public SystemSelectionViewModel(UserConnection conn, MainWindowViewModel mainWinViewModel)
     {
         _selectedSystem = new TabletopSystem();
         _userConnection = conn;
+        _hostName = "";
         _tabletopSystemRepository = new TabletopSystemRepository(_userConnection);
         _systems = _tabletopSystemRepository.GetSystems();
         _mainWindowViewModel = mainWinViewModel;
@@ -59,13 +67,23 @@ public class SystemSelectionViewModel : ObservableObject
         DeleteSystemCommand = new RelayCommand(o => ExecuteDeleteSystemCommand());
         AddSystemCommand = new RelayCommand(o => ExecuteAddSystemCommand());
         ReloadCommand = new RelayCommand(o => ExecuteReloadCommand());
-        Trace.WriteLine("System Selection View Model constructed!");
+        ConnectCommand = new RelayCommand(o => ExecuteConnectCommand());
+        //Trace.WriteLine("System Selection View Model constructed!");
     }
 
     public void ExecuteReloadCommand()
     {
-        _userConnection.tryConnection();
         Systems = _tabletopSystemRepository.GetSystems();
+    }
+    public void ExecuteConnectCommand()
+    {
+        _userConnection.tryConnection(_hostName);
+        Systems = _tabletopSystemRepository.GetSystems();
+        if (_userConnection.connectedToSqlServer)
+        {
+            MessageBox.Show($"Connected to {_hostName}!");
+        }
+        else { MessageBox.Show($"Connection Failed."); };
     }
 
     public void ExecuteAddSystemCommand()

@@ -57,6 +57,7 @@ namespace TabletopSystems
                 services.AddTransient<AddTagViewModel>();
                 services.AddTransient<AddMonsterViewModel>();
                 services.AddTransient<DisplayCapabilityViewModel>();
+                services.AddTransient<DisplayGearViewModel>();
 
                 //Make Character/monster viewmodels scoped so that you can switch back and forth between tabs?
                 //Might be unnecessary bc tabcontrol doesnt go out of scope and its binded?

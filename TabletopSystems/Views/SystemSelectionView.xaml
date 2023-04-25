@@ -122,12 +122,31 @@
                     Delete
                 </Button>
             </StackPanel>
-            <Button Command="{Binding ReloadCommand}" Padding="5 0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Opacity="0.8" Foreground="GhostWhite" FontSize="15" Height="25" Margin="2 1 2 1">
-                <Button.Background>
-                    <SolidColorBrush Color="Black" Opacity="0.6"/>
-                </Button.Background>
-                Reload
-            </Button>
+            <StackPanel Grid.Column="1"
+                        HorizontalAlignment="Right">
+                <Button Command="{Binding ReloadCommand}" Padding="5 0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch" Opacity="0.8" Foreground="GhostWhite" FontSize="15" Height="25" Margin="2 1 2 1">
+                    <Button.Background>
+                        <SolidColorBrush Color="Black" Opacity="0.6"/>
+                    </Button.Background>
+                    Reload
+                </Button>
+                <TextBox Background="Transparent"
+                         Foreground="#FFFFFF"
+                         Margin="2 1 2 1"
+                         FontSize="15"
+                         TextWrapping="NoWrap"
+                         Width="Auto"
+                         CaretBrush="#FFFFFF"
+                         Text="{Binding HostName}">
+                    
+                </TextBox>
+                <Button Command="{Binding ConnectCommand}" Padding="5 0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch" Opacity="0.8" Foreground="GhostWhite" FontSize="15" Height="25" Margin="2 1 2 1">
+                    <Button.Background>
+                        <SolidColorBrush Color="Black" Opacity="0.6"/>
+                    </Button.Background>
+                    Connect
+                </Button>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>

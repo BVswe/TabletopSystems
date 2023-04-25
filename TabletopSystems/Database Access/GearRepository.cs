@@ -3,6 +3,7 @@ using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -512,8 +513,12 @@ namespace TabletopSystems.Database_Access
         public TTRPGGear SearchGear(string gearName, int systemID)
         {
             TTRPGGear gear = new TTRPGGear();
-            string cmdString = "SELECT SystemID,GearName,GearDescription" +
-                " FROM Gear WHERE SystemID=@systemID";
+            string cmdString = "SELECT SystemID, GearName, GearDescription," +
+                " Coalesce((SELECT STRING_AGG(TagName, ',') as [Tags] FROM Gear_Tags WHERE GearName=Gear.GearName),'') as Tags," +
+                " Coalesce((SELECT STRING_AGG(AttributeName, ',') as [Attributes] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as Attributes," +
+                " Coalesce((SELECT STRING_AGG(AttributeValue, ',') as [AttributeValues] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeValues," +
+                " Coalesce((SELECT STRING_AGG(AttributeUsed, ',') as [AttributeUsed] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeUsed" +
+                " FROM Gear WHERE GearName=@gearName AND SystemID=@systemID;";
             try
             {
                 if (_userConnection.connectedToSqlServer)
@@ -524,31 +529,99 @@ namespace TabletopSystems.Database_Access
                         {
                             conn.Open();
                             cmd.Parameters.AddWithValue("@systemID", systemID);
+                            cmd.Parameters.AddWithValue("@gearName", gearName);
                             SqlDataReader reader = cmd.ExecuteReader();
-                            while (reader.Read())
+                            if (reader.Read())
                             {
                                 gear.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
                                 gear.GearName = reader["GearName"].ToString()!;
                                 gear.Description = reader["GearDescription"].ToString() ?? string.Empty;
+                                string temp = reader["Tags"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split(','))
+                                    {
+                                        TTRPGTag tempTag = new TTRPGTag();
+                                        tempTag.TagName = s;
+                                        tempTag.SystemID = gear.SystemID;
+                                        gear.Tags.Add(tempTag);
+                                    }
+                                }
+                                temp = reader["Attributes"].ToString() ?? string.Empty;
+                                string temp2 = reader["AttributeValues"].ToString() ?? string.Empty;
+                                string temp3 = reader["AttributeUsed"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    string[] attributeList = temp.Split(',');
+                                    string[] valueList = temp2.Split(',');
+                                    string[] boolList = temp3.Split(',');
+                                    for (int i = 0; i <  attributeList.Length; i++)
+                                    {
+                                        AttributeValueAndBool tempAttribute = new AttributeValueAndBool();
+                                        tempAttribute.Attribute = new TTRPGAttribute { SystemID = gear.SystemID, AttributeName = attributeList[i] };
+                                        tempAttribute.BoolValue = (boolList[i] == "1");
+                                        tempAttribute.Value = int.Parse(valueList[i]);
+                                        gear.Attributes.Add(tempAttribute);
+                                    }
+                                }
+
                             }
+                            if (reader.Read()) throw new DataException("multiple rows returned from query");
                         }
                     }
                 }
                 else
                 {
+                    cmdString = "SELECT SystemID, GearName, GearDescription," +
+                        " Coalesce((SELECT group_concat(TagName) as [Tags] FROM Gear_Tags WHERE GearName=Gear.GearName),'') as Tags," +
+                        " Coalesce((SELECT group_concat(AttributeName) as [Attributes] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as Attributes," +
+                        " Coalesce((SELECT group_concat(AttributeValue) as [AttributeValues] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeValues," +
+                        " Coalesce((SELECT group_concat(AttributeUsed) as [AttributeUsed] FROM Attributes_Gear WHERE GearName=Gear.GearName GROUP BY GearName),'') as AttributeUsed" +
+                        " FROM Gear WHERE GearName=@gearName AND SystemID=@systemID;";
                     using (SqliteConnection conn = new SqliteConnection(_userConnection.sqliteString))
                     {
                         using (SqliteCommand cmd = new SqliteCommand(cmdString, conn))
                         {
                             conn.Open();
                             cmd.Parameters.AddWithValue("@systemID", systemID);
+                            cmd.Parameters.AddWithValue("@gearName", gearName);
                             SqliteDataReader reader = cmd.ExecuteReader();
-                            while (reader.Read())
+                            if (reader.Read())
                             {
                                 gear.SystemID = Int32.Parse(reader["SystemID"].ToString()!);
                                 gear.GearName = reader["GearName"].ToString()!;
                                 gear.Description = reader["GearDescription"].ToString() ?? string.Empty;
+                                string temp = reader["Tags"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    foreach (string s in temp.Split(','))
+                                    {
+                                        TTRPGTag tempTag = new TTRPGTag();
+                                        tempTag.TagName = s;
+                                        tempTag.SystemID = gear.SystemID;
+                                        gear.Tags.Add(tempTag);
+                                    }
+                                }
+                                temp = reader["Attributes"].ToString() ?? string.Empty;
+                                string temp2 = reader["AttributeValues"].ToString() ?? string.Empty;
+                                string temp3 = reader["AttributeUsed"].ToString() ?? string.Empty;
+                                if (!String.IsNullOrEmpty(temp))
+                                {
+                                    string[] attributeList = temp.Split(',');
+                                    string[] valueList = temp2.Split(',');
+                                    string[] boolList = temp3.Split(',');
+                                    for (int i = 0; i < attributeList.Length; i++)
+                                    {
+                                        AttributeValueAndBool tempAttribute = new AttributeValueAndBool();
+                                        tempAttribute.Attribute = new TTRPGAttribute { SystemID = gear.SystemID, AttributeName = attributeList[i] };
+                                        tempAttribute.BoolValue = (boolList[i] == "1");
+                                        tempAttribute.Value = int.Parse(valueList[i]);
+                                        gear.Attributes.Add(tempAttribute);
+                                    }
+                                }
+
                             }
+                            if (reader.Read()) throw new DataException("multiple rows returned from query");
                         }
                     }
                 }

@@ -23,7 +23,7 @@ namespace TabletopSystems.Factories
                 case "Capability":
                     return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(DisplayCapabilityViewModel)));
                 case "Gear":
-                    return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(AddGearViewModel)));
+                    return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(DisplayGearViewModel)));
                 case "Monster":
                     return new DisplayItemViewModel(_itemViewModelFactory.Invoke(typeof(AddMonsterViewModel)));
                 case "Class":

@@ -32,7 +32,7 @@ public class ConnectToSqlViewModel : ObservableObject
     {
         _connection = conn;
         TryConnectionCommand = new RelayCommand(o => {
-            _connection.tryConnection();
+            //_connection.tryConnection();
             if (_connection.connectedToSqlServer)
             {
                 IsConnectedText = "Connected!";

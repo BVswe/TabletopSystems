@@ -89,7 +89,7 @@ namespace TabletopSystems.ViewModels
                 MessageLog.Add(Message);
                 Message = "";
             }, o => true);
-            Trace.WriteLine("SystemMainPageView was constructed!");
+            //Trace.WriteLine("SystemMainPageView was constructed!");
         }
     }
 }
